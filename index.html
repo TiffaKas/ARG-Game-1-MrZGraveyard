@@ -23,6 +23,17 @@
         /* 主系统 */
         #system { display: none; height: 100vh; width: 100%; }
         .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; }
+        
+        /* 导航样式 */
+        .nav-menu { margin-top: 20px; flex: 1; }
+        .nav-item { 
+            padding: 15px 25px; font-size: 14px; color: var(--gold); cursor: pointer; 
+            transition: background 0.3s; display: flex; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.05); }
+        .nav-item span { margin-right: 10px; }
+
         .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; }
         .card { background: #fff; padding: 50px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         input { width: 100%; padding: 15px; border: 1px solid #ddd; margin: 20px 0; box-sizing: border-box; font-size: 16px; }
@@ -34,8 +45,7 @@
     <div id="welcome">
         <div class="box">
             <h2 style="text-align:center">作者寄语</h2>
-            <p>欢迎。你是一个墓地管理员，来到千安公墓工作，这是你的工作网站游戏目标，在正常工作中，发现奇怪的东西，然后开始调查怪异的源头
-你即将进入《千安公墓》管理档案库。建议在手边准备一个<strong>记事本</strong>，记录下观察到的所有变化。在这个系统里，细节决定真相。</p>
+            <p>欢迎。你是一个墓地管理员，来到千安公墓工作，这是你的工作网站游戏目标，在正常工作中，发现奇怪的东西，然后开始调查怪异的源头。建议在手边准备一个<strong>记事本</strong>，记录下观察到的所有变化。在这个系统里，细节决定真相。</p>
             
             <details>
                 <summary>提示：（建议一周目没懂的二周目看）</summary>
@@ -51,9 +61,20 @@
 
     <div id="system">
         <div class="side">
-            <div style="padding:40px 20px; text-align:center"><h1 style="color:var(--gold); font-size:22px; letter-spacing:4px">千安公墓</h1></div>
-            <div style="padding:20px; font-size:14px; color:var(--gold)">● 档案检索模块</div>
-            <div style="margin-top:auto; padding:20px; font-size:11px; color:#555">© 2026 QianAn Admin</div>
+            <div style="padding:40px 20px; text-align:center">
+                <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-item" style="opacity: 0.5; cursor: default;">
+                    <span>●</span> 档案检索模块
+                </div>
+                <div class="nav-item" onclick="window.location.href='rules.html'">
+                    <span>📖</span> 员工守则
+                </div>
+            </div>
+
+            <div style="padding:20px; font-size:11px; color:#555">© 2026 QianAn Admin</div>
         </div>
         <div class="main">
             <div class="card">
