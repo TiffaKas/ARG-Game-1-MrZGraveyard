@@ -3,81 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>内部机密：员工守则 - 千安公墓</title>
+    <title>工作守则 - 千安公墓</title>
     <style>
-        :root { --paper-white: #f9f9f9; --ink-black: #2c3e50; --alert-red: #c0392b; }
-        body { background: #d1d1d1; margin: 0; padding: 40px; font-family: "STSong", "SimSun", serif; display: flex; justify-content: center; }
+        :root { --ink-black: #000000; --paper-white: #ffffff; }
+        body { background: #e0e0e0; margin: 0; padding: 50px; font-family: "SimSun", serif; display: flex; justify-content: center; }
         
         .manual-page {
             width: 100%; max-width: 800px; background: var(--paper-white);
-            padding: 60px; box-shadow: 5px 5px 20px rgba(0,0,0,0.2);
-            position: relative; border: 1px solid #bbb;
+            padding: 80px; box-shadow: none; border: 1px solid #000;
         }
 
-        .official-seal {
-            position: absolute; top: 40px; right: 60px; width: 100px; height: 100px;
-            border: 3px double var(--alert-red); border-radius: 50%; color: var(--alert-red);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold; transform: rotate(20deg); font-size: 14px; opacity: 0.7;
-        }
-
-        h1 { text-align: center; font-size: 28px; border-bottom: 2px solid var(--ink-black); padding-bottom: 15px; }
-        h2 { background: var(--ink-black); color: white; padding: 5px 15px; font-size: 18px; margin-top: 30px; }
-        p, li { line-height: 1.8; color: var(--ink-black); font-size: 16px; }
-        
-        .highlight { color: var(--alert-red); font-weight: bold; }
+        h1 { text-align: center; font-size: 24px; margin-bottom: 50px; text-decoration: underline; }
+        h2 { font-size: 18px; margin-top: 30px; border-bottom: 1px solid #000; padding-bottom: 5px; }
+        p, li { line-height: 1.8; color: var(--ink-black); font-size: 14px; text-align: justify; }
+        ul { list-style-type: none; padding-left: 0; }
+        li { margin-bottom: 10px; }
         
         .perforated-line {
-            margin: 40px 0; border-top: 2px dashed #999; position: relative; text-align: center;
-        }
-        .perforated-line::after {
-            content: "✂ 沿着此处虚线撕开 (内嵌感应器防护区) ✂";
-            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-            background: var(--paper-white); padding: 0 15px; font-size: 12px; color: #999;
+            margin: 40px 0; border-top: 1px dashed #000; position: relative;
         }
 
-        /* 关键修正：返回 system.html */
         .back-btn {
-            position: fixed; top: 20px; left: 20px; padding: 10px 20px;
-            background: #1d2731; color: #b8977e; text-decoration: none; font-size: 14px;
-            border: 1px solid var(--ink-black);
+            position: fixed; top: 20px; left: 20px; padding: 8px 15px;
+            background: #fff; color: #000; text-decoration: none; 
+            font-size: 12px; border: 1px solid #000;
         }
-        .back-btn:hover { background: #2c3e50; }
     </style>
 </head>
 <body>
 
-    <a href="system.html" class="back-btn">← 返回管理系统</a>
+    <a href="system.html" class="back-btn">返回系统</a>
 
     <div class="manual-page">
-        <div class="official-seal">千安公墓<br>内部存档</div>
-        <h1>员工守则及职业操守手册</h1>
-        <p style="text-align: center; color: #666;">[ 数字化副本 / 2026 修订版 ]</p>
+        <h1>工作守则</h1>
+        <p>本守则和实体手册相同，但是推荐在电脑上也保存一份。</p>
 
         <h2>第一章：行为准则与职业操守</h2>
         <ul>
-            <li><strong>严禁收受贿赂：</strong> 员工不得向丧家索取任何非法费用。</li>
-            <li><strong>敬业与尊重：</strong> 严禁直呼死者姓名。<span class="highlight">你不是死者的亲属</span>。</li>
-            <li><strong>保密义务：</strong> 对所有墓位信息负有绝对保密责任。</li>
+            <li>严禁收受贿赂：员工不得向丧家索取或收受任何非法费用，违者将依法处理。</li>
+            <li>敬业与尊重：遵循“尊严、尊重”的原则，提供专业服务，保持环境整洁肃穆。以任何方式直接提及死者的大名是对死者的不尊重，你不是死者的亲属。</li>
+            <li>保密义务：对用户个人资料、墓位信息、联系方式等相关信息负有绝对保密义务。</li>
         </ul>
 
         <h2>第二章：工作职责与管理流程</h2>
         <ul>
-            <li><strong>环境维护：</strong> <span class="highlight">注：不要处理死者的遗物。</span></li>
-            <li><strong>档案管理：</strong> 确保包含：黑白照片、姓氏、生平简述及<strong>生理资料</strong>。</li>
+            <li>墓基管理：负责公墓的巡查、准确测量墓基位置，确保施工单位严格按规定埋葬造墓，杜绝违法违规营葬。</li>
+            <li>环境维护：维护墓园整体环境卫生，负责巡查查报、墓区清理、废弃物处理等。注：不要处理死者的遗物。</li>
+            <li>档案管理：详细记录墓位使用情况，对未使用或已使用的单据建立记录，并定期核查：确保每一份墓位的档案有死者的清晰黑白照片，姓氏，生平简述和生理资料。</li>
+            <li>费用收缴：按官方规定收缴使用规费，规范收据管理，严禁违规扩建及擅自加价。</li>
+        </ul>
+
+        <h2>第三章：服务与沟通规范</h2>
+        <ul>
+            <li>接待服务：礼貌、耐心地服务前来洽谈或祭扫的家属。</li>
+            <li>业务指导：指导使用人合法依规申请、使用墓位，解答有关殡葬管理的咨询。</li>
+            <li>紧急情况：如遇到墓园内突发事件或墓穴损坏，应按照预案迅速处理，如果遇到无法解决的状况请把实体员工手册沿着中间的虚线撕开（防止撕坏传感器），里面有传感器会自动发送请求。</li>
         </ul>
 
         <div class="perforated-line"></div>
 
-        <p class="highlight" style="text-align: center; font-size: 18px;">紧急情况警告</p>
-        <p>
-            如果遇到<strong>无法解决</strong>的状况，请立即将实体员工手册<strong>沿着中间的虚线撕开</strong>。感应器将在物理断路后自动发送最高级别请求。
-        </p>
+        <h2>第四章：考勤与日常安全</h2>
+        <ul>
+            <li>工作时间：遵循轮班制，确保墓园服务不断档。</li>
+            <li>日常安全：严禁火种带入墓区（除指定地点外），确保墓园用火安全。</li>
+        </ul>
 
-        <div class="perforated-line"></div>
-
-        <p style="margin-top: 50px; font-size: 12px; color: #888; text-align: center;">
-            © 2026 千安公墓管理处办公厅 编印
+        <p style="margin-top: 100px; font-size: 12px; text-align: center;">
+            千安公墓管理处
         </p>
     </div>
 
