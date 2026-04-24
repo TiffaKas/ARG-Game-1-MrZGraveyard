@@ -4,78 +4,116 @@
     <meta charset="UTF-8">
     <title>档案录入终端 - 千安公墓</title>
     <style>
-        body { background: #f0f2f5; font-family: "SimSun", serif; padding: 40px; }
+        :root { --ink: #000; --paper: #fff; --bg: #f0f2f5; }
+        body { background: var(--bg); font-family: "SimSun", serif; padding: 40px; margin: 0; display: flex; justify-content: center; }
+        
         .form-container { 
-            max-width: 700px; margin: 0 auto; background: #fff; 
-            padding: 40px; border: 1px solid #000; 
+            max-width: 700px; width: 100%; background: var(--paper); 
+            padding: 50px; border: 1px solid var(--ink); box-shadow: none;
         }
-        h2 { text-align: center; border-bottom: 1px solid #000; padding-bottom: 10px; }
-        .field { margin: 20px 0; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
+
+        h2 { text-align: center; border-bottom: 2px solid var(--ink); padding-bottom: 15px; margin-top: 0; letter-spacing: 2px; }
+        p.subtitle { font-size: 12px; color: #666; text-align: center; margin-bottom: 30px; }
+
+        .field { margin-bottom: 25px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; }
+        
         input, textarea { 
-            width: 100%; padding: 10px; border: 1px solid #ccc; 
-            box-sizing: border-box; font-family: inherit;
+            width: 100%; padding: 12px; border: 1px solid #ccc; 
+            box-sizing: border-box; font-family: inherit; font-size: 14px;
+            outline: none; background: #fafafa;
         }
+        input:focus, textarea:focus { border-color: var(--ink); background: var(--paper); }
+        
+        input[readonly] { background: #eee; cursor: not-allowed; color: #666; }
+
         .submit-btn { 
-            background: #000; color: #fff; border: none; 
-            padding: 15px 30px; cursor: pointer; width: 100%; 
-            font-size: 16px; margin-top: 20px;
+            background: #1d2731; color: #b8977e; border: none; 
+            padding: 18px; cursor: pointer; width: 100%; 
+            font-size: 16px; font-weight: bold; margin-top: 10px;
+            letter-spacing: 4px; transition: opacity 0.2s;
         }
-        .back-link { display: block; margin-top: 20px; text-align: center; color: #666; text-decoration: none; font-size: 12px; }
+        .submit-btn:hover { opacity: 0.9; }
+
+        .back-link { 
+            display: block; margin-top: 25px; text-align: center; 
+            color: #888; text-decoration: none; font-size: 12px; 
+            border-top: 1px solid #eee; padding-top: 20px;
+        }
+        .back-link:hover { color: #000; text-decoration: underline; }
     </style>
 </head>
 <body>
 
 <div class="form-container">
     <h2>逝者数字化档案录入表</h2>
-    <p style="font-size: 12px; color: #888; text-align: center;">请严格按照纸质附单内容核对录入</p>
+    <p class="subtitle">警告：所有字段均为必填项。录入不全将导致数据库索引失效。</p>
     
     <div class="field">
         <label>姓氏 (Surname)</label>
-        <input type="text" id="lastName" placeholder="仅填写姓氏">
+        <input type="text" id="lastName" placeholder="请输入逝者姓氏">
     </div>
 
     <div class="field">
         <label>生理资料 (Biological Data)</label>
-        <textarea id="bioData" rows="3" placeholder="身高、体重、虹膜频率、骨密度等..."></textarea>
+        <textarea id="bioData" rows="3" placeholder="包括但不限于：身高、体重、虹膜频率、骨密度、生物特征描述等..."></textarea>
     </div>
 
     <div class="field">
         <label>生平简述 (Biography)</label>
-        <textarea id="desc" rows="4" placeholder="简要描述生平事迹"></textarea>
+        <textarea id="desc" rows="4" placeholder="请简要概述逝者生前主要事迹及社会关系"></textarea>
     </div>
 
     <div class="field">
-        <label>档案索引号 (自动分配)</label>
+        <label>系统分配索引号 (Index Code)</label>
         <input type="text" id="indexCode" readonly>
     </div>
 
     <button class="submit-btn" onclick="saveData()">确认提交并封存档案</button>
-    <a href="system.html" class="back-link">放弃当前进度返回系统</a>
+    <a href="system.html" class="back-link">放弃当前更改并返回主终端</a>
 </div>
 
 <script>
-    // 自动生成一个索引号
-    document.getElementById('indexCode').value = 'QA-' + Math.floor(Math.random()*9000 + 1000);
+    // 页面加载时自动生成索引号
+    window.onload = function() {
+        document.getElementById('indexCode').value = 'QA-' + Math.floor(Math.random()*8999 + 1000);
+    }
 
     function saveData() {
-        const data = {
-            id: document.getElementById('indexCode').value,
-            name: document.getElementById('lastName').value,
-            bio: document.getElementById('bioData').value,
-            desc: document.getElementById('desc').value,
+        // 获取输入值并去除首尾空格
+        const name = document.getElementById('lastName').value.trim();
+        const bio = document.getElementById('bioData').value.trim();
+        const desc = document.getElementById('desc').value.trim();
+        const id = document.getElementById('indexCode').value;
+
+        // 校验：任何一项为空都拒绝提交
+        if (!name || !bio || !desc) {
+            alert("提交失败：档案内容不完整。\n请核对并填写所有必填字段。");
+            return; // 终止执行
+        }
+
+        // 构建档案对象
+        const newFile = {
+            id: id,
+            name: name,
+            bio: bio,
+            desc: desc,
             time: new Date().toLocaleString()
         };
 
-        // 获取已有档案
-        let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-        archives.push(data);
-        
-        // 保存回本地
-        localStorage.setItem('cemetery_files', JSON.stringify(archives));
+        try {
+            // 读取现有库
+            let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
+            // 加入新档案
+            archives.push(newFile);
+            // 写回本地存储
+            localStorage.setItem('cemetery_files', JSON.stringify(archives));
 
-        alert("档案已成功存入数据库。");
-        window.location.href = 'system.html';
+            alert("录入成功。档案已加密存入数字化管理库。");
+            window.location.href = 'system.html';
+        } catch (e) {
+            alert("系统错误：数据写入失败。请检查浏览器本地存储空间。");
+        }
     }
 </script>
 
