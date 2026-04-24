@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>千安公墓 - 数字化管理平台</title>
+    <style>
+        :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
+        body { margin: 0; font-family: sans-serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
+
+        /* 侧边栏 */
+        .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; }
+        
+        .nav-menu { margin-top: 20px; flex: 1; }
+        .nav-item { 
+            padding: 15px 25px; font-size: 14px; color: var(--gold); cursor: pointer; 
+            transition: background 0.3s; display: flex; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.05); }
+        .nav-item span { margin-right: 10px; }
+
+        /* 主界面 */
+        .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; }
+        .card { background: #fff; padding: 50px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        h2 { border-left: 4px solid var(--gold); padding-left: 15px; font-weight: normal; margin-bottom: 30px; }
+        input { width: 100%; padding: 15px; border: 1px solid #ddd; margin: 20px 0; box-sizing: border-box; font-size: 16px; outline: none; }
+        input:focus { border-color: var(--gold); }
+        
+        #search-btn { width: 100%; padding: 15px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; letter-spacing: 2px; }
+        #search-btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+    <div class="side">
+        <div style="padding:40px 20px; text-align:center">
+            <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
+        </div>
+        
+        <div class="nav-menu">
+            <div class="nav-item" style="opacity: 0.5; cursor: default;">
+                <span>●</span> 档案检索模块
+            </div>
+            <div class="nav-item" onclick="window.location.href='rules.html'">
+                <span>📖</span> 员工守则
+            </div>
+        </div>
+
+        <div style="padding:20px; font-size:11px; color:#555">© 2026 QianAn Admin</div>
+    </div>
+
+    <div class="main">
+        <div class="card">
+            <h2>档案检索中心</h2>
+            <input type="text" id="pass" placeholder="输入索引号或关键词">
+            <button id="search-btn" onclick="find()">验证并检索</button>
+        </div>
+    </div>
+
+    <script>
+        function find() {
+            var val = document.getElementById('pass').value.trim().toLowerCase();
+            if (val) {
+                const btn = document.getElementById('search-btn');
+                btn.innerText = "正在验证权限...";
+                btn.disabled = true;
+                setTimeout(() => { 
+                    window.location.href = val + ".html"; 
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
