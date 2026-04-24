@@ -71,11 +71,14 @@
     </div>
 
     <script>
-        // 1. 官方档案名单池（用于审计）
-        // 之后我会根据你传给我的信息更新这里
+        /**
+         * 1. 官方名单池 (用于 12 分钟一次的审计清理)
+         */
         const OFFICIAL_NAMES = ["张顺", "王利民", "李陈氏"]; 
 
-        // 2. 核心检索逻辑
+        /**
+         * 2. 检索逻辑
+         */
         function find() {
             var val = document.getElementById('pass').value.trim().toLowerCase();
             if (val) {
@@ -86,12 +89,28 @@
             }
         }
 
-        // 3. 自动弹窗逻辑 (每 3 分钟)
-        const WORK_INTERVAL = 180000; 
-        function initWorkSystem() {
+        /**
+         * 3. 动态触发逻辑 (基于事件的倒计时)
+         */
+        const COOLDOWN = 180000; // 3分钟
+
+        function monitorWorkCycle() {
             setInterval(() => {
-                if (!document.querySelector('.work-popup')) createPopup();
-            }, WORK_INTERVAL);
+                const lastSubmit = localStorage.getItem('last_record_timestamp');
+                
+                if (lastSubmit) {
+                    // 如果已经有过录入记录，计算时间差
+                    const timePassed = Date.now() - parseInt(lastSubmit);
+                    if (timePassed >= COOLDOWN) {
+                        if (!document.querySelector('.work-popup')) createPopup();
+                    }
+                } else {
+                    // 初次启动，如果没有记录，5秒后给第一单
+                    setTimeout(() => {
+                        if (!document.querySelector('.work-popup')) createPopup();
+                    }, 5000);
+                }
+            }, 1000); // 每秒检查一次
         }
 
         function createPopup() {
@@ -101,33 +120,35 @@
             const hintName = OFFICIAL_NAMES[Math.floor(Math.random() * OFFICIAL_NAMES.length)];
             popup.innerHTML = `
                 <div class="popup-title">工作指令：待处理</div>
-                <p style="font-size:13px; line-height:1.6; margin:0;">检测到逝者 [ ${hintName} ] 的纸质档案待数字化。请立即录入。非官方名单内容将在审计中被抹除。</p>
+                <p style="font-size:13px; line-height:1.6; margin:0;">检测到待处理档案 [ ${hintName} ]。请立即前往录入终端完成数字化封存。</p>
                 <button class="popup-btn" onclick="window.location.href='entry.html'">进入录入程序</button>
             `;
             document.body.appendChild(popup);
         }
 
-        // 4. 审计与清理逻辑 (每 12 分钟)
-        const AUDIT_INTERVAL = 720000; 
+        /**
+         * 4. 12 分钟审计清理逻辑
+         */
+        const AUDIT_INTERVAL = 720000; // 12分钟
         function startAudit() {
             setInterval(() => {
-                console.log("正在执行每 12 分钟一次的档案审计...");
+                console.log("启动周期性档案审计...");
                 let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
                 
-                // 过滤：只保留名字在官方名单池中的档案
-                const filteredArchives = archives.filter(item => OFFICIAL_NAMES.includes(item.name));
+                // 仅保留合规名单内的条目
+                const filtered = archives.filter(item => OFFICIAL_NAMES.includes(item.name));
                 
-                if (archives.length !== filteredArchives.length) {
-                    localStorage.setItem('cemetery_files', JSON.stringify(filteredArchives));
-                    console.warn("审计完毕：检测到非法录入项，已强制抹除。");
+                if (archives.length !== filtered.length) {
+                    localStorage.setItem('cemetery_files', JSON.stringify(filtered));
+                    console.warn("审计系统检测并抹除了非法录入的档案项。");
                 }
             }, AUDIT_INTERVAL);
         }
 
         window.onload = () => {
-            initWorkSystem();
+            monitorWorkCycle();
             startAudit();
-            console.log("监控审计系统已上线。");
+            console.log("数字化管理平台运行中。系统监控已就绪。");
         };
     </script>
 </body>
