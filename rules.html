@@ -8,14 +8,12 @@
         :root { --paper-white: #f9f9f9; --ink-black: #2c3e50; --alert-red: #c0392b; }
         body { background: #d1d1d1; margin: 0; padding: 40px; font-family: "STSong", "SimSun", serif; display: flex; justify-content: center; }
         
-        /* 模拟纸张效果 */
         .manual-page {
             width: 100%; max-width: 800px; background: var(--paper-white);
             padding: 60px; box-shadow: 5px 5px 20px rgba(0,0,0,0.2);
             position: relative; border: 1px solid #bbb;
         }
 
-        /* 顶部公章效果 */
         .official-seal {
             position: absolute; top: 40px; right: 60px; width: 100px; height: 100px;
             border: 3px double var(--alert-red); border-radius: 50%; color: var(--alert-red);
@@ -27,10 +25,8 @@
         h2 { background: var(--ink-black); color: white; padding: 5px 15px; font-size: 18px; margin-top: 30px; }
         p, li { line-height: 1.8; color: var(--ink-black); font-size: 16px; }
         
-        /* 强调文字 */
         .highlight { color: var(--alert-red); font-weight: bold; }
         
-        /* 拟物化虚线设计 */
         .perforated-line {
             margin: 40px 0; border-top: 2px dashed #999; position: relative; text-align: center;
         }
@@ -40,58 +36,45 @@
             background: var(--paper-white); padding: 0 15px; font-size: 12px; color: #999;
         }
 
+        /* 关键修正：返回 system.html */
         .back-btn {
             position: fixed; top: 20px; left: 20px; padding: 10px 20px;
-            background: #2c3e50; color: white; text-decoration: none; font-size: 14px;
+            background: #1d2731; color: #b8977e; text-decoration: none; font-size: 14px;
+            border: 1px solid var(--ink-black);
         }
+        .back-btn:hover { background: #2c3e50; }
     </style>
 </head>
 <body>
 
-    <a href="index.html" class="back-btn">← 返回管理系统</a>
+    <a href="system.html" class="back-btn">← 返回管理系统</a>
 
     <div class="manual-page">
         <div class="official-seal">千安公墓<br>内部存档</div>
         <h1>员工守则及职业操守手册</h1>
-        <p style="text-align: center; color: #666;">[ 数字化副本 / 推荐本地备份 ]</p>
+        <p style="text-align: center; color: #666;">[ 数字化副本 / 2026 修订版 ]</p>
 
         <h2>第一章：行为准则与职业操守</h2>
         <ul>
-            <li><strong>严禁收受贿赂：</strong> 员工不得向丧家索取或收受任何非法费用，违者将依法处理。</li>
-            <li><strong>敬业与尊重：</strong> 遵循“尊严、尊重”原则。<span class="highlight">以任何方式直接提及死者的大名是对死者的不尊重</span>，请时刻记住你不是死者的亲属。</li>
-            <li><strong>保密义务：</strong> 对用户资料、墓位信息及联系方式负有绝对保密义务。</li>
+            <li><strong>严禁收受贿赂：</strong> 员工不得向丧家索取任何非法费用。</li>
+            <li><strong>敬业与尊重：</strong> 严禁直呼死者姓名。<span class="highlight">你不是死者的亲属</span>。</li>
+            <li><strong>保密义务：</strong> 对所有墓位信息负有绝对保密责任。</li>
         </ul>
 
         <h2>第二章：工作职责与管理流程</h2>
         <ul>
-            <li><strong>墓基管理：</strong> 负责巡查、准确测量位置，杜绝违法违规营葬。</li>
-            <li><strong>环境维护：</strong> 负责墓区清理、废弃物处理等。<span class="highlight">注：严禁处理死者的遗物。</span></li>
-            <li><strong>档案管理：</strong> 确保每一份档案包含：清晰黑白照片、姓氏、生平简述及<strong>生理资料</strong>。</li>
-            <li><strong>费用收缴：</strong> 按官方规定收缴，严禁擅自加价。</li>
-        </ul>
-
-        <h2>第三章：服务与沟通规范</h2>
-        <ul>
-            <li><strong>接待服务：</strong> 礼貌、耐心地服务洽谈家属。</li>
-            <li><strong>业务指导：</strong> 解答殡葬管理咨询，引导合规使用。</li>
+            <li><strong>环境维护：</strong> <span class="highlight">注：不要处理死者的遗物。</span></li>
+            <li><strong>档案管理：</strong> 确保包含：黑白照片、姓氏、生平简述及<strong>生理资料</strong>。</li>
         </ul>
 
         <div class="perforated-line"></div>
 
-        <p class="highlight" style="text-align: center; font-size: 18px;">
-            紧急情况警告
-        </p>
+        <p class="highlight" style="text-align: center; font-size: 18px;">紧急情况警告</p>
         <p>
-            如遇墓园内突发事件或墓穴损坏，应按预案处理。如果遇到<strong>无法解决</strong>的状况，请立即将实体员工手册<strong>沿着中间的虚线撕开</strong>（严禁暴力撕扯以防止破坏内嵌柔性传感器）。感应器将在物理断路后自动发送最高级别请求。
+            如果遇到<strong>无法解决</strong>的状况，请立即将实体员工手册<strong>沿着中间的虚线撕开</strong>。感应器将在物理断路后自动发送最高级别请求。
         </p>
 
         <div class="perforated-line"></div>
-
-        <h2>第四章：考勤与日常安全</h2>
-        <ul>
-            <li><strong>工作时间：</strong> 遵循轮班制，确保服务不断档。</li>
-            <li><strong>日常安全：</strong> 严禁火种带入墓区（指定地点除外），确保用火安全。</li>
-        </ul>
 
         <p style="margin-top: 50px; font-size: 12px; color: #888; text-align: center;">
             © 2026 千安公墓管理处办公厅 编印
