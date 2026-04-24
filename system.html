@@ -18,7 +18,7 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .nav-item:hover { background: rgba(255,255,255,0.1); }
-        .nav-item span { margin-right: 15px; }
+        .nav-item span { margin-right: 15px; width: 10px; }
 
         /* 主界面 */
         .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; }
@@ -31,7 +31,7 @@
         #search-btn { width: 100%; padding: 15px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; letter-spacing: 2px; }
         #search-btn:hover { opacity: 0.9; }
 
-        /* 弹窗样式 */
+        /* 工作弹窗样式 */
         .work-popup {
             position: fixed; bottom: 20px; right: 20px; 
             width: 300px; background: #fff; border: 1px solid #000;
@@ -57,14 +57,17 @@
         </div>
         
         <div class="nav-menu">
-            <div class="nav-item" style="cursor: default;">
-                <span> - </span> 档案检索模块
+            <div class="nav-item" onclick="window.location.href='system.html'" style="background: rgba(255,255,255,0.1);">
+                <span>-</span> 档案检索模块
+            </div>
+            <div class="nav-item" onclick="window.location.href='entry.html'">
+                <span>-</span> 数据录入终端
             </div>
             <div class="nav-item" onclick="window.location.href='list.html'">
-                <span> - </span> 档案库
+                <span>-</span> 已录入档案库
             </div>
             <div class="nav-item" onclick="window.location.href='rules.html'">
-                <span> - </span> 员工守则
+                <span>-</span> 员工守则
             </div>
         </div>
 
@@ -93,33 +96,31 @@
             }
         }
 
-        // 2. 工作定时弹窗逻辑
-        let workInterval = 180000; // 3分钟
+        // 2. 自动弹窗逻辑 (每 3 分钟触发一次)
+        const WORK_INTERVAL = 180000; // 3分钟
 
-        function startWorkAlert() {
+        function initWorkSystem() {
             setInterval(() => {
-                createPopup();
-            }, workInterval);
+                if (!document.querySelector('.work-popup')) {
+                    createPopup();
+                }
+            }, WORK_INTERVAL);
         }
 
         function createPopup() {
-            // 如果页面已有弹窗则不重复创建
-            if (document.querySelector('.work-popup')) return;
-
             const popup = document.createElement('div');
             popup.className = 'work-popup';
             popup.innerHTML = `
                 <div class="popup-title">工作指令任务 (待处理)</div>
                 <p style="font-size:13px; line-height:1.6; margin:0;">检测到待录入逝者信息。请立即进入录入终端，将纸质单据内容数字化。逾期将记录考勤异常。</p>
-                <button class="popup-btn" onclick="location.href='entry.html'">开始录入</button>
+                <button class="popup-btn" onclick="window.location.href='entry.html'">开始录入</button>
             `;
             document.body.appendChild(popup);
         }
 
-        // 启动系统
         window.onload = () => {
-            console.log("千安公墓数字化管理平台已启动...");
-            startWorkAlert();
+            console.log("千安公墓管理平台已启动...");
+            initWorkSystem();
         };
     </script>
 </body>
