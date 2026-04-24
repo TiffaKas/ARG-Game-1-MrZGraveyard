@@ -2,7 +2,6 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>千安公墓 - 数字化管理平台</title>
     <style>
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
@@ -26,38 +25,29 @@
         input { width: 100%; padding: 15px; border: 1px solid #ddd; margin: 20px 0; box-sizing: border-box; font-size: 16px; outline: none; }
         #search-btn { width: 100%; padding: 15px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; letter-spacing: 2px; }
 
-        /* 工作弹窗 */
+        /* 持久化工作弹窗 */
         .work-popup {
             position: fixed; bottom: 20px; right: 20px; 
-            width: 300px; background: #fff; border: 1px solid #000;
-            padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            z-index: 9999; animation: slideIn 0.5s ease-out;
-            font-family: "SimSun", serif;
+            width: 320px; background: #fff; border: 2px solid var(--gold);
+            padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 9999; font-family: "SimSun", serif;
+            animation: slideIn 0.5s ease-out;
         }
-        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-        .popup-title { border-bottom: 1px solid #000; margin: 0 0 15px 0; padding-bottom: 5px; font-size: 16px; font-weight: bold; }
-        .popup-btn { width: 100%; background: #1d2731; color: var(--gold); border: none; padding: 12px; cursor: pointer; margin-top: 15px; font-weight: bold; }
+        @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
+        .popup-title { border-bottom: 1px solid #000; margin: 0 0 10px 0; padding-bottom: 5px; font-weight: bold; font-size: 15px; }
+        .popup-content { font-size: 13px; color: #333; line-height: 1.6; max-height: 180px; overflow-y: auto; background: #f9f9f9; padding: 10px; border: 1px inset #eee; }
+        .popup-btn { width: 100%; background: var(--p-bg); color: var(--gold); border: none; padding: 12px; cursor: pointer; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="side">
-        <div style="padding:40px 20px; text-align:center">
-            <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
-        </div>
+        <div style="padding:40px 20px; text-align:center"><h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1></div>
         <div class="nav-menu">
-            <div class="nav-item" onclick="window.location.href='system.html'" style="background: rgba(255,255,255,0.1);">
-                <span>-</span> 档案检索模块
-            </div>
-            <div class="nav-item" onclick="window.location.href='entry.html'">
-                <span>-</span> 数据录入终端
-            </div>
-            <div class="nav-item" onclick="window.location.href='list.html'">
-                <span>-</span> 已录入档案库
-            </div>
-            <div class="nav-item" onclick="window.location.href='rules.html'">
-                <span>-</span> 员工守则
-            </div>
+            <div class="nav-item" onclick="window.location.href='system.html'" style="background: rgba(255,255,255,0.1);"><span>-</span> 档案检索模块</div>
+            <div class="nav-item" onclick="window.location.href='entry.html'"><span>-</span> 数据录入终端</div>
+            <div class="nav-item" onclick="window.location.href='list.html'"><span>-</span> 已录入档案库</div>
+            <div class="nav-item" onclick="window.location.href='rules.html'"><span>-</span> 员工守则</div>
         </div>
         <div style="padding:20px; font-size:11px; color:#555">© 2026 QianAn Admin System</div>
     </div>
@@ -71,84 +61,72 @@
     </div>
 
     <script>
-        /**
-         * 1. 官方名单池 (用于 12 分钟一次的审计清理)
-         */
-        const OFFICIAL_NAMES = ["张顺", "王利民", "李陈氏"]; 
+        const OFFICIAL_NAMES = ["张顺", "王利民", "李陈氏"]; // 审计白名单
 
-        /**
-         * 2. 检索逻辑
-         */
         function find() {
             var val = document.getElementById('pass').value.trim().toLowerCase();
             if (val) {
                 const btn = document.getElementById('search-btn');
-                btn.innerText = "正在验证权限...";
-                btn.disabled = true;
+                btn.innerText = "正在验证权限..."; btn.disabled = true;
                 setTimeout(() => { window.location.href = val + ".html"; }, 1000);
             }
         }
 
-        /**
-         * 3. 动态触发逻辑 (基于事件的倒计时)
-         */
-        const COOLDOWN = 180000; // 3分钟
-
-        function monitorWorkCycle() {
-            setInterval(() => {
-                const lastSubmit = localStorage.getItem('last_record_timestamp');
-                
-                if (lastSubmit) {
-                    // 如果已经有过录入记录，计算时间差
-                    const timePassed = Date.now() - parseInt(lastSubmit);
-                    if (timePassed >= COOLDOWN) {
-                        if (!document.querySelector('.work-popup')) createPopup();
-                    }
-                } else {
-                    // 初次启动，如果没有记录，5秒后给第一单
-                    setTimeout(() => {
-                        if (!document.querySelector('.work-popup')) createPopup();
-                    }, 5000);
-                }
-            }, 1000); // 每秒检查一次
-        }
-
-        function createPopup() {
+        // 核心渲染函数：支持跨页面调用
+        function renderPersistentPopup(content) {
+            if (document.getElementById('persistent-popup')) return;
             const popup = document.createElement('div');
             popup.className = 'work-popup';
-            // 随机抽取一个官方名字作为提示（示意）
-            const hintName = OFFICIAL_NAMES[Math.floor(Math.random() * OFFICIAL_NAMES.length)];
+            popup.id = 'persistent-popup';
             popup.innerHTML = `
-                <div class="popup-title">工作指令：待处理</div>
-                <p style="font-size:13px; line-height:1.6; margin:0;">检测到待处理档案 [ ${hintName} ]。请立即前往录入终端完成数字化封存。</p>
-                <button class="popup-btn" onclick="window.location.href='entry.html'">进入录入程序</button>
+                <div class="popup-title">[ 待处理原始附单 ]</div>
+                <div class="popup-content">${content}</div>
+                <button class="popup-btn" onclick="window.location.href='entry.html'">进入录入终端</button>
             `;
             document.body.appendChild(popup);
         }
 
-        /**
-         * 4. 12 分钟审计清理逻辑
-         */
-        const AUDIT_INTERVAL = 720000; // 12分钟
+        function createNewTask() {
+            // 测试文本，之后可替换为任务池逻辑
+            const rawData = "那是我的叔叔张顺。他身高175cm，骨密度极高。他有一双灰色的虹膜。他生前是一名勤恳的钟表匠。";
+            localStorage.setItem('current_task_content', rawData);
+            renderPersistentPopup(rawData);
+        }
+
+        // 监控逻辑
+        const COOLDOWN = 180000; // 3分钟
+        function monitorWorkCycle() {
+            setInterval(() => {
+                const lastSubmit = localStorage.getItem('last_record_timestamp');
+                const currentTask = localStorage.getItem('current_task_content');
+                
+                // 只有当没有进行中的任务时，才判定时间是否达到 3 分钟
+                if (!currentTask) {
+                    if (lastSubmit) {
+                        if (Date.now() - parseInt(lastSubmit) >= COOLDOWN) createNewTask();
+                    } else {
+                        setTimeout(createNewTask, 5000); // 首次启动
+                    }
+                }
+            }, 1000);
+        }
+
+        // 审计清理 (12分钟)
         function startAudit() {
             setInterval(() => {
-                console.log("启动周期性档案审计...");
                 let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-                
-                // 仅保留合规名单内的条目
                 const filtered = archives.filter(item => OFFICIAL_NAMES.includes(item.name));
-                
                 if (archives.length !== filtered.length) {
                     localStorage.setItem('cemetery_files', JSON.stringify(filtered));
-                    console.warn("审计系统检测并抹除了非法录入的档案项。");
                 }
-            }, AUDIT_INTERVAL);
+            }, 720000);
         }
 
         window.onload = () => {
+            const savedTask = localStorage.getItem('current_task_content');
+            if (savedTask) renderPersistentPopup(savedTask);
             monitorWorkCycle();
             startAudit();
-            console.log("数字化管理平台运行中。系统监控已就绪。");
         };
     </script>
 </body>
