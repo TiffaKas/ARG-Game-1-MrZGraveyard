@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Z先生的墓地 - 访问终端</title>
+    <style>
+        body { background-color: black; color: #00FF00; font-family: monospace; text-align: center; padding-top: 100px; }
+        input { background: black; border: 1px solid #00FF00; color: #00FF00; padding: 10px; }
+        button { background: #00FF00; border: none; padding: 10px 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>[ 欢迎来到 Z 先生的墓地 ]</h1>
+    <p>请输入访问密钥以继续...</p>
+    <input type="text" id="pass" placeholder="在此输入关键词...">
+    <button onclick="check()">执行</button>
+
+    <script>
+        function check() {
+            var word = document.getElementById('pass').value.trim().toLowerCase();
+            if (word === "") {
+                alert("请输入内容！");
+            } else {
+                // 核心逻辑：输入什么词，就尝试跳转到什么.html页面
+                window.location.href = word + ".html";
+            }
+        }
+    </script>
+</body>
+</html>
