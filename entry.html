@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>档案录入终端 - 千安公墓</title>
+    <style>
+        body { background: #f0f2f5; font-family: "SimSun", serif; padding: 40px; }
+        .form-container { 
+            max-width: 700px; margin: 0 auto; background: #fff; 
+            padding: 40px; border: 1px solid #000; 
+        }
+        h2 { text-align: center; border-bottom: 1px solid #000; padding-bottom: 10px; }
+        .field { margin: 20px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea { 
+            width: 100%; padding: 10px; border: 1px solid #ccc; 
+            box-sizing: border-box; font-family: inherit;
+        }
+        .submit-btn { 
+            background: #000; color: #fff; border: none; 
+            padding: 15px 30px; cursor: pointer; width: 100%; 
+            font-size: 16px; margin-top: 20px;
+        }
+        .back-link { display: block; margin-top: 20px; text-align: center; color: #666; text-decoration: none; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>逝者数字化档案录入表</h2>
+    <p style="font-size: 12px; color: #888; text-align: center;">请严格按照纸质附单内容核对录入</p>
+    
+    <div class="field">
+        <label>姓氏 (Surname)</label>
+        <input type="text" id="lastName" placeholder="仅填写姓氏">
+    </div>
+
+    <div class="field">
+        <label>生理资料 (Biological Data)</label>
+        <textarea id="bioData" rows="3" placeholder="身高、体重、虹膜频率、骨密度等..."></textarea>
+    </div>
+
+    <div class="field">
+        <label>生平简述 (Biography)</label>
+        <textarea id="desc" rows="4" placeholder="简要描述生平事迹"></textarea>
+    </div>
+
+    <div class="field">
+        <label>档案索引号 (自动分配)</label>
+        <input type="text" id="indexCode" readonly>
+    </div>
+
+    <button class="submit-btn" onclick="saveData()">确认提交并封存档案</button>
+    <a href="system.html" class="back-link">放弃当前进度返回系统</a>
+</div>
+
+<script>
+    // 自动生成一个索引号
+    document.getElementById('indexCode').value = 'QA-' + Math.floor(Math.random()*9000 + 1000);
+
+    function saveData() {
+        const data = {
+            id: document.getElementById('indexCode').value,
+            name: document.getElementById('lastName').value,
+            bio: document.getElementById('bioData').value,
+            desc: document.getElementById('desc').value,
+            time: new Date().toLocaleString()
+        };
+
+        // 获取已有档案
+        let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
+        archives.push(data);
+        
+        // 保存回本地
+        localStorage.setItem('cemetery_files', JSON.stringify(archives));
+
+        alert("档案已成功存入数据库。");
+        window.location.href = 'system.html';
+    }
+</script>
+
+</body>
+</html>
