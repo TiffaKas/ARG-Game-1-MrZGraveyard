@@ -2,96 +2,49 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>千安公墓 - 数字化管理平台</title>
+    <title>数字化管理平台 - 千安公墓</title>
     <style>
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
         .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; }
-        .nav-menu { margin-top: 20px; flex: 1; }
-        .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
-        .nav-item { padding: 12px 25px; font-size: 14px; color: var(--gold); cursor: pointer; transition: all 0.3s; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        .nav-item:hover { background: rgba(255,255,255,0.1); padding-left: 30px; }
-        .nav-item span { margin-right: 15px; font-size: 10px; }
-        .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
-        .card { background: #fff; padding: 50px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h2 { border-left: 4px solid var(--gold); padding-left: 15px; font-weight: normal; margin-bottom: 30px; color: var(--dark); font-size: 18px; }
-        input { width: 100%; padding: 15px; border: 1px solid #ddd; margin: 20px 0; box-sizing: border-box; outline: none; }
-        #search-btn { width: 100%; padding: 15px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; }
-        .work-popup { position: fixed; bottom: 20px; right: 20px; width: 380px; max-height: 450px; background: #fff; border: 2px solid var(--gold); display: flex; flex-direction: column; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
-        .popup-header { background: var(--p-bg); color: var(--gold); padding: 12px 20px; font-weight: bold; font-size: 13px; }
-        .popup-content { padding: 20px; overflow-y: auto; font-size: 14px; line-height: 1.8; white-space: pre-wrap; background: #fdfdfd; flex: 1; color: #333; }
-        .popup-footer { padding: 15px; border-top: 1px solid #eee; }
-        .action-btn { width: 100%; background: var(--p-bg); color: var(--gold); border: none; padding: 12px; cursor: pointer; font-weight: bold; }
+        .nav-item { padding: 15px 25px; color: var(--gold); cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); text-decoration: none; display: block; }
+        .nav-item:hover { background: rgba(255,255,255,0.1); }
+        .main { flex: 1; padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .search-container { width: 100%; max-width: 600px; text-align: center; }
+        input { width: 80%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px; }
+        button { padding: 10px 25px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; }
+        .work-popup { position: fixed; right: 20px; bottom: 20px; width: 300px; background: #fff; border: 2px solid var(--p-bg); padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
     <div class="side">
-        <div style="padding:40px 20px; text-align:center">
-            <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
-            <p style="font-size:10px; color:#555; margin-top:5px;">OBSERVER TERMINAL v7.0</p>
-        </div>
-        <div class="nav-menu">
-            <div class="menu-label">内部管理</div>
-            <div class="nav-item" onclick="location.href='system.html'"><span>[01]</span> 档案检索模块</div>
-            <div class="nav-item" onclick="location.href='entry.html'"><span>[02]</span> 数据录入终端</div>
-            <div class="nav-item" onclick="location.href='list.html'"><span>[03]</span> 已录入档案库</div>
-            <div class="menu-label">外部连接</div>
-            <div class="nav-item" onclick="location.href='official.html'"><span>●</span> 访问对外官网</div>
-            <div class="nav-item" onclick="location.href='wechat.html'"><span>●</span> 移动通讯快讯</div>
-            <div class="nav-item" onclick="location.href='email.html'"><span>●</span> 内部行政邮箱</div>
-        </div>
-        <div style="padding:20px; font-size:11px; color:#444;">系统状态：稳定<br>© 2026 Q-A Admin</div>
+        <div style="padding:40px 20px; font-weight:bold; color:var(--gold); font-size: 20px;">QianAn Admin</div>
+        <a class="nav-item" href="system.html" target="_blank">档案检索</a>
+        <a class="nav-item" href="rules.html" target="_blank">工作守则</a>
+        <a class="nav-item" href="list.html" target="_blank">已录入档案</a>
+        <a class="nav-item" href="wechat.html" target="_blank">移动通讯</a>
     </div>
-
     <div class="main">
-        <div class="card">
-            <h2>档案索引/检索</h2>
-            <input type="text" id="pass" placeholder="输入姓名或索引号">
-            <button id="search-btn" onclick="find()">开始校验</button>
+        <div class="search-container">
+            <h2>档案全局检索系统</h2>
+            <input type="text" placeholder="输入姓名或编号...">
+            <button onclick="window.open('google.html', '_blank')">模拟互联网搜索</button>
         </div>
     </div>
 
     <script>
-        const TASK_POOL = [
-            "陈建（阿建）身体挺不错的，没想到在家里就这么静静地走了...",
-            "果果.......是妈妈不好...宋涵是个很好的同学...",
-            "谁也没想到，老周，周诚，会在盛夏的午后冻死..."
-        ];
-
-        function find() {
-            let v = document.getElementById('pass').value.trim();
-            if(v) window.location.href = v + ".html";
-        }
-
-        function checkNewTask() {
-            const archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-            const lastTime = parseInt(localStorage.getItem('last_record_timestamp') || 0);
-            const now = Date.now();
-            const cooldown = 180000; // 3分钟
-
-            // 核心修复：增加对任务是否全部完成的判断
-            if (archives.length >= TASK_POOL.length) return;
-
-            // 只有在没有当前任务，且冷却时间已过的情况下，才发放下一个任务
-            if (!localStorage.getItem('current_task_content') && (now - lastTime >= cooldown)) {
-                localStorage.setItem('current_task_content', TASK_POOL[archives.length]);
-                location.reload(); 
-            }
-        }
-
+        const TASK_POOL = ["【待办任务】姓名：陈建。特征：骨密度极高，灰质化。请录入系统。"];
         window.onload = () => {
-            setInterval(checkNewTask, 5000);
-            
             const task = localStorage.getItem('current_task_content');
-            // 只有当 localStorage 里确实存在任务内容时才渲染弹窗
+            if(!task && !localStorage.getItem('cemetery_files')) {
+                localStorage.setItem('current_task_content', TASK_POOL[0]);
+                location.reload();
+            }
             if(task) {
                 const div = document.createElement('div');
                 div.className = 'work-popup';
-                div.innerHTML = `
-                    <div class="popup-header"><span>待处理原始附单</span></div>
-                    <div class="popup-content">${task}</div>
-                    <div class="popup-footer"><button class="action-btn" onclick="location.href='entry.html'">前往录入</button></div>
-                `;
+                div.innerHTML = `<h3>原始附单已送达</h3><p>${task}</p>
+                <button style="width:100%" onclick="window.open('entry.html', '_blank')">前往录入</button>`;
                 document.body.appendChild(div);
             }
         };
