@@ -1,30 +1,102 @@
-function saveData() {
-    const nameInput = document.getElementById('lastName').value.trim();
-    const bio = document.getElementById('bioData').value.trim();
-    const desc = document.getElementById('desc').value.trim(); // 获取生平
-    const task = localStorage.getItem('current_task_content');
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>档案录入终端 - 千安公墓管理平台</title>
+    <style>
+        :root { --ink: #000; --paper: #fff; --gold: #b8977e; --bg: #f0f2f5; }
+        body { background: var(--bg); font-family: "SimSun", serif; padding: 40px; margin: 0; display: flex; justify-content: center; transition: background 0.2s; }
+        .flash-fail { animation: flash 0.3s ease-in-out; }
+        @keyframes flash { 0% {background:var(--bg);} 50% {background:#d0d0d0;} 100% {background:var(--bg);} }
+        .form-container { max-width: 650px; width: 100%; background: var(--paper); padding: 40px; border: 1px solid var(--ink); position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { text-align: center; border-bottom: 2px solid var(--ink); padding-bottom: 15px; margin-top: 0; letter-spacing: 2px; font-weight: normal; }
+        .field { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; color: #333; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; outline: none; background: #fafafa; font-size: 14px; }
+        input:focus, textarea:focus { border-color: var(--ink); background: #fff; }
+        .submit-btn { background: #1d2731; color: var(--gold); border: none; padding: 18px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; transition: opacity 0.2s; }
+        .submit-btn:hover { opacity: 0.9; }
+        #hint-text { text-align: center; height: 20px; margin-top: 10px; font-size: 13px; color: #cc0000; font-weight: bold; visibility: hidden; }
+        .ref-box { position: fixed; left: 20px; top: 100px; width: 280px; background: #fff; border: 1px solid #ddd; padding: 20px; font-size: 13px; color: #555; max-height: 70vh; overflow-y: auto; line-height: 1.6; }
+        .ref-title { font-weight: bold; border-bottom: 1px solid #eee; margin-bottom: 10px; padding-bottom: 5px; color: #000; }
+    </style>
+</head>
+<body>
 
-    if (!task) { feedback("别那么无聊"); return; }
-    if (!nameInput || !bio) { feedback("好像不太对"); return; }
+<div class="ref-box">
+    <div class="ref-title">原始附单参考</div>
+    <div id="ref-content" style="white-space: pre-wrap;">等待附单导入...</div>
+</div>
 
-    const pureName = nameInput.split('（')[0].split('(')[0].trim();
-    const keys = MASTER_KEYS[pureName];
-    if(!keys) { feedback("好像不太对"); return; }
-
-    const matchCount = keys.filter(k => bio.includes(k)).length;
-    if(matchCount < 2) { feedback("好像不太对"); return; }
-
-    let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-    // 重点：这里增加了 bio 和 desc 的存储
-    archives.push({ 
-        name: nameInput, 
-        time: new Date().toLocaleString('zh-CN', { hour12: false }),
-        bio: bio,
-        desc: desc 
-    });
+<div class="form-container">
+    <h2>逝者数字化档案录入表</h2>
+    <div id="hint-text">好像不太对</div>
     
-    localStorage.setItem('cemetery_files', JSON.stringify(archives));
-    localStorage.removeItem('current_task_content');
-    localStorage.setItem('last_record_timestamp', Date.now());
-    window.location.href = 'system.html';
-}
+    <div class="field">
+        <label>姓名 (Full Name)</label>
+        <input type="text" id="lastName" placeholder="请输入附单中的法定姓名">
+    </div>
+    <div class="field">
+        <label>生理特征提取 (Biological Traits)</label>
+        <textarea id="bioData" rows="5" placeholder="请根据原始附单提取核心生理观测数据..."></textarea>
+    </div>
+    <div class="field">
+        <label>生平总结 (Biography)</label>
+        <textarea id="desc" rows="4" placeholder="行政存档使用"></textarea>
+    </div>
+    
+    <button class="submit-btn" onclick="saveData()">提交并存档</button>
+</div>
+
+<script>
+    const MASTER_KEYS = {
+        "陈建": ["骨", "密度", "高", "灰", "瞳孔"],
+        "宋涵": ["高", "骨化", "纤维", "增殖", "硬"],
+        "周诚": ["凉", "体温", "低", "指甲", "蓝"]
+    };
+
+    window.onload = () => {
+        const task = localStorage.getItem('current_task_content');
+        document.getElementById('ref-content').innerText = task || "暂无待处理任务。";
+    }
+
+    function feedback(msg) {
+        document.body.classList.remove('flash-fail');
+        void document.body.offsetWidth;
+        document.body.classList.add('flash-fail');
+        const h = document.getElementById('hint-text');
+        h.innerText = msg; h.style.visibility = 'visible';
+        setTimeout(() => h.style.visibility = 'hidden', 2000);
+    }
+
+    function saveData() {
+        const nameInput = document.getElementById('lastName').value.trim();
+        const bio = document.getElementById('bioData').value.trim();
+        const desc = document.getElementById('desc').value.trim();
+        const task = localStorage.getItem('current_task_content');
+
+        if (!task) { feedback("别那么无聊"); return; }
+        if (!nameInput || !bio) { feedback("好像不太对"); return; }
+
+        const pureName = nameInput.split('（')[0].split('(')[0].trim();
+        const keys = MASTER_KEYS[pureName];
+        if(!keys) { feedback("好像不太对"); return; }
+
+        const matchCount = keys.filter(k => bio.includes(k)).length;
+        if(matchCount < 2) { feedback("好像不太对"); return; }
+
+        let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
+        archives.push({ 
+            name: nameInput, 
+            time: new Date().toLocaleString('zh-CN', { hour12: false }),
+            bio: bio,
+            desc: desc 
+        });
+        localStorage.setItem('cemetery_files', JSON.stringify(archives));
+        localStorage.removeItem('current_task_content');
+        localStorage.setItem('last_record_timestamp', Date.now());
+        window.location.href = 'system.html';
+    }
+</script>
+</body>
+</html>
