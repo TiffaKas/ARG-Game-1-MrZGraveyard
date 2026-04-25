@@ -2,57 +2,47 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>已录入档案库 - 千安公墓</title>
+    <title>已录入档案库</title>
     <style>
         :root { --p-bg: #1d2731; --gold: #b8977e; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; }
-        .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); }
-        .main { flex: 1; padding: 40px; overflow-y: auto; }
+        .side { width: 260px; background: var(--p-bg); color: #fff; }
+        .main { flex: 1; padding: 40px; }
         table { width: 100%; border-collapse: collapse; background: #fff; }
         th, td { border: 1px solid #ddd; padding: 15px; text-align: left; }
-        th { background: #fafafa; }
-        .nav-item { padding: 12px 25px; color: var(--gold); cursor: pointer; text-decoration: none; display: block; }
+        .nav-item { padding: 15px 25px; color: var(--gold); text-decoration: none; display: block; }
     </style>
 </head>
 <body>
     <div class="side">
-        <div style="padding:40px 20px; text-align:center">
-            <h1 style="color:var(--gold); font-size:22px; margin:0">千安公墓</h1>
-        </div>
-        <a class="nav-item" href="system.html">[01] 档案检索</a>
-        <a class="nav-item" href="list.html">[03] 已录入档案</a>
+        <div style="padding:40px 20px; color:var(--gold); font-weight:bold;">管理目录</div>
+        <a class="nav-item" href="system.html" target="_blank">[01] 后台首页</a>
+        <a class="nav-item" href="list.html" target="_blank">[02] 已录入库</a>
     </div>
-
     <div class="main">
         <h2>已对焦档案列表</h2>
         <table id="archive-table">
             <thead>
-                <tr><th>编号</th><th>姓名 (点击查看详情)</th><th>录入时间</th><th>状态</th></tr>
+                <tr><th>编号</th><th>姓名/索引项</th><th>录入时间</th><th>状态</th></tr>
             </thead>
             <tbody id="list-content"></tbody>
         </table>
-        <div id="empty-msg" style="display:none; padding:20px; color:#999;">暂无档案。</div>
     </div>
 
     <script>
         window.onload = () => {
             const archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
             const container = document.getElementById('list-content');
-            if (archives.length === 0) {
-                document.getElementById('empty-msg').style.display = 'block';
-                document.getElementById('archive-table').style.display = 'none';
-            } else {
-                archives.forEach((item, index) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>#00${index + 1}</td>
-                        <td><a href="detail.html?name=${encodeURIComponent(item.name)}" style="color: #409EFF; text-decoration: none;">${item.name}</a></td>
-                        <td>${item.time}</td>
-                        <td style="color: green;">已存档</td>
-                    `;
-                    container.appendChild(row);
-                });
-            }
+            archives.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>#00${index + 1}</td>
+                    <td><a href="detail.html?name=${encodeURIComponent(item.name)}" target="_blank" style="color: #409EFF; text-decoration: none;">${item.name}</a></td>
+                    <td>${item.time}</td>
+                    <td style="color: green;">已存档</td>
+                `;
+                container.appendChild(row);
+            });
         };
     </script>
 </body>
