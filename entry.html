@@ -2,93 +2,144 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>已录入档案库 - 千安公墓</title>
+    <title>档案录入终端 - 千安公墓管理平台</title>
     <style>
-        :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
-        body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; }
+        :root { --ink: #000; --paper: #fff; --gold: #b8977e; --bg: #f0f2f5; }
+        body { background: var(--bg); font-family: "SimSun", serif; padding: 40px; margin: 0; display: flex; justify-content: center; transition: background 0.2s; }
         
-        /* 侧边栏保持一致 */
-        .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; }
-        .nav-menu { margin-top: 20px; flex: 1; }
-        .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
-        .nav-item { padding: 12px 25px; font-size: 14px; color: var(--gold); cursor: pointer; transition: 0.3s; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        .nav-item:hover { background: rgba(255,255,255,0.1); }
+        /* 错误时的轻微闪烁效果，暗示录入失败 */
+        .flash-fail { animation: flash 0.3s ease-in-out; }
+        @keyframes flash { 0% {background:var(--bg);} 50% {background:#d0d0d0;} 100% {background:var(--bg);} }
         
-        /* 主内容区 */
-        .main { flex: 1; padding: 40px; overflow-y: auto; }
-        .header-bar { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
-        h2 { margin: 0; font-weight: normal; letter-spacing: 2px; }
+        .form-container { max-width: 650px; width: 100%; background: var(--paper); padding: 40px; border: 1px solid var(--ink); position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { text-align: center; border-bottom: 2px solid var(--ink); padding-bottom: 15px; margin-top: 0; letter-spacing: 2px; font-weight: normal; }
+        .field { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; color: #333; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; outline: none; background: #fafafa; font-size: 14px; }
+        input:focus, textarea:focus { border-color: var(--ink); background: #fff; }
         
-        /* 表格样式 */
-        table { width: 100%; border-collapse: collapse; background: #fff; }
-        th { background: #eee; text-align: left; padding: 12px; font-size: 13px; border: 1px solid #ddd; }
-        td { padding: 12px; border: 1px solid #ddd; font-size: 14px; color: #444; }
-        tr:nth-child(even) { background: #fafafa; }
-        .empty-hint { text-align: center; padding: 50px; color: #999; font-style: italic; }
+        .submit-btn { background: #1d2731; color: var(--gold); border: none; padding: 18px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; transition: opacity 0.2s; }
+        .submit-btn:hover { opacity: 0.9; }
+        
+        /* 提示语保持你要求的“正常”反馈 */
+        #hint-text { text-align: center; height: 20px; margin-top: 10px; font-size: 13px; color: #cc0000; font-weight: bold; visibility: hidden; letter-spacing: 1px; }
+        
+        /* 左侧参考原文框，方便玩家核对 */
+        .ref-box { position: fixed; left: 20px; top: 100px; width: 280px; background: #fff; border: 1px solid #ddd; padding: 20px; font-size: 13px; color: #555; max-height: 70vh; overflow-y: auto; line-height: 1.6; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .ref-title { font-weight: bold; border-bottom: 1px solid #eee; margin-bottom: 10px; padding-bottom: 5px; color: #000; }
     </style>
 </head>
 <body>
 
-    <div class="side">
-        <div style="padding:40px 20px; text-align:center">
-            <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
-            <p style="font-size:10px; color:#555; margin-top:5px;">OBSERVER TERMINAL v7.0</p>
-        </div>
-        <div class="nav-menu">
-            <div class="menu-label">内部管理</div>
-            <div class="nav-item" onclick="location.href='system.html'"><span>[01]</span> 档案检索模块</div>
-            <div class="nav-item" onclick="location.href='entry.html'"><span>[02]</span> 数据录入终端</div>
-            <div class="nav-item" onclick="location.href='list.html'" style="background: rgba(255,255,255,0.1);"><span>[03]</span> 已录入档案库</div>
-            <div class="menu-label">外部连接</div>
-            <div class="nav-item" onclick="location.href='official.html'"><span>●</span> 访问对外官网</div>
-            <div class="nav-item" onclick="location.href='wechat.html'"><span>●</span> 移动通讯快讯</div>
-            <div class="nav-item" onclick="location.href='email.html'"><span>●</span> 内部行政邮箱</div>
-        </div>
+<div class="ref-box" id="ref-window">
+    <div class="ref-title">原始附单参考 (Reference)</div>
+    <div id="ref-content" style="white-space: pre-wrap;">等待附单导入...</div>
+</div>
+
+<div class="form-container">
+    <h2>逝者数字化档案录入表</h2>
+    <div id="hint-text">好像不太对</div>
+    
+    <div class="field">
+        <label>姓氏 (Full Name)</label>
+        <input type="text" id="lastName" placeholder="请输入附单中的法定姓名">
     </div>
-
-    <div class="main">
-        <div class="header-bar">
-            <h2>已录入档案清单 (Archive List)</h2>
-            <span style="font-size:12px; color:#666;">当前版本：2026.04.25</span>
-        </div>
-
-        <table id="archive-table">
-            <thead>
-                <tr>
-                    <th style="width: 80px;">编号</th>
-                    <th>姓名/索引项</th>
-                    <th>录入时间</th>
-                    <th>状态</th>
-                </tr>
-            </thead>
-            <tbody id="list-content">
-                </tbody>
-        </table>
-        <div id="empty-msg" class="empty-hint" style="display:none;">暂无已对焦档案，请前往录入终端处理原始附单。</div>
+    
+    <div class="field">
+        <label>生理特征提取 (Biological Traits)</label>
+        <textarea id="bioData" rows="5" placeholder="请根据原始附单提取核心生理观测数据..."></textarea>
     </div>
+    
+    <div class="field">
+        <label>生平总结 (Biography)</label>
+        <textarea id="desc" rows="4" placeholder="（此项为行政存档使用，不影响校验结果）"></textarea>
+    </div>
+    
+    <button class="submit-btn" onclick="saveData()">提交并存档</button>
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="system.html" style="color:#999; font-size:12px; text-decoration:none;">取消并返回管理终端</a>
+    </div>
+</div>
 
-    <script>
-        window.onload = () => {
-            const archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-            const container = document.getElementById('list-content');
-            const emptyMsg = document.getElementById('empty-msg');
+<script>
+    // 核心校验关键词库（需命中至少2个）
+    const MASTER_KEYS = {
+        "陈建": ["骨", "密度", "高", "灰", "瞳孔", "眼睛"],
+        "宋涵": ["高", "骨化", "纤维", "增殖", "硬", "石"],
+        "周诚": ["硬朗", "凉", "体温", "低", "指甲", "蓝", "代谢", "慢"]
+    };
 
-            if (archives.length === 0) {
-                emptyMsg.style.display = 'block';
-                document.getElementById('archive-table').style.display = 'none';
-            } else {
-                archives.forEach((item, index) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>#00${index + 1}</td>
-                        <td>${item.name}</td>
-                        <td>${item.time}</td>
-                        <td style="color: green;">已定义 (Defined)</td>
-                    `;
-                    container.appendChild(row);
-                });
-            }
-        };
-    </script>
+    window.onload = () => {
+        const task = localStorage.getItem('current_task_content');
+        if(task) {
+            document.getElementById('ref-content').innerText = task;
+        } else {
+            document.getElementById('ref-content').innerText = "暂无待处理任务。请等待系统分派。";
+        }
+    }
+
+    // 统一的报错反馈
+    function feedback(msg) {
+        document.body.classList.remove('flash-fail');
+        void document.body.offsetWidth; // 触发重绘
+        document.body.classList.add('flash-fail');
+        
+        const h = document.getElementById('hint-text');
+        h.innerText = msg; 
+        h.style.visibility = 'visible';
+        setTimeout(() => h.style.visibility = 'hidden', 2000);
+    }
+
+    function saveData() {
+        const nameInput = document.getElementById('lastName').value.trim();
+        const bio = document.getElementById('bioData').value.trim();
+        const task = localStorage.getItem('current_task_content');
+
+        // 1. 无任务状态
+        if (!task) { 
+            feedback("别那么无聊"); 
+            return; 
+        }
+
+        // 2. 空内容拦截
+        if (!nameInput || !bio) { 
+            feedback("好像不太对"); 
+            return; 
+        }
+
+        // 3. 提取核心主键（兼容带小名的格式）
+        const pureName = nameInput.split('（')[0].split('(')[0].trim();
+        const keys = MASTER_KEYS[pureName];
+
+        // 4. 姓名校验失败
+        if(!keys) { 
+            feedback("好像不太对"); 
+            return; 
+        }
+
+        // 5. 关键词命中校验（必须命中 2 个或以上）
+        const matchCount = keys.filter(k => bio.includes(k)).length;
+        if(matchCount < 2) { 
+            feedback("好像不太对"); 
+            return; 
+        }
+
+        // 6. 执行存储
+        let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
+        archives.push({ 
+            name: nameInput, 
+            time: new Date().toLocaleString('zh-CN', { hour12: false }) 
+        });
+        localStorage.setItem('cemetery_files', JSON.stringify(archives));
+        
+        // 7. 清理状态并设置 3 分钟冷却起点
+        localStorage.removeItem('current_task_content');
+        localStorage.setItem('last_record_timestamp', Date.now());
+
+        // 8. 正常跳转，无任何多余提示
+        window.location.href = 'system.html';
+    }
+</script>
 </body>
 </html>
