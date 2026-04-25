@@ -2,104 +2,93 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>档案录入终端</title>
+    <title>已录入档案库 - 千安公墓</title>
     <style>
-        :root { --ink: #000; --paper: #fff; --gold: #b8977e; --bg: #f0f2f5; }
-        body { background: var(--bg); font-family: "SimSun", serif; padding: 40px; margin: 0; display: flex; justify-content: center; transition: background 0.2s; }
-        .flash-white { animation: flash 0.3s ease-in-out; }
-        @keyframes flash { 0% {background:var(--bg);} 50% {background:#e0e0e0;} 100% {background:var(--bg);} }
+        :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
+        body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; }
         
-        .form-container { max-width: 650px; width: 100%; background: var(--paper); padding: 40px; border: 1px solid var(--ink); position: relative; }
-        h2 { text-align: center; border-bottom: 2px solid var(--ink); padding-bottom: 15px; margin-top: 0; letter-spacing: 2px; }
-        .field { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 14px; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; outline: none; background: #fafafa; }
-        .submit-btn { background: #1d2731; color: var(--gold); border: none; padding: 18px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; }
-        #hint-text { text-align: center; height: 20px; margin-top: 10px; font-size: 14px; color: #666; font-weight: bold; visibility: hidden; }
+        /* 侧边栏保持一致 */
+        .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; }
+        .nav-menu { margin-top: 20px; flex: 1; }
+        .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
+        .nav-item { padding: 12px 25px; font-size: 14px; color: var(--gold); cursor: pointer; transition: 0.3s; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .nav-item:hover { background: rgba(255,255,255,0.1); }
         
-        /* 侧边小浮窗显示原文 */
-        .ref-box { position: fixed; left: 20px; top: 100px; width: 250px; background: #fff; border: 1px solid #ddd; padding: 15px; font-size: 12px; color: #666; max-height: 400px; overflow-y: auto; }
+        /* 主内容区 */
+        .main { flex: 1; padding: 40px; overflow-y: auto; }
+        .header-bar { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+        h2 { margin: 0; font-weight: normal; letter-spacing: 2px; }
+        
+        /* 表格样式 */
+        table { width: 100%; border-collapse: collapse; background: #fff; }
+        th { background: #eee; text-align: left; padding: 12px; font-size: 13px; border: 1px solid #ddd; }
+        td { padding: 12px; border: 1px solid #ddd; font-size: 14px; color: #444; }
+        tr:nth-child(even) { background: #fafafa; }
+        .empty-hint { text-align: center; padding: 50px; color: #999; font-style: italic; }
     </style>
 </head>
 <body>
 
-<div class="form-container">
-    <h2>逝者数字化档案录入表</h2>
-    <div id="hint-text">好像不太对</div>
-    
-    <div class="field">
-        <label>姓氏 (Surname)</label>
-        <input type="text" id="lastName" placeholder="需严格核对大名">
+    <div class="side">
+        <div style="padding:40px 20px; text-align:center">
+            <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
+            <p style="font-size:10px; color:#555; margin-top:5px;">OBSERVER TERMINAL v7.0</p>
+        </div>
+        <div class="nav-menu">
+            <div class="menu-label">内部管理</div>
+            <div class="nav-item" onclick="location.href='system.html'"><span>[01]</span> 档案检索模块</div>
+            <div class="nav-item" onclick="location.href='entry.html'"><span>[02]</span> 数据录入终端</div>
+            <div class="nav-item" onclick="location.href='list.html'" style="background: rgba(255,255,255,0.1);"><span>[03]</span> 已录入档案库</div>
+            <div class="menu-label">外部连接</div>
+            <div class="nav-item" onclick="location.href='official.html'"><span>●</span> 访问对外官网</div>
+            <div class="nav-item" onclick="location.href='wechat.html'"><span>●</span> 移动通讯快讯</div>
+            <div class="nav-item" onclick="location.href='email.html'"><span>●</span> 内部行政邮箱</div>
+        </div>
     </div>
-    <div class="field">
-        <label>生理资料 (Biological Data)</label>
-        <textarea id="bioData" rows="4" placeholder="提取核心生理异常指标..."></textarea>
+
+    <div class="main">
+        <div class="header-bar">
+            <h2>已录入档案清单 (Archive List)</h2>
+            <span style="font-size:12px; color:#666;">当前版本：2026.04.25</span>
+        </div>
+
+        <table id="archive-table">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">编号</th>
+                    <th>姓名/索引项</th>
+                    <th>录入时间</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody id="list-content">
+                </tbody>
+        </table>
+        <div id="empty-msg" class="empty-hint" style="display:none;">暂无已对焦档案，请前往录入终端处理原始附单。</div>
     </div>
-    <div class="field">
-        <label>生平简述 (Biography)</label>
-        <textarea id="desc" rows="4" placeholder="此项不作为显象对焦依据，可自由概括"></textarea>
-    </div>
-    <button class="submit-btn" onclick="saveData()">确认提交并封存档案</button>
-    <a href="system.html" style="display:block; text-align:center; margin-top:20px; color:#999; font-size:12px; text-decoration:none;">放弃当前进度返回</a>
-</div>
 
-<script>
-    // 逻辑库
-    const MASTER_KEYS = {
-        "陈建": ["骨", "密度", "高", "灰", "瞳孔", "眼睛"],
-        "宋涵": ["高", "骨化", "纤维", "增殖", "硬", "石"],
-        "周诚": ["硬朗", "凉", "体温", "低", "指甲", "蓝", "代谢", "慢"]
-    };
+    <script>
+        window.onload = () => {
+            const archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
+            const container = document.getElementById('list-content');
+            const emptyMsg = document.getElementById('empty-msg');
 
-    window.onload = () => {
-        const task = localStorage.getItem('current_task_content');
-        if(task) {
-            const box = document.createElement('div');
-            box.className = 'ref-box';
-            box.innerHTML = `<strong>附单参考：</strong><br><br>${task}`;
-            document.body.appendChild(box);
-        }
-    }
-
-    function feedback(msg) {
-        document.body.classList.remove('flash-white');
-        void document.body.offsetWidth;
-        document.body.classList.add('flash-white');
-        const h = document.getElementById('hint-text');
-        h.innerText = msg; h.style.visibility = 'visible';
-        setTimeout(() => h.style.visibility = 'hidden', 2000);
-    }
-
-    function saveData() {
-        const nameInput = document.getElementById('lastName').value.trim();
-        const bio = document.getElementById('bioData').value.trim();
-        const task = localStorage.getItem('current_task_content');
-
-        if (!task) { feedback("别那么无聊"); return; }
-        if (!nameInput || !bio) { feedback("好像不太对"); return; }
-
-        // 彩蛋检测逻辑：检测是否包含大名且带有括号
-        const isEasterEgg = nameInput.includes('（') && nameInput.includes('）');
-        // 提取纯大名用于逻辑比对
-        const pureName = nameInput.split('（')[0].split('(')[0].trim();
-
-        const keys = MASTER_KEYS[pureName];
-        if(!keys) { feedback("好像不太对"); return; }
-
-        const matchCount = keys.filter(k => bio.includes(k)).length;
-        if(matchCount < 1) { feedback("好像不太对"); return; }
-
-        // 验证通过
-        let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-        archives.push({ name: nameInput, time: new Date().toLocaleString() });
-        localStorage.setItem('cemetery_files', JSON.stringify(archives));
-        
-        localStorage.removeItem('current_task_content');
-        localStorage.setItem('last_record_timestamp', Date.now());
-
-        alert("录入成功。现实已对焦。");
-        window.location.href = 'system.html';
-    }
-</script>
+            if (archives.length === 0) {
+                emptyMsg.style.display = 'block';
+                document.getElementById('archive-table').style.display = 'none';
+            } else {
+                archives.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>#00${index + 1}</td>
+                        <td>${item.name}</td>
+                        <td>${item.time}</td>
+                        <td style="color: green;">已定义 (Defined)</td>
+                    `;
+                    container.appendChild(row);
+                });
+            }
+        };
+    </script>
 </body>
 </html>
