@@ -4,91 +4,61 @@
     <meta charset="UTF-8">
     <title>档案详情 - 千安公墓管理平台</title>
     <style>
-        :root { --p-bg: #1d2731; --gold: #b8977e; --paper: #fff; }
-        body { margin: 0; font-family: "SimSun", serif; background: #e2e2e2; display: flex; justify-content: center; padding: 50px 0; }
-        
-        .folder { width: 800px; background: var(--paper); border: 1px solid #999; box-shadow: 20px 20px 0 rgba(0,0,0,0.05); padding: 60px; position: relative; }
-        .folder::before { content: "TOP SECRET"; position: absolute; top: 20px; right: 20px; border: 3px solid #cc0000; color: #cc0000; padding: 5px 10px; font-weight: bold; transform: rotate(15deg); opacity: 0.3; }
-
-        .header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
-        
-        .profile-section { display: flex; gap: 30px; margin-bottom: 40px; }
-        .avatar { width: 180px; height: 220px; border: 1px solid #000; background: #eee; filter: grayscale(100%) contrast(1.2); object-fit: cover; }
-        
-        .info-grid { flex: 1; display: grid; grid-template-columns: 100px 1fr; gap: 15px; font-size: 15px; }
-        .label { font-weight: bold; background: #eee; padding: 5px; text-align: center; border: 1px solid #000; }
-        .value { border-bottom: 1px dashed #000; padding: 5px; }
-
-        .content-block { margin-top: 30px; }
-        .block-title { background: #000; color: #fff; padding: 5px 15px; display: inline-block; font-size: 14px; margin-bottom: 10px; }
-        .text-area { line-height: 1.8; font-size: 15px; white-space: pre-wrap; border: 1px solid #ddd; padding: 20px; background: #fafafa; }
-
-        .back-btn { margin-top: 50px; text-align: center; }
-        .back-btn a { color: #666; font-size: 13px; text-decoration: none; border: 1px solid #666; padding: 10px 20px; }
+        :root { --p-bg: #1d2731; --gold: #b8977e; --border: #dcdfe6; }
+        body { margin: 0; font-family: "Microsoft YaHei", sans-serif; background: #f5f7fa; color: #303133; }
+        .container { padding: 30px; display: flex; justify-content: center; }
+        .record-card { width: 850px; background: #fff; border: 1px solid var(--border); padding: 40px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+        .section-header { border-left: 4px solid var(--p-bg); padding-left: 12px; font-size: 18px; font-weight: bold; margin-bottom: 30px; }
+        .main-info { display: flex; gap: 30px; margin-bottom: 30px; border-bottom: 1px solid #f0f0f0; padding-bottom: 30px; }
+        .photo-box { width: 140px; text-align: center; }
+        .photo-box img { width: 140px; height: 180px; object-fit: cover; border: 1px solid #eee; filter: grayscale(100%); }
+        .info-table { flex: 1; display: grid; grid-template-columns: 100px 1fr 100px 1fr; border-top: 1px solid #ebeef5; border-left: 1px solid #ebeef5; }
+        .info-table div { padding: 12px; border-right: 1px solid #ebeef5; border-bottom: 1px solid #ebeef5; font-size: 14px; }
+        .t-label { background: #fafafa; color: #606266; font-weight: bold; }
+        .content-box { background: #fcfcfc; border: 1px solid #eee; padding: 15px; font-size: 14px; line-height: 1.8; color: #444; min-height: 60px; margin-bottom: 20px; white-space: pre-wrap; }
+        .btn-back { display: inline-block; padding: 10px 20px; background: var(--p-bg); color: var(--gold); text-decoration: none; font-size: 14px; border-radius: 4px; }
     </style>
 </head>
 <body>
-
-    <div class="folder">
-        <div class="header">
-            <h1 style="font-size: 24px; margin: 0;">人员数字化对焦档案</h1>
-            <span id="archive-id" style="font-family: monospace;">UUID: Loading...</span>
-        </div>
-
-        <div class="profile-section">
-            <img id="portrait" class="avatar" src="" alt="识别照片">
-            <div class="info-grid">
-                <div class="label">姓名</div><div class="value" id="view-name">-</div>
-                <div class="label">录入时间</div><div class="value" id="view-time">-</div>
-                <div class="label">当前状态</div><div class="value" style="color: green;">已定义/已锁定</div>
-                <div class="label">权限等级</div><div class="value">LEVEL 3 (RESTRICTED)</div>
+    <div class="container">
+        <div class="record-card">
+            <div class="section-header">人员电子档案明细</div>
+            <div class="main-info">
+                <div class="photo-box">
+                    <img id="v-photo" src="" alt="照片">
+                    <div style="font-size:11px; color:#999; margin-top:5px;">系统对焦图像</div>
+                </div>
+                <div class="info-table">
+                    <div class="t-label">姓名</div><div id="v-name">-</div>
+                    <div class="t-label">状态</div><div style="color: green;">正常存档</div>
+                    <div class="t-label">录入时间</div><div id="v-time">-</div>
+                    <div class="t-label">分类</div><div>数字化墓区</div>
+                </div>
             </div>
-        </div>
-
-        <div class="content-block">
-            <div class="block-title">提取的生理特征 (Observation Data)</div>
-            <div class="text-area" id="view-bio">等待数据溢出...</div>
-        </div>
-
-        <div class="content-block">
-            <div class="block-title">行政生平总结 (Biography)</div>
-            <div class="text-area" id="view-desc">无描述。</div>
-        </div>
-
-        <div class="back-btn">
-            <a href="list.html">← 返回档案清单</a>
+            <div style="font-weight:bold; margin-bottom:10px;">生理特征提取 (Observation)</div>
+            <div class="content-box" id="v-bio"></div>
+            <div style="font-weight:bold; margin-bottom:10px;">行政生平总结 (Biography)</div>
+            <div class="content-box" id="v-desc"></div>
+            <a href="list.html" class="btn-back">返回列表</a>
         </div>
     </div>
 
     <script>
         window.onload = () => {
-            const params = new URLSearchParams(window.location.search);
-            const targetName = params.get('name');
-            
-            // 从 localStorage 获取完整数据
-            const archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-            // 注意：为了让 detail 能看到 bio 和 desc，我们需要在 entry.html 存储时把这些也存进去
-            // 这里我们先做一个匹配
-            const data = archives.find(a => a.name === targetName);
-
+            const name = new URLSearchParams(window.location.search).get('name');
+            const data = JSON.parse(localStorage.getItem('cemetery_files') || '[]').find(a => a.name === name);
             if (data) {
-                document.getElementById('view-name').innerText = data.name;
-                document.getElementById('view-time').innerText = data.time;
-                document.getElementById('view-bio').innerText = data.bio || "特征已固化。";
-                document.getElementById('view-desc').innerText = data.desc || "暂无生平简述。";
-                document.getElementById('archive-id').innerText = "ARCH-" + Math.random().toString(36).substr(2, 9).toUpperCase();
-
-                // 根据姓名分配“模拟 AI”头像
-                // 这里用一个简单的逻辑模拟：陈建（男/老），宋涵（女/少），周诚（男/中）
-                let avatarUrl = "https://i.pravatar.cc/300?u=" + data.name; 
-                if (data.name.includes("陈建")) avatarUrl = "https://randomuser.me/api/portraits/men/75.jpg";
-                if (data.name.includes("宋涵")) avatarUrl = "https://randomuser.me/api/portraits/women/24.jpg";
-                if (data.name.includes("周诚")) avatarUrl = "https://randomuser.me/api/portraits/men/42.jpg";
+                document.getElementById('v-name').innerText = data.name;
+                document.getElementById('v-time').innerText = data.time;
+                document.getElementById('v-bio').innerText = data.bio;
+                document.getElementById('v-desc').innerText = data.desc || "无行政描述。";
                 
-                document.getElementById('portrait').src = avatarUrl;
-            } else {
-                alert("档案读取失败：未找到对焦目标。");
-                location.href = 'list.html';
+                let img = "";
+                if (name.includes("陈建")) img = "https://randomuser.me/api/portraits/men/75.jpg";
+                else if (name.includes("宋涵")) img = "https://randomuser.me/api/portraits/women/24.jpg";
+                else if (name.includes("周诚")) img = "https://randomuser.me/api/portraits/men/42.jpg";
+                else img = "https://i.pravatar.cc/300?u=" + name;
+                document.getElementById('v-photo').src = img;
             }
         };
     </script>
