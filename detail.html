@@ -2,45 +2,24 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>档案详情 - 千安公墓管理平台</title>
+    <title>档案详情</title>
     <style>
-        :root { --p-bg: #1d2731; --gold: #b8977e; --border: #dcdfe6; }
-        body { margin: 0; font-family: "Microsoft YaHei", sans-serif; background: #f5f7fa; color: #303133; }
-        .container { padding: 30px; display: flex; justify-content: center; }
-        .record-card { width: 850px; background: #fff; border: 1px solid var(--border); padding: 40px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
-        .section-header { border-left: 4px solid var(--p-bg); padding-left: 12px; font-size: 18px; font-weight: bold; margin-bottom: 30px; }
-        .main-info { display: flex; gap: 30px; margin-bottom: 30px; border-bottom: 1px solid #f0f0f0; padding-bottom: 30px; }
-        .photo-box { width: 140px; text-align: center; }
-        .photo-box img { width: 140px; height: 180px; object-fit: cover; border: 1px solid #eee; filter: grayscale(100%); }
-        .info-table { flex: 1; display: grid; grid-template-columns: 100px 1fr 100px 1fr; border-top: 1px solid #ebeef5; border-left: 1px solid #ebeef5; }
-        .info-table div { padding: 12px; border-right: 1px solid #ebeef5; border-bottom: 1px solid #ebeef5; font-size: 14px; }
-        .t-label { background: #fafafa; color: #606266; font-weight: bold; }
-        .content-box { background: #fcfcfc; border: 1px solid #eee; padding: 15px; font-size: 14px; line-height: 1.8; color: #444; min-height: 60px; margin-bottom: 20px; white-space: pre-wrap; }
-        .btn-back { display: inline-block; padding: 10px 20px; background: var(--p-bg); color: var(--gold); text-decoration: none; font-size: 14px; border-radius: 4px; }
+        body { background: #f5f7fa; font-family: sans-serif; padding: 40px; display: flex; justify-content: center; }
+        .card { width: 800px; background: #fff; padding: 40px; border: 1px solid #ddd; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header { border-left: 5px solid #1d2731; padding-left: 15px; margin-bottom: 30px; font-size: 20px; font-weight: bold; }
+        .content { line-height: 1.8; color: #333; margin-bottom: 20px; padding: 15px; background: #fafafa; border: 1px dashed #ccc; }
+        .btn-back { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #1d2731; color: #b8977e; text-decoration: none; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="record-card">
-            <div class="section-header">人员电子档案明细</div>
-            <div class="main-info">
-                <div class="photo-box">
-                    <img id="v-photo" src="" alt="照片">
-                    <div style="font-size:11px; color:#999; margin-top:5px;">系统对焦图像</div>
-                </div>
-                <div class="info-table">
-                    <div class="t-label">姓名</div><div id="v-name">-</div>
-                    <div class="t-label">状态</div><div style="color: green;">正常存档</div>
-                    <div class="t-label">录入时间</div><div id="v-time">-</div>
-                    <div class="t-label">分类</div><div>数字化墓区</div>
-                </div>
-            </div>
-            <div style="font-weight:bold; margin-bottom:10px;">生理特征提取 (Observation)</div>
-            <div class="content-box" id="v-bio"></div>
-            <div style="font-weight:bold; margin-bottom:10px;">行政生平总结 (Biography)</div>
-            <div class="content-box" id="v-desc"></div>
-            <a href="list.html" class="btn-back">返回列表</a>
-        </div>
+    <div class="card">
+        <div class="header">档案：<span id="v-name"></span></div>
+        <p><strong>录入时间：</strong> <span id="v-time"></span></p>
+        <div style="font-weight:bold;">生理特征描述：</div>
+        <div class="content" id="v-bio"></div>
+        <div style="font-weight:bold;">行政生平总结：</div>
+        <div class="content" id="v-desc"></div>
+        <a href="list.html" target="_blank" class="btn-back">返回列表</a>
     </div>
 
     <script>
@@ -51,14 +30,7 @@
                 document.getElementById('v-name').innerText = data.name;
                 document.getElementById('v-time').innerText = data.time;
                 document.getElementById('v-bio').innerText = data.bio;
-                document.getElementById('v-desc').innerText = data.desc || "无行政描述。";
-                
-                let img = "";
-                if (name.includes("陈建")) img = "https://randomuser.me/api/portraits/men/75.jpg";
-                else if (name.includes("宋涵")) img = "https://randomuser.me/api/portraits/women/24.jpg";
-                else if (name.includes("周诚")) img = "https://randomuser.me/api/portraits/men/42.jpg";
-                else img = "https://i.pravatar.cc/300?u=" + name;
-                document.getElementById('v-photo').src = img;
+                document.getElementById('v-desc').innerText = data.desc || "无描述。";
             }
         };
     </script>
