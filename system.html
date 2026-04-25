@@ -6,23 +6,17 @@
     <style>
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
-
-        /* 侧边栏 */
         .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; }
         .nav-menu { margin-top: 20px; flex: 1; }
         .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
         .nav-item { padding: 12px 25px; font-size: 14px; color: var(--gold); cursor: pointer; transition: all 0.3s; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
         .nav-item:hover { background: rgba(255,255,255,0.1); padding-left: 30px; }
         .nav-item span { margin-right: 15px; font-size: 10px; }
-
-        /* 主界面 - 保持极简，无倒计时 */
         .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
         .card { background: #fff; padding: 50px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         h2 { border-left: 4px solid var(--gold); padding-left: 15px; font-weight: normal; margin-bottom: 30px; color: var(--dark); font-size: 18px; }
         input { width: 100%; padding: 15px; border: 1px solid #ddd; margin: 20px 0; box-sizing: border-box; outline: none; }
         #search-btn { width: 100%; padding: 15px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; }
-
-        /* 弹窗样式 */
         .work-popup { position: fixed; bottom: 20px; right: 20px; width: 380px; max-height: 450px; background: #fff; border: 2px solid var(--gold); display: flex; flex-direction: column; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
         .popup-header { background: var(--p-bg); color: var(--gold); padding: 12px 20px; font-weight: bold; font-size: 13px; }
         .popup-content { padding: 20px; overflow-y: auto; font-size: 14px; line-height: 1.8; white-space: pre-wrap; background: #fdfdfd; flex: 1; color: #333; }
@@ -31,7 +25,6 @@
     </style>
 </head>
 <body>
-
     <div class="side">
         <div style="padding:40px 20px; text-align:center">
             <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
@@ -60,40 +53,37 @@
 
     <script>
         const TASK_POOL = [
-            "陈建（阿建）身体挺不错的，没想到在家里就这么静静地走了。不知道是什么原因？之前摔跤后没有骨折，没有扭伤，我一直都觉得阿建身体很好，没有我们这个年纪常有的骨质疏松。也经常锻炼，每天都是走两万步以上，也很鼓舞人，可惜的就是没有一个好妻子陪伴着他，也无儿无女。还记得阿建当时是镇里唯一一个考上大学的人，可风光了，他是个好人。陈建是个好人，不是说他做过舍身为人的大善事，但是他一直守着本分，不越界；每当碰见有人需要帮助时，灰色的瞳孔总是让人感到安心，大家和他相处都很舒服。致：灰色的阿建。",
-            "果果.......是妈妈不好，要是妈妈当时没有失去理智就好了，是妈妈让你伤心了，但是孩子，这个世界太苦，你也太苦，这个石人病太折磨人了..................嗯......这对你来说也许也是一件好事，但是妈妈要带着这份愧疚活下去了，替你的；\n\n宋涵是个很好的同学，她人挺高的，成绩好，是个好班长，做事认真，客观。记得那一次，我差点被冤枉了，是她坚持调查下去我才被还回清白，要是她熟视无睹的话，就没有现在的我。发生这件事我也感到很伤心，她没有叫我的外号“马桶”，而是正常地直呼我的大名，干练的声音和一声声“小同”始终在我的脑海，宋涵，再见，祝你好运。",
-            "谁也没想到，老周，周诚，会在盛夏的午后，蜷缩在那个没有冷气的维修间里冻死。这听起来像个笑话，但他走的时候，身上确实覆盖着一层薄薄的白色霜华。我一直觉得老周是个怪人，虽然他身体看起来很硬朗，从不感冒，但他那双手摸起来总是像井水一样冰凉，夏天和他握手甚至能感到一阵寒意。老周是个实实在在的好人。记得那年学校电路短路引发小火灾，是他冒着烟冲进去抢救档案。大家后来问他怕不怕烫，他只是搓了搓那双发蓝的指甲盖，憨厚地笑笑说：“我这人天生怕热不怕火。”他这辈子没结过婚，守着那堆零件过日子，从不占人便宜。医生私下里嘀咕，说老周的代谢速度慢得惊人，这或许解释了他为什么总是那么冷静、那么凉。"
+            "陈建（阿建）身体挺不错的，没想到在家里就这么静静地走了...",
+            "果果.......是妈妈不好...宋涵是个很好的同学...",
+            "谁也没想到，老周，周诚，会在盛夏的午后冻死..."
         ];
 
         function find() {
             let v = document.getElementById('pass').value.trim();
-            if(v) {
-                // 搜索时不再显示奇怪的提示，只做正常的页面跳转模拟
-                window.location.href = v + ".html";
-            }
+            if(v) window.location.href = v + ".html";
         }
 
         function checkNewTask() {
+            const archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
             const lastTime = parseInt(localStorage.getItem('last_record_timestamp') || 0);
             const now = Date.now();
             const cooldown = 180000; // 3分钟
 
-            // 只有冷却结束，且当前没任务，且还有未完成任务时，才静默加载
-            if (now - lastTime >= cooldown && !localStorage.getItem('current_task_content')) {
-                let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-                if (archives.length < TASK_POOL.length) {
-                    localStorage.setItem('current_task_content', TASK_POOL[archives.length]);
-                    location.reload(); // 只有这一步会刷新页面显示弹窗
-                }
+            // 核心修复：增加对任务是否全部完成的判断
+            if (archives.length >= TASK_POOL.length) return;
+
+            // 只有在没有当前任务，且冷却时间已过的情况下，才发放下一个任务
+            if (!localStorage.getItem('current_task_content') && (now - lastTime >= cooldown)) {
+                localStorage.setItem('current_task_content', TASK_POOL[archives.length]);
+                location.reload(); 
             }
         }
 
         window.onload = () => {
-            // 每 5 秒静默检查一次
             setInterval(checkNewTask, 5000);
-            checkNewTask();
-
+            
             const task = localStorage.getItem('current_task_content');
+            // 只有当 localStorage 里确实存在任务内容时才渲染弹窗
             if(task) {
                 const div = document.createElement('div');
                 div.className = 'work-popup';
