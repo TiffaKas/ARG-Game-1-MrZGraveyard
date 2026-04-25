@@ -6,73 +6,81 @@
     <style>
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
         body { margin: 0; font-family: sans-serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
+
+        /* 侧边栏优化 */
         .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; }
         .nav-menu { margin-top: 20px; flex: 1; }
-        .nav-item { padding: 15px 25px; font-size: 14px; color: var(--gold); cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .nav-item:hover { background: rgba(255,255,255,0.1); }
-        .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; }
-        .card { background: #fff; padding: 50px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h2 { border-left: 4px solid var(--gold); padding-left: 15px; font-weight: normal; margin-bottom: 30px; color: var(--dark); }
-        input { width: 100%; padding: 15px; border: 1px solid #ddd; margin: 20px 0; box-sizing: border-box; font-size: 16px; outline: none; }
-        #search-btn { width: 100%; padding: 15px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; letter-spacing: 2px; }
-
-        /* 持久化弹窗样式 */
-        .work-popup {
-            position: fixed; bottom: 20px; right: 20px; width: 320px; background: #fff; border: 2px solid var(--gold);
-            padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 9999; font-family: "SimSun", serif;
-            animation: slideIn 0.5s ease-out;
+        .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; text-transform: uppercase; }
+        .nav-item { 
+            padding: 12px 25px; font-size: 14px; color: var(--gold); cursor: pointer; 
+            transition: all 0.3s; display: flex; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
         }
-        @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
-        .popup-title { border-bottom: 1px solid #000; margin: 0 0 10px 0; padding-bottom: 5px; font-weight: bold; font-size: 15px; color: #1d2731; }
-        .popup-content { font-size: 13px; color: #333; line-height: 1.6; max-height: 180px; overflow-y: auto; background: #f9f9f9; padding: 10px; border: 1px inset #eee; font-style: italic; }
+        .nav-item:hover { background: rgba(255,255,255,0.1); padding-left: 30px; }
+        .nav-item span { margin-right: 15px; font-size: 10px; }
+        
+        /* 外部显象项特殊样式 */
+        .external { color: #fff; border-left: 3px solid transparent; }
+        .external:hover { border-left-color: #fff; }
+
+        /* 主界面 */
+        .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; position: relative; }
+        .card { background: #fff; padding: 50px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { border-left: 4px solid var(--gold); padding-left: 15px; font-weight: normal; margin-bottom: 30px; color: var(--dark); font-size: 18px; }
+        input { width: 100%; padding: 15px; border: 1px solid #ddd; margin: 20px 0; box-sizing: border-box; outline: none; }
+        #search-btn { width: 100%; padding: 15px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; }
+
+        /* 持久化弹窗 */
+        .work-popup {
+            position: fixed; bottom: 20px; right: 20px; 
+            width: 320px; background: #fff; border: 2px solid var(--gold);
+            padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 9999; font-family: "SimSun", serif;
+        }
+        .popup-title { border-bottom: 1px solid #000; margin: 0 0 10px 0; padding-bottom: 5px; font-weight: bold; font-size: 14px; }
+        .popup-content { font-size: 13px; color: #333; line-height: 1.6; font-style: italic; background: #f9f9f9; padding: 10px; border: 1px inset #eee; }
     </style>
 </head>
 <body>
 
     <div class="side">
-        <div style="padding:40px 20px; text-align:center"><h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1></div>
-        <div class="nav-menu">
-            <div class="nav-item" onclick="window.location.href='system.html'" style="background: rgba(255,255,255,0.1);"><span>-</span> 档案检索模块</div>
-            <div class="nav-item" onclick="window.location.href='entry.html'"><span>-</span> 数据录入终端</div>
-            <div class="nav-item" onclick="window.location.href='list.html'"><span>-</span> 已录入档案库</div>
-            <div class="nav-item" onclick="window.location.href='rules.html'"><span>-</span> 员工守则</div>
+        <div style="padding:40px 20px; text-align:center">
+            <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
+            <p style="font-size:10px; color:#555; margin-top:5px;">OBSERVER TERMINAL v7.0</p>
         </div>
-        <div style="padding:20px; font-size:11px; color:#555">© 2026 QianAn Admin System</div>
+        
+        <div class="nav-menu">
+            <div class="menu-label">内部管理</div>
+            <div class="nav-item" onclick="window.location.href='system.html'"><span>[01]</span> 档案检索模块</div>
+            <div class="nav-item" onclick="window.location.href='entry.html'"><span>[02]</span> 数据录入终端</div>
+            <div class="nav-item" onclick="window.location.href='list.html'"><span>[03]</span> 已录入档案库</div>
+
+            <div class="menu-label">外部连接</div>
+            <div class="nav-item external" onclick="window.location.href='official.html'"><span>●</span> 访问对外官网</div>
+            <div class="nav-item external" onclick="window.location.href='wechat.html'"><span>●</span> 移动通讯快讯</div>
+            <div class="nav-item external" onclick="window.location.href='email.html'"><span>●</span> 内部行政邮箱</div>
+        </div>
+        
+        <div style="padding:20px; font-size:11px; color:#444;">
+            认知波动：<span style="color: #00ff00;">极低</span><br>
+            © 2026 Q-A Admin
+        </div>
     </div>
 
     <div class="main">
         <div class="card">
-            <h2>档案检索中心</h2>
-            <input type="text" id="pass" placeholder="输入索引号或关键词">
-            <button id="search-btn" onclick="find()">验证并检索</button>
+            <h2>档案索引/检索</h2>
+            <input type="text" id="pass" placeholder="输入逝者姓名或索引号">
+            <button id="search-btn" onclick="find()">开始校验</button>
         </div>
     </div>
 
     <script>
-        // 审计白名单（正确姓氏）
-        const OFFICIAL_NAMES = ["张顺", "林婉", "陈阿公"];
-
-        // 任务池：带有家属的主观废话
-        const TASK_POOL = [
-            {
-                name: "张顺",
-                content: "那是我的叔叔张顺，他是个怪人。他身体可好了，都说老年人会骨质疏松，我看他才不会，去年他从二楼台阶摔下来，地板都磕裂了，他拍拍屁股什么事也没有。还有他的眼睛，晚年总像是蒙了一层灰色的雾。"
-            },
-            {
-                name: "林婉",
-                content: "婉儿（林婉）走的时候才二十岁。她生前最爱漂亮了，可是奇怪的是，哪怕是六月天，她的皮肤也像冰块一样。而且，她的关节很僵硬，搬运师傅说，她这身体重得像装满了铅。"
-            },
-            {
-                name: "陈阿公",
-                content: "陈阿公常说自己能听到地底下的声音。到了九十岁，他的听力反而比孙子还好，连隔壁房间的表针走动声都能听到。但他不喜欢光，总是把窗帘拉得死死的。"
-            }
-        ];
-
         function find() {
-            var val = document.getElementById('pass').value.trim().toLowerCase();
+            var val = document.getElementById('pass').value.trim();
             if (val) {
                 const btn = document.getElementById('search-btn');
-                btn.innerText = "正在验证权限..."; btn.disabled = true;
+                btn.innerText = "正在同步显象..."; btn.disabled = true;
                 setTimeout(() => { window.location.href = val + ".html"; }, 1000);
             }
         }
@@ -83,46 +91,16 @@
             popup.className = 'work-popup';
             popup.id = 'persistent-popup';
             popup.innerHTML = `
-                <div class="popup-title">[ 随附家属口述文本 ]</div>
+                <div class="popup-title">[ 待处理原始附单 ]</div>
                 <div class="popup-content">“${content}”</div>
-                <button style="width:100%; background:#1d2731; color:#b8977e; border:none; padding:10px; cursor:pointer; margin-top:15px; font-weight:bold;" onclick="window.location.href='entry.html'">进入录入程序</button>
+                <button style="width:100%; background:#1d2731; color:#b8977e; border:none; padding:12px; cursor:pointer; margin-top:15px; font-weight:bold;" onclick="window.location.href='entry.html'">进入录入终端</button>
             `;
             document.body.appendChild(popup);
-        }
-
-        function createNewTask() {
-            const task = TASK_POOL[Math.floor(Math.random() * TASK_POOL.length)];
-            localStorage.setItem('current_task_content', task.content);
-            renderPersistentPopup(task.content);
-        }
-
-        function monitorWorkCycle() {
-            setInterval(() => {
-                const lastSubmit = localStorage.getItem('last_record_timestamp');
-                const currentTask = localStorage.getItem('current_task_content');
-                if (!currentTask) {
-                    if (lastSubmit) {
-                        if (Date.now() - parseInt(lastSubmit) >= 180000) createNewTask();
-                    } else {
-                        setTimeout(createNewTask, 5000);
-                    }
-                }
-            }, 1000);
-        }
-
-        function startAudit() {
-            setInterval(() => {
-                let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-                const filtered = archives.filter(item => OFFICIAL_NAMES.includes(item.name));
-                localStorage.setItem('cemetery_files', JSON.stringify(filtered));
-            }, 720000);
         }
 
         window.onload = () => {
             const savedTask = localStorage.getItem('current_task_content');
             if (savedTask) renderPersistentPopup(savedTask);
-            monitorWorkCycle();
-            startAudit();
         };
     </script>
 </body>
