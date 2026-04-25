@@ -4,18 +4,30 @@
     <meta charset="UTF-8">
     <title>档案录入终端 - 千安公墓</title>
     <style>
-        :root { --ink: #000; --paper: #fff; --gold: #b8977e; }
-        body { background: #f0f2f5; font-family: "SimSun", serif; padding: 40px; margin: 0; display: flex; justify-content: center; }
-        .form-container { max-width: 700px; width: 100%; background: var(--paper); padding: 50px; border: 1px solid var(--ink); }
+        :root { --ink: #000; --paper: #fff; --gold: #b8977e; --error: #ff3b30; }
+        body { background: #f0f2f5; font-family: "SimSun", serif; padding: 40px; margin: 0; display: flex; justify-content: center; transition: background 0.1s; }
+        
+        /* 闪屏特效 */
+        .flash-red { animation: flash 0.3s ease-in-out; }
+        @keyframes flash {
+            0% { background: #f0f2f5; }
+            50% { background: rgba(255, 59, 48, 0.3); }
+            100% { background: #f0f2f5; }
+        }
+
+        .form-container { max-width: 700px; width: 100%; background: var(--paper); padding: 50px; border: 1px solid var(--ink); box-shadow: 0 0 20px rgba(0,0,0,0.05); }
         h2 { text-align: center; border-bottom: 2px solid var(--ink); padding-bottom: 15px; margin-top: 0; }
         .field { margin-bottom: 25px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; }
         input, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; outline: none; }
-        input:focus, textarea:focus { border-color: var(--ink); }
-        .submit-btn { background: #1d2731; color: var(--gold); border: none; padding: 18px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        input:focus, textarea:focus { border-color: var(--gold); background: #fff; }
+        .submit-btn { background: #1d2731; color: var(--gold); border: none; padding: 18px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; letter-spacing: 4px; }
         
-        /* 跨页面共享的弹窗样式 */
-        .work-popup { position: fixed; bottom: 20px; right: 20px; width: 300px; background: #fff; border: 2px solid var(--gold); padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); font-size: 13px; z-index: 1000; }
+        /* 提示文字 */
+        #hint-text { color: var(--error); text-align: center; height: 20px; margin-top: 10px; font-weight: bold; visibility: hidden; }
+
+        /* 弹窗样式 */
+        .work-popup { position: fixed; bottom: 20px; right: 20px; width: 300px; background: #fff; border: 2px solid var(--gold); padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); font-size: 13px; }
         .popup-title { font-weight: bold; border-bottom: 1px solid #ddd; margin-bottom: 8px; }
     </style>
 </head>
@@ -23,62 +35,95 @@
 
 <div class="form-container">
     <h2>逝者数字化档案录入表</h2>
-    <p style="font-size:12px; color:red; text-align:center;">[ 请根据右下角附单描述提取关键信息 ]</p>
+    <div id="hint-text">要不要再想一想？</div>
     
     <div class="field">
         <label>姓氏 (Surname)</label>
-        <input type="text" id="lastName" placeholder="提取附单中的姓氏">
+        <input type="text" id="lastName" placeholder="提取附单中的核心姓氏">
     </div>
     <div class="field">
         <label>生理资料 (Biological Data)</label>
-        <textarea id="bioData" rows="3" placeholder="提取身高、虹膜、骨骼等特征"></textarea>
+        <textarea id="bioData" rows="3" placeholder="例如：骨密度异常、虹膜异色..."></textarea>
     </div>
     <div class="field">
         <label>生平简述 (Biography)</label>
-        <textarea id="desc" rows="4" placeholder="提取职业、爱好或社会关系"></textarea>
+        <textarea id="desc" rows="4" placeholder="提取职业或生前习性..."></textarea>
     </div>
     <div class="field">
         <label>系统分配索引号</label>
-        <input type="text" id="indexCode" readonly>
+        <input type="text" id="indexCode" readonly style="background:#eee;">
     </div>
     <button class="submit-btn" onclick="saveData()">确认提交并封存档案</button>
-    <a href="system.html" style="display:block; text-align:center; margin-top:20px; color:#666; font-size:12px;">返回主系统</a>
+    <a href="system.html" style="display:block; text-align:center; margin-top:20px; color:#666; font-size:12px; text-decoration:none;">返回管理终端</a>
 </div>
 
 <script>
+    // 1. 标准答案数据库 (生理信息采用关键词匹配逻辑)
+    const ANSWER_KEYS = {
+        "张顺": ["骨密度", "灰色", "虹膜", "高"],
+        "林婉": ["温", "冷", "重", "铅", "关节", "硬"],
+        "陈阿公": ["听", "光", "敏", "缩"]
+    };
+
     window.onload = function() {
         document.getElementById('indexCode').value = 'QA-' + Math.floor(Math.random()*8999 + 1000);
-        // 恢复弹窗
         const savedTask = localStorage.getItem('current_task_content');
         if (savedTask) {
             const popup = document.createElement('div');
             popup.className = 'work-popup';
-            popup.innerHTML = `<div class="popup-title">当前处理附单</div><div>${savedTask}</div>`;
+            popup.innerHTML = `<div class="popup-title">待处理：随附口述</div><div style="font-style:italic; color:#555;">“${savedTask}”</div>`;
             document.body.appendChild(popup);
         }
+    }
+
+    function triggerError() {
+        document.body.classList.remove('flash-red');
+        void document.body.offsetWidth; // 触发重绘
+        document.body.classList.add('flash-red');
+        const hint = document.getElementById('hint-text');
+        hint.style.visibility = 'visible';
+        setTimeout(() => { hint.style.visibility = 'hidden'; }, 2000);
     }
 
     function saveData() {
         const name = document.getElementById('lastName').value.trim();
         const bio = document.getElementById('bioData').value.trim();
         const desc = document.getElementById('desc').value.trim();
-        const id = document.getElementById('indexCode').value;
 
+        // 基础非空校验
         if (!name || !bio || !desc) {
-            alert("档案不完整，拒绝存入。");
+            triggerError();
             return;
         }
 
-        const newFile = { id, name, bio, desc, time: new Date().toLocaleString() };
+        // 核心逻辑：名字与生理信息校验
+        const expectedKeywords = ANSWER_KEYS[name];
+        
+        if (!expectedKeywords) {
+            // 如果输入的姓氏根本不在任务池里
+            triggerError();
+            return;
+        }
+
+        // 检查生理资料里是否包含至少两个关键词
+        const matchCount = expectedKeywords.filter(key => bio.includes(key)).length;
+        
+        if (matchCount < 1) {
+            // 只要没抓到任何一个关键词，就判定为“没想好”
+            triggerError();
+            return;
+        }
+
+        // 校验通过后的逻辑
+        const newFile = { id: document.getElementById('indexCode').value, name, bio, desc, time: new Date().toLocaleString() };
         let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
         archives.push(newFile);
         localStorage.setItem('cemetery_files', JSON.stringify(archives));
 
-        // 核心更新：重置时间戳，并清除当前任务
         localStorage.setItem('last_record_timestamp', Date.now());
         localStorage.removeItem('current_task_content');
 
-        alert("录入成功。下一项任务将在 3 分钟后下达。");
+        alert("录入成功。档案已封存。");
         window.location.href = 'system.html';
     }
 </script>
