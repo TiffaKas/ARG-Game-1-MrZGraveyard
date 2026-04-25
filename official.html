@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>千安园 - 每一份生命都值得被温柔对待</title>
+    <style>
+        :root { --gold-light: #d4af37; --text: #4a4a4a; --bg: #ffffff; }
+        body { margin: 0; font-family: "Microsoft YaHei", "Source Han Serif CN", serif; color: var(--text); background: var(--bg); line-height: 1.8; }
+        
+        /* 导航栏 */
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 10% ; border-bottom: 1px solid #eee; position: sticky; top: 0; background: #fff; z-index: 100; }
+        .logo { font-size: 24px; font-weight: bold; color: var(--gold-light); letter-spacing: 2px; }
+        .nav-links a { margin-left: 30px; text-decoration: none; color: #666; font-size: 14px; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--gold-light); }
+
+        /* 英雄区 */
+        .hero { height: 60vh; background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .hero h1 { font-size: 48px; color: #333; margin-bottom: 10px; font-weight: 300; }
+        .hero p { font-size: 18px; letter-spacing: 5px; color: var(--gold-light); }
+
+        /* 内容板块 */
+        .content-section { padding: 80px 15%; text-align: center; }
+        .content-section h2 { font-size: 30px; margin-bottom: 40px; position: relative; display: inline-block; }
+        .content-section h2::after { content: ''; position: absolute; bottom: -10px; left: 25%; width: 50%; height: 2px; background: var(--gold-light); }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 50px; }
+        .card { padding: 30px; border: 1px solid #f0f0f0; transition: transform 0.3s; background: #fafafa; }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .card h3 { color: var(--gold-light); margin-bottom: 15px; }
+        
+        /* 页脚 */
+        footer { background: #333; color: #ccc; padding: 40px 10%; font-size: 12px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">千安园 | QIANAN PARK</div>
+    <div class="nav-links">
+        <a href="#">关于我们</a>
+        <a href="#">园区景观</a>
+        <a href="#">礼仪服务</a>
+        <a href="#">在线纪念</a>
+    </div>
+</nav>
+
+<div class="hero">
+    <h1>对生命的敬畏，对记忆的永恒</h1>
+    <p>千安园：为每一个灵魂寻找宁静的归宿</p>
+</div>
+
+<div class="content-section">
+    <h2>人文关怀</h2>
+    <p>在千安，我们相信死亡不是生命的终点，而是化作星辰，永远守护在亲人身旁。我们的园区设计融合自然之美与人文之光，旨在为您提供一个追思、缅怀、与心灵对话的静谧空间。</p>
+    
+    <div class="grid">
+        <div class="card">
+            <h3>定制化墓位</h3>
+            <p>根据逝者的生平特点，提供个性化石碑雕刻与周边绿化设计。</p>
+        </div>
+        <div class="card">
+            <h3>全天候管家</h3>
+            <p>专业的维护团队，确保每一处角落都洁净如新，草木常青。</p>
+        </div>
+        <div class="card">
+            <h3>数字云纪念</h3>
+            <p>通过数字化档案，您可以随时随地查看亲人的生平点滴。（系统升级中）</p>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>千安公墓管理有限公司 版权所有 © 2026</p>
+    <p>许可证号：QA-RE-2024001 | 咨询热线：400-000-0000</p>
+    <p style="opacity: 0.3;">* 我们承诺：所有档案录入均经过严格观测与标准化处理 *</p>
+</footer>
+
+</body>
+</html>
