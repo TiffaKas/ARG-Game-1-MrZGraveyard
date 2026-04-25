@@ -1,23 +1,19 @@
 <script>
     window.onload = () => {
-        // 从 localStorage 重新读取最新数据
         const archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
         const container = document.getElementById('list-content');
         const emptyMsg = document.getElementById('empty-msg');
-        const table = document.getElementById('archive-table');
 
         if (archives.length === 0) {
             emptyMsg.style.display = 'block';
-            table.style.display = 'none';
+            document.getElementById('archive-table').style.display = 'none';
         } else {
-            emptyMsg.style.display = 'none';
-            table.style.display = 'table';
-            container.innerHTML = ""; // 清空旧内容防止重复渲染
             archives.forEach((item, index) => {
                 const row = document.createElement('tr');
+                // 修改点：将姓名包裹在 a 标签中，跳转到 detail.html
                 row.innerHTML = `
                     <td>#00${index + 1}</td>
-                    <td>${item.name}</td>
+                    <td><a href="detail.html?name=${encodeURIComponent(item.name)}" style="color: #1d2731; text-decoration: underline; cursor: pointer;">${item.name}</a></td>
                     <td>${item.time}</td>
                     <td style="color: green;">已定义 (Defined)</td>
                 `;
