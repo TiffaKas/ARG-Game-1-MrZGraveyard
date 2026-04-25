@@ -10,34 +10,23 @@
         /* 侧边栏 */
         .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; }
         .nav-menu { margin-top: 20px; flex: 1; }
-        .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; text-transform: uppercase; }
+        .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
         .nav-item { padding: 12px 25px; font-size: 14px; color: var(--gold); cursor: pointer; transition: all 0.3s; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
         .nav-item:hover { background: rgba(255,255,255,0.1); padding-left: 30px; }
         .nav-item span { margin-right: 15px; font-size: 10px; }
-        .external { color: #fff; }
 
-        /* 主界面 */
-        .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; position: relative; }
+        /* 主界面 - 保持极简，无倒计时 */
+        .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
         .card { background: #fff; padding: 50px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         h2 { border-left: 4px solid var(--gold); padding-left: 15px; font-weight: normal; margin-bottom: 30px; color: var(--dark); font-size: 18px; }
         input { width: 100%; padding: 15px; border: 1px solid #ddd; margin: 20px 0; box-sizing: border-box; outline: none; }
         #search-btn { width: 100%; padding: 15px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; }
 
-        /* 优化后的长文案滚动弹窗 */
-        .work-popup {
-            position: fixed; bottom: 20px; right: 20px; 
-            width: 380px; max-height: 450px; background: #fff; 
-            border: 2px solid var(--gold); padding: 0; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 9999;
-            display: flex; flex-direction: column;
-        }
-        .popup-header { background: var(--p-bg); color: var(--gold); padding: 12px 20px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; }
-        .popup-content { 
-            padding: 20px; overflow-y: auto; font-size: 14px; color: #333; 
-            line-height: 1.8; font-family: "SimSun", serif; white-space: pre-wrap;
-            background: #fdfdfd; flex: 1;
-        }
-        .popup-footer { padding: 15px; border-top: 1px solid #eee; background: #fff; }
+        /* 弹窗样式 */
+        .work-popup { position: fixed; bottom: 20px; right: 20px; width: 380px; max-height: 450px; background: #fff; border: 2px solid var(--gold); display: flex; flex-direction: column; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .popup-header { background: var(--p-bg); color: var(--gold); padding: 12px 20px; font-weight: bold; font-size: 13px; }
+        .popup-content { padding: 20px; overflow-y: auto; font-size: 14px; line-height: 1.8; white-space: pre-wrap; background: #fdfdfd; flex: 1; color: #333; }
+        .popup-footer { padding: 15px; border-top: 1px solid #eee; }
         .action-btn { width: 100%; background: var(--p-bg); color: var(--gold); border: none; padding: 12px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
@@ -54,11 +43,11 @@
             <div class="nav-item" onclick="location.href='entry.html'"><span>[02]</span> 数据录入终端</div>
             <div class="nav-item" onclick="location.href='list.html'"><span>[03]</span> 已录入档案库</div>
             <div class="menu-label">外部连接</div>
-            <div class="nav-item external" onclick="location.href='official.html'"><span>●</span> 访问对外官网</div>
-            <div class="nav-item external" onclick="location.href='wechat.html'"><span>●</span> 移动通讯快讯</div>
-            <div class="nav-item external" onclick="location.href='email.html'"><span>●</span> 内部行政邮箱</div>
+            <div class="nav-item" onclick="location.href='official.html'"><span>●</span> 访问对外官网</div>
+            <div class="nav-item" onclick="location.href='wechat.html'"><span>●</span> 移动通讯快讯</div>
+            <div class="nav-item" onclick="location.href='email.html'"><span>●</span> 内部行政邮箱</div>
         </div>
-        <div style="padding:20px; font-size:11px; color:#444;">认知状态：稳定<br>© 2026 Q-A Admin</div>
+        <div style="padding:20px; font-size:11px; color:#444;">系统状态：稳定<br>© 2026 Q-A Admin</div>
     </div>
 
     <div class="main">
@@ -70,7 +59,6 @@
     </div>
 
     <script>
-        // 任务池：包含你提供的三个完整例子
         const TASK_POOL = [
             "陈建（阿建）身体挺不错的，没想到在家里就这么静静地走了。不知道是什么原因？之前摔跤后没有骨折，没有扭伤，我一直都觉得阿建身体很好，没有我们这个年纪常有的骨质疏松。也经常锻炼，每天都是走两万步以上，也很鼓舞人，可惜的就是没有一个好妻子陪伴着他，也无儿无女。还记得阿建当时是镇里唯一一个考上大学的人，可风光了，他是个好人。陈建是个好人，不是说他做过舍身为人的大善事，但是他一直守着本分，不越界；每当碰见有人需要帮助时，灰色的瞳孔总是让人感到安心，大家和他相处都很舒服。致：灰色的阿建。",
             "果果.......是妈妈不好，要是妈妈当时没有失去理智就好了，是妈妈让你伤心了，但是孩子，这个世界太苦，你也太苦，这个石人病太折磨人了..................嗯......这对你来说也许也是一件好事，但是妈妈要带着这份愧疚活下去了，替你的；\n\n宋涵是个很好的同学，她人挺高的，成绩好，是个好班长，做事认真，客观。记得那一次，我差点被冤枉了，是她坚持调查下去我才被还回清白，要是她熟视无睹的话，就没有现在的我。发生这件事我也感到很伤心，她没有叫我的外号“马桶”，而是正常地直呼我的大名，干练的声音和一声声“小同”始终在我的脑海，宋涵，再见，祝你好运。",
@@ -80,28 +68,37 @@
         function find() {
             let v = document.getElementById('pass').value.trim();
             if(v) {
-                document.getElementById('search-btn').innerText = "正在对焦现实...";
-                setTimeout(()=> { window.location.href = v + ".html"; }, 800);
+                // 搜索时不再显示奇怪的提示，只做正常的页面跳转模拟
+                window.location.href = v + ".html";
+            }
+        }
+
+        function checkNewTask() {
+            const lastTime = parseInt(localStorage.getItem('last_record_timestamp') || 0);
+            const now = Date.now();
+            const cooldown = 180000; // 3分钟
+
+            // 只有冷却结束，且当前没任务，且还有未完成任务时，才静默加载
+            if (now - lastTime >= cooldown && !localStorage.getItem('current_task_content')) {
+                let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
+                if (archives.length < TASK_POOL.length) {
+                    localStorage.setItem('current_task_content', TASK_POOL[archives.length]);
+                    location.reload(); // 只有这一步会刷新页面显示弹窗
+                }
             }
         }
 
         window.onload = () => {
-            const lastTime = localStorage.getItem('last_record_timestamp') || 0;
-            const now = Date.now();
-            // 9分钟内（540000ms）分阶段发放任务
-            if (now - lastTime > 5000 && !localStorage.getItem('current_task_content')) {
-                let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-                let nextIndex = archives.length % TASK_POOL.length; 
-                localStorage.setItem('current_task_content', TASK_POOL[nextIndex]);
-                location.reload();
-            }
+            // 每 5 秒静默检查一次
+            setInterval(checkNewTask, 5000);
+            checkNewTask();
 
             const task = localStorage.getItem('current_task_content');
             if(task) {
                 const div = document.createElement('div');
                 div.className = 'work-popup';
                 div.innerHTML = `
-                    <div class="popup-header"><span>待处理原始附单</span><span>● ONLINE</span></div>
+                    <div class="popup-header"><span>待处理原始附单</span></div>
                     <div class="popup-content">${task}</div>
                     <div class="popup-footer"><button class="action-btn" onclick="location.href='entry.html'">前往录入</button></div>
                 `;
