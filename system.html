@@ -6,37 +6,25 @@
     <style>
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
         body { margin: 0; font-family: sans-serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
-
-        /* 侧边栏 */
         .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; }
         .nav-menu { margin-top: 20px; flex: 1; }
-        .nav-item { 
-            padding: 15px 25px; font-size: 14px; color: var(--gold); cursor: pointer; 
-            transition: background 0.3s; display: flex; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
+        .nav-item { padding: 15px 25px; font-size: 14px; color: var(--gold); cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .nav-item:hover { background: rgba(255,255,255,0.1); }
-        .nav-item span { margin-right: 15px; width: 10px; }
-
-        /* 主界面 */
         .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; }
         .card { background: #fff; padding: 50px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         h2 { border-left: 4px solid var(--gold); padding-left: 15px; font-weight: normal; margin-bottom: 30px; color: var(--dark); }
         input { width: 100%; padding: 15px; border: 1px solid #ddd; margin: 20px 0; box-sizing: border-box; font-size: 16px; outline: none; }
         #search-btn { width: 100%; padding: 15px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; letter-spacing: 2px; }
 
-        /* 持久化工作弹窗 */
+        /* 持久化弹窗样式 */
         .work-popup {
-            position: fixed; bottom: 20px; right: 20px; 
-            width: 320px; background: #fff; border: 2px solid var(--gold);
-            padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            z-index: 9999; font-family: "SimSun", serif;
+            position: fixed; bottom: 20px; right: 20px; width: 320px; background: #fff; border: 2px solid var(--gold);
+            padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 9999; font-family: "SimSun", serif;
             animation: slideIn 0.5s ease-out;
         }
         @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
-        .popup-title { border-bottom: 1px solid #000; margin: 0 0 10px 0; padding-bottom: 5px; font-weight: bold; font-size: 15px; }
-        .popup-content { font-size: 13px; color: #333; line-height: 1.6; max-height: 180px; overflow-y: auto; background: #f9f9f9; padding: 10px; border: 1px inset #eee; }
-        .popup-btn { width: 100%; background: var(--p-bg); color: var(--gold); border: none; padding: 12px; cursor: pointer; margin-top: 15px; font-weight: bold; }
+        .popup-title { border-bottom: 1px solid #000; margin: 0 0 10px 0; padding-bottom: 5px; font-weight: bold; font-size: 15px; color: #1d2731; }
+        .popup-content { font-size: 13px; color: #333; line-height: 1.6; max-height: 180px; overflow-y: auto; background: #f9f9f9; padding: 10px; border: 1px inset #eee; font-style: italic; }
     </style>
 </head>
 <body>
@@ -61,7 +49,24 @@
     </div>
 
     <script>
-        const OFFICIAL_NAMES = ["张顺", "王利民", "李陈氏"]; // 审计白名单
+        // 审计白名单（正确姓氏）
+        const OFFICIAL_NAMES = ["张顺", "林婉", "陈阿公"];
+
+        // 任务池：带有家属的主观废话
+        const TASK_POOL = [
+            {
+                name: "张顺",
+                content: "那是我的叔叔张顺，他是个怪人。他身体可好了，都说老年人会骨质疏松，我看他才不会，去年他从二楼台阶摔下来，地板都磕裂了，他拍拍屁股什么事也没有。还有他的眼睛，晚年总像是蒙了一层灰色的雾。"
+            },
+            {
+                name: "林婉",
+                content: "婉儿（林婉）走的时候才二十岁。她生前最爱漂亮了，可是奇怪的是，哪怕是六月天，她的皮肤也像冰块一样。而且，她的关节很僵硬，搬运师傅说，她这身体重得像装满了铅。"
+            },
+            {
+                name: "陈阿公",
+                content: "陈阿公常说自己能听到地底下的声音。到了九十岁，他的听力反而比孙子还好，连隔壁房间的表针走动声都能听到。但他不喜欢光，总是把窗帘拉得死死的。"
+            }
+        ];
 
         function find() {
             var val = document.getElementById('pass').value.trim().toLowerCase();
@@ -72,53 +77,44 @@
             }
         }
 
-        // 核心渲染函数：支持跨页面调用
         function renderPersistentPopup(content) {
             if (document.getElementById('persistent-popup')) return;
             const popup = document.createElement('div');
             popup.className = 'work-popup';
             popup.id = 'persistent-popup';
             popup.innerHTML = `
-                <div class="popup-title">[ 待处理原始附单 ]</div>
-                <div class="popup-content">${content}</div>
-                <button class="popup-btn" onclick="window.location.href='entry.html'">进入录入终端</button>
+                <div class="popup-title">[ 随附家属口述文本 ]</div>
+                <div class="popup-content">“${content}”</div>
+                <button style="width:100%; background:#1d2731; color:#b8977e; border:none; padding:10px; cursor:pointer; margin-top:15px; font-weight:bold;" onclick="window.location.href='entry.html'">进入录入程序</button>
             `;
             document.body.appendChild(popup);
         }
 
         function createNewTask() {
-            // 测试文本，之后可替换为任务池逻辑
-            const rawData = "那是我的叔叔张顺。他身高175cm，骨密度极高。他有一双灰色的虹膜。他生前是一名勤恳的钟表匠。";
-            localStorage.setItem('current_task_content', rawData);
-            renderPersistentPopup(rawData);
+            const task = TASK_POOL[Math.floor(Math.random() * TASK_POOL.length)];
+            localStorage.setItem('current_task_content', task.content);
+            renderPersistentPopup(task.content);
         }
 
-        // 监控逻辑
-        const COOLDOWN = 180000; // 3分钟
         function monitorWorkCycle() {
             setInterval(() => {
                 const lastSubmit = localStorage.getItem('last_record_timestamp');
                 const currentTask = localStorage.getItem('current_task_content');
-                
-                // 只有当没有进行中的任务时，才判定时间是否达到 3 分钟
                 if (!currentTask) {
                     if (lastSubmit) {
-                        if (Date.now() - parseInt(lastSubmit) >= COOLDOWN) createNewTask();
+                        if (Date.now() - parseInt(lastSubmit) >= 180000) createNewTask();
                     } else {
-                        setTimeout(createNewTask, 5000); // 首次启动
+                        setTimeout(createNewTask, 5000);
                     }
                 }
             }, 1000);
         }
 
-        // 审计清理 (12分钟)
         function startAudit() {
             setInterval(() => {
                 let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
                 const filtered = archives.filter(item => OFFICIAL_NAMES.includes(item.name));
-                if (archives.length !== filtered.length) {
-                    localStorage.setItem('cemetery_files', JSON.stringify(filtered));
-                }
+                localStorage.setItem('cemetery_files', JSON.stringify(filtered));
             }, 720000);
         }
 
