@@ -2,51 +2,22 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>访问协议 - 千安公墓管理系统</title>
     <style>
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
-        body { margin: 0; font-family: sans-serif; background-color: #fff; overflow: hidden; }
-
-        #welcome {
-            height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center;
-            transition: opacity 0.8s;
-        }
-        .box { max-width: 600px; padding: 40px; line-height: 1.6; color: var(--dark); }
-        details { margin: 20px 0; background: #fff9e6; border: 1px dashed var(--gold); padding: 10px; font-size: 13px; }
-        summary { cursor: pointer; color: var(--gold); font-weight: bold; }
-        .disclaim { font-size: 12px; color: #888; border-top: 1px solid #eee; margin-top: 20px; padding-top: 10px; }
-        .btn { margin-top: 30px; padding: 15px 50px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; width: 100%; letter-spacing: 2px; }
+        body { margin: 0; font-family: sans-serif; background-color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .box { max-width: 600px; padding: 40px; line-height: 1.6; color: var(--dark); border: 1px solid #eee; }
+        h2 { text-align: center; color: var(--p-bg); border-bottom: 2px solid var(--gold); padding-bottom: 10px; }
+        .btn { margin-top: 30px; padding: 15px 50px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; width: 100%; letter-spacing: 2px; transition: 0.3s; }
+        .btn:hover { opacity: 0.9; }
     </style>
 </head>
 <body>
-
-    <div id="welcome">
-        <div class="box">
-            <h2 style="text-align:center; color:var(--p-bg)">作者寄语</h2>
-            <p>欢迎。你是一个墓地管理员，来到千安公墓工作。你的任务是在正常工作中，通过系统检索发现异常，并调查怪异的源头。</p>
-            <p>建议在手边准备一个<strong>记事本</strong>，记录下观察到的所有变化。在这个系统里，细节决定真相。</p>
-            
-            <details>
-                <summary>提示：（建议一周目没懂的二周目看）</summary>
-                <p>提示：档案显示的触发条件与访问者的 <strong>San值（理智值）</strong> 相关。</p>
-            </details>
-
-            <div class="disclaim">
-                <strong>免责声明：</strong> 本网站为虚构艺术作品，与现实机构无关。所有编号及记录纯属虚构。
-            </div>
-            <button class="btn" onclick="go()">开启终端</button>
-        </div>
+    <div class="box">
+        <h2>作者寄语</h2>
+        <p>欢迎来到千安公墓。你将作为一名档案管理人员，负责处理日常的数字化录入工作。</p>
+        <p><strong>注意：</strong>在这个系统里，细节决定真相。建议在手边准备一个记事本记录异常。</p>
+        <button class="btn" onclick="window.open('system.html', '_blank')">我已阅读并知晓</button>
     </div>
-
-    <script>
-        function go() {
-            document.getElementById('welcome').style.opacity = '0';
-            setTimeout(() => {
-                // 跳转至主系统
-                window.location.href = "system.html";
-            }, 800);
-        }
-    </script>
 </body>
 </html>
