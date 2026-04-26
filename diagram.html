@@ -1,39 +1,72 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <meta charset="UTF-8">
+    <title>千安墓园 - 实时平面图监控 v7.1</title>
     <style>
-        /* 地图容器：保持比例并居中 */
+        :root {
+            --b8977e: #b8977e; /* 金棕色 */
+            --1d2731: #1d2731; /* 深蓝背景 */
+        }
+
+        body {
+            background-color: var(--1d2731);
+            color: var(--b8977e);
+            font-family: "SimSun", serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-weight: normal;
+            letter-spacing: 2px;
+            font-size: 20px;
+            border-bottom: 1px solid var(--b8977e);
+            padding-bottom: 10px;
+        }
+
+        /* 地图容器 */
         .map-container {
             position: relative;
-            width: 90vw; /* 根据系统 UI 调整宽度 */
-            max-width: 1200px;
+            width: 90vw;
+            max-width: 1100px;
             margin: 20px auto;
-            border: 2px solid #b8977e;
+            border: 2px solid var(--b8977e);
+            box-shadow: 0 0 30px rgba(184, 151, 126, 0.2);
             overflow: hidden;
+            background: #000;
         }
 
         /* 墓园底图 */
         #cemetery-map {
             width: 100%;
             display: block;
-            filter: brightness(0.8); /* 配合系统深色调 */
+            filter: brightness(0.7) contrast(1.1); /* 配合系统深色调 */
+            user-select: none;
         }
 
-        /* 实时红点 */
+        /* 实时红点 通用样式 */
         .dot {
             position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #ff0000;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
             z-index: 10;
             pointer-events: none;
-            /* 平滑移动的核心：0.8秒内完成位置过渡 */
-            transition: left 0.8s ease-in-out, top 0.8s ease-in-out;
+            /* 平滑移动的核心：1.2秒内完成位置过渡，模拟缓慢行走 */
+            transition: left 1.2s linear, top 1.2s linear;
         }
 
-        /* 红点呼吸灯效果（增加诡异感） */
+        /* 不同观察者的红点颜色微调，增加层次感 */
+        #observer-1 { background-color: #ff0000; box-shadow: 0 0 10px #ff0000; }
+        #observer-2 { background-color: #ff3333; box-shadow: 0 0 10px #ff3333; }
+        #observer-3 { background-color: #ff5555; box-shadow: 0 0 10px #ff5555; filter: hue-rotate(15deg); }
+        #observer-4 { background-color: #ff1111; box-shadow: 0 0 10px #ff1111; filter: saturate(2); }
+
+        /* 红点呼吸灯效果 */
         .dot::after {
             content: '';
             position: absolute;
@@ -41,57 +74,154 @@
             height: 100%;
             background: inherit;
             border-radius: inherit;
-            animation: pulse 1.5s infinite;
+            animation: pulse 1.8s infinite;
         }
 
         @keyframes pulse {
             0% { transform: scale(1); opacity: 0.8; }
             100% { transform: scale(3); opacity: 0; }
         }
+
+        /* 监控状态栏 */
+        .status-bar {
+            width: 90vw;
+            max-width: 1100px;
+            font-size: 12px;
+            color: #666;
+            text-align: left;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
-<div class="map-container">
-    <img src="your-image-path.jpg" id="cemetery-map">
-    <div id="observer-dot" class="dot" style="left: 50%; top: 50%;"></div>
-</div>
+    <h1>千安墓园动态平面对焦系统 v7.1</h1>
+    
+    <div class="map-container">
+        <img src="your-modified-image-with-numbers.jpg" id="cemetery-map" alt="千安公墓实时平面图">
+        
+        <div id="observer-1" class="dot"></div>
+        <div id="observer-2" class="dot"></div>
+        <div id="observer-3" class="dot"></div>
+        <div id="observer-4" class="dot"></div>
+    </div>
+
+    <div class="status-bar">
+        [终端状态] 认知稳定性: 98% | 实时对焦数: 4 | 当前观测模式: 随机网络巡逻
+    </div>
 
 <script>
-    const dot = document.getElementById('observer-dot');
+    // ==========================================
+    // 1. 定义灰色道路网络 (Road Network)
+    // 每一个节点都是灰色道路上的一个十字路口、转折点或端点。
+    // ==========================================
+    const roadNetwork = {
+        // 慈云殿/主轴线区域
+        'gate_main': { x: 49.6, y: 88.5, adjacent: ['hub_south'] },
+        'hub_south': { x: 49.6, y: 72.8, adjacent: ['gate_main', 'hub_mid_south', 'lake_west', 'lake_east'] },
+        'hub_mid_south': { x: 49.6, y: 56.7, adjacent: ['hub_south', 'hub_main', 'road_2_3', 'road_4_5'] },
+        'hub_main': { x: 49.6, y: 44.5, adjacent: ['hub_mid_south', 'temple_entrance', 'road_1_2_mid', 'road_5_6_mid'] },
+        'temple_entrance': { x: 49.6, y: 31.0, adjacent: ['hub_main'] },
 
-    /**
-     * 移动红点到指定坐标（百分比）
-     * @param {number} x - 横向坐标 0-100
-     * @param {number} y - 纵向坐标 0-100
-     */
-    function updatePosition(x, y) {
-        dot.style.left = x + '%';
-        dot.style.top = y + '%';
-    }
-
-    // 模拟实时巡逻路径逻辑
-    function startPatrol() {
-        // 定义几个关键点的百分比坐标（根据你的图片编号手动微调）
-        const path = [
-            {x: 48, y: 52}, // 慈云殿中心 (1)
-            {x: 65, y: 28}, // 4号区路口
-            {x: 75, y: 35}, // 6号区边缘
-            {x: 55, y: 80}, // 人工湖畔 (8)
-            {x: 25, y: 40}  // 2号区内部
-        ];
+        // 横向主支路 (中间段)
+        'road_2_3': { x: 38.0, y: 56.7, adjacent: ['hub_mid_south', 'road_1_2_south', 'zone_3_corner'] },
+        'road_4_5': { x: 61.5, y: 56.7, adjacent: ['hub_mid_south', 'road_5_6_south', 'zone_4_corner'] },
         
-        let index = 0;
-        setInterval(() => {
-            const pos = path[index];
-            updatePosition(pos.x, pos.y);
-            index = (index + 1) % path.length;
-            console.log(`[监控] 目标当前位置: 区块 ${index}`);
-        }, 3000); // 每3秒移动一次
+        // 横向支路 (上段)
+        'road_1_2_mid': { x: 34.0, y: 44.5, adjacent: ['hub_main', 'road_1_corner_up'] },
+        'road_5_6_mid': { x: 66.0, y: 44.5, adjacent: ['hub_main', 'road_6_corner_up'] },
+
+        // 外部环路西侧
+        'road_1_corner_up': { x: 17.5, y: 44.5, adjacent: ['road_1_2_mid', 'road_1_west_gate'] },
+        'road_1_west_gate': { x: 10.0, y: 54.0, adjacent: ['road_1_corner_up', 'road_1_2_south'] },
+        'road_1_2_south': { x: 17.5, y: 56.7, adjacent: ['road_1_west_gate', 'road_2_3', 'zone_1_lower'] },
+
+        // 外部环路东侧
+        'road_6_corner_up': { x: 82.5, y: 44.5, adjacent: ['road_5_6_mid', 'road_6_east_gate'] },
+        'road_6_east_gate': { x: 90.0, y: 54.0, adjacent: ['road_6_corner_up', 'road_5_6_south'] },
+        'road_5_6_south': { x: 82.5, y: 56.7, adjacent: ['road_6_east_gate', 'road_4_5', 'zone_6_lower'] },
+
+        // 区域内部灰色节点 (模拟特定路径)
+        'zone_1_lower': { x: 25.0, y: 64.0, adjacent: ['road_1_2_south'] },
+        'zone_3_corner': { x: 42.0, y: 35.0, adjacent: ['road_2_3'] },
+        'zone_4_corner': { x: 57.0, y: 35.0, adjacent: ['road_4_5'] },
+        'zone_6_lower': { x: 74.0, y: 64.0, adjacent: ['road_5_6_south'] },
+
+        // 南侧湖泊/蛇区道路
+        'lake_west': { x: 36.5, y: 72.8, adjacent: ['hub_south', 'snake_1'] },
+        'lake_east': { x: 68.0, y: 72.8, adjacent: ['hub_south', 'snake_2'] },
+        'snake_1': { x: 28.0, y: 78.0, adjacent: ['lake_west'] },
+        'snake_2': { x: 78.0, y: 78.0, adjacent: ['lake_east'] }
+    };
+
+    const nodeIds = Object.keys(roadNetwork);
+
+    // ==========================================
+    // 2. 红点观测者类
+    // ==========================================
+    class Observer {
+        constructor(id, initialNodeId) {
+            this.el = document.getElementById(id);
+            this.currentNodeId = initialNodeId;
+            // 初始放置到节点位置
+            this.updateCssPosition(roadNetwork[initialNodeId]);
+        }
+
+        updateCssPosition(pos) {
+            this.el.style.left = pos.x + '%';
+            this.el.style.top = pos.y + '%';
+        }
+
+        /**
+         * 选择一个随机的相邻节点并移动过去
+         */
+        moveToNextRandomNode() {
+            const currentNode = roadNetwork[this.currentNodeId];
+            const adjacentNodes = currentNode.adjacent;
+
+            if (adjacentNodes && adjacentNodes.length > 0) {
+                // 随机选择一个
+                const randomIndex = Math.floor(Math.random() * adjacentNodes.length);
+                const nextNodeId = adjacentNodes[randomIndex];
+                const nextNode = roadNetwork[nextNodeId];
+
+                // 执行过渡移动
+                this.updateCssPosition(nextNode);
+                
+                // 核心：在 transition 完成前，不要触发 console
+                this.currentNodeId = nextNodeId;
+            }
+        }
     }
 
-    // 启动模拟
-    window.onload = startPatrol;
+    // ==========================================
+    // 3. 初始化 4 个观测者并启动模拟
+    // ==========================================
+    window.onload = () => {
+        // 在不同主要路口初始化 4 个红点
+        const observers = [
+            new Observer('observer-1', 'gate_main'),      // 主大门
+            new Observer('observer-2', 'temple_entrance'), // 慈云殿
+            new Observer('observer-3', 'road_1_corner_up'),// 西侧环路
+            new Observer('observer-4', 'road_6_east_gate') // 东侧大门
+        ];
+
+        // 启动定时寻路逻辑
+        // 使用 2.5s 到 4s 之间的随机间隔，避免它们移动太同步。
+        observers.forEach((obs, index) => {
+            const interval = 2500 + Math.random() * 1500; 
+            setInterval(() => {
+                obs.moveToNextRandomNode();
+            }, interval);
+        });
+
+        // 可选：添加认知不稳定时的诡异效果（比如红点抖动）
+        // if(localStorage.getItem('san_value') < 40) {
+        //     document.querySelectorAll('.dot').forEach(d => d.style.animationDuration = '0.5s');
+        // }
+    };
+
 </script>
 
 </body>
