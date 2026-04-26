@@ -7,7 +7,7 @@
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
         .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; }
-        .nav-menu { margin-top: 20px; flex: 1; }
+        .nav-menu { margin-top: 20px; flex: 1; overflow-y: auto; } /* 增加滚动支持 */
         .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
         .nav-item { padding: 12px 25px; font-size: 14px; color: var(--gold); cursor: pointer; transition: all 0.3s; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
         .nav-item:hover { background: rgba(255,255,255,0.1); padding-left: 30px; }
@@ -17,6 +17,8 @@
         h2 { border-left: 4px solid var(--gold); padding-left: 15px; font-weight: normal; margin-bottom: 30px; color: var(--dark); font-size: 18px; }
         input { width: 100%; padding: 15px; border: 1px solid #ddd; margin: 20px 0; box-sizing: border-box; outline: none; }
         #search-btn { width: 100%; padding: 15px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; }
+        
+        /* 弹窗样式 */
         .work-popup { position: fixed; bottom: 20px; right: 20px; width: 380px; max-height: 450px; background: #fff; border: 2px solid var(--gold); display: flex; flex-direction: column; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
         .popup-header { background: var(--p-bg); color: var(--gold); padding: 12px 20px; font-weight: bold; font-size: 13px; }
         .popup-content { padding: 20px; overflow-y: auto; font-size: 14px; line-height: 1.8; white-space: pre-wrap; background: #fdfdfd; flex: 1; color: #333; }
@@ -35,10 +37,13 @@
             <div class="nav-item" onclick="location.href='system.html'"><span> [01] </span> 档案检索模块</div>
             <div class="nav-item" onclick="location.href='entry.html'"><span> [02] </span> 数据录入终端</div>
             <div class="nav-item" onclick="location.href='list.html'"><span> [03] </span> 已录入档案库</div>
+            <div class="nav-item" onclick="location.href='diagram.html'"><span> [04] </span> 实时墓位平面图</div>
+            <div class="nav-item" onclick="location.href='complain.html'"><span> [05] </span> 异常投诉报告</div>
+            <div class="nav-item" onclick="location.href='email.html'"><span> [06] </span> 内部行政邮箱</div>
+
             <div class="menu-label">外部连接</div>
             <div class="nav-item" onclick="location.href='official.html'"><span> - </span> 访问对外官网</div>
-            <div class="nav-item" onclick="location.href='wechat.html'"><span> - </span> 移动通讯快讯</div>
-            <div class="nav-item" onclick="location.href='email.html'"><span> - </span> 内部行政邮箱</div>
+            <div class="nav-item" onclick="window.open('https://www.google.com')"><span> - </span> 全网搜索引擎</div>
         </div>
         <div style="padding:20px; font-size:11px; color:#444;">系统状态：稳定<br>© 2026 Q-A Admin</div>
     </div>
@@ -67,12 +72,10 @@
             const archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
             const lastTime = parseInt(localStorage.getItem('last_record_timestamp') || 0);
             const now = Date.now();
-            const cooldown = 180000; // 3分钟
+            const cooldown = 180000; 
 
-            // 核心修复：增加对任务是否全部完成的判断
             if (archives.length >= TASK_POOL.length) return;
 
-            // 只有在没有当前任务，且冷却时间已过的情况下，才发放下一个任务
             if (!localStorage.getItem('current_task_content') && (now - lastTime >= cooldown)) {
                 localStorage.setItem('current_task_content', TASK_POOL[archives.length]);
                 location.reload(); 
@@ -81,9 +84,7 @@
 
         window.onload = () => {
             setInterval(checkNewTask, 5000);
-            
             const task = localStorage.getItem('current_task_content');
-            // 只有当 localStorage 里确实存在任务内容时才渲染弹窗
             if(task) {
                 const div = document.createElement('div');
                 div.className = 'work-popup';
