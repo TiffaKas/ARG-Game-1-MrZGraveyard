@@ -7,7 +7,7 @@
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
         .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; }
-        .nav-menu { margin-top: 20px; flex: 1; overflow-y: auto; } /* 增加滚动支持 */
+        .nav-menu { margin-top: 20px; flex: 1; overflow-y: auto; }
         .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
         .nav-item { padding: 12px 25px; font-size: 14px; color: var(--gold); cursor: pointer; transition: all 0.3s; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
         .nav-item:hover { background: rgba(255,255,255,0.1); padding-left: 30px; }
@@ -18,7 +18,6 @@
         input { width: 100%; padding: 15px; border: 1px solid #ddd; margin: 20px 0; box-sizing: border-box; outline: none; }
         #search-btn { width: 100%; padding: 15px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; }
         
-        /* 弹窗样式 */
         .work-popup { position: fixed; bottom: 20px; right: 20px; width: 380px; max-height: 450px; background: #fff; border: 2px solid var(--gold); display: flex; flex-direction: column; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
         .popup-header { background: var(--p-bg); color: var(--gold); padding: 12px 20px; font-weight: bold; font-size: 13px; }
         .popup-content { padding: 20px; overflow-y: auto; font-size: 14px; line-height: 1.8; white-space: pre-wrap; background: #fdfdfd; flex: 1; color: #333; }
@@ -34,6 +33,7 @@
         </div>
         <div class="nav-menu">
             <div class="menu-label">内部管理</div>
+            <div class="nav-item" onclick="location.href='rules.html'"><span> [00] </span> 员工工作守则</div>
             <div class="nav-item" onclick="location.href='system.html'"><span> [01] </span> 档案检索模块</div>
             <div class="nav-item" onclick="location.href='entry.html'"><span> [02] </span> 数据录入终端</div>
             <div class="nav-item" onclick="location.href='list.html'"><span> [03] </span> 已录入档案库</div>
@@ -62,7 +62,6 @@
             "果果.......是妈妈不好，要是妈妈当时没有失去理智就好了，是妈妈让你伤心了，但是孩子，这个世界太苦，你也太苦，这个石人病太折磨人了..................嗯......这对你来说也许也是一件好事，但是妈妈要带着这份愧疚活下去了，替你的；宋涵是个很好的同学，她人挺高的，成绩好，是个好班长，做事认真，客观。记得那一次，我差点被冤枉了，是她坚持调查下去我才被还回清白，要是她熟视无睹的话，就没有现在的我。发生这件事我也感到很伤心，她没有叫我的外号“马桶”，而是正常地直呼我的大名，干练的声音和一声声“小同”始终在我的脑海，宋涵，再见，祝你好运。",
             "谁也没想到，老周，周诚，会在盛夏的午后，蜷缩在那个没有冷气的维修间里冻死。这听起来像个笑话，但他走的时候，身上确实覆盖着一层薄薄的白色霜华。我一直觉得老周是个怪人，虽然他身体看起来很硬朗，从不感冒，但他那双手摸起来总是像井水一样冰凉，夏天和他握手甚至能感到一阵寒意。老周是个实实在在的好人。记得那年学校电路短路引发小火灾，是他冒着烟冲进去抢救档案。大家后来问他怕不怕烫，他只是搓了搓那双发蓝的指甲盖，憨厚地笑笑说：“我这人天生怕热不怕火。”他这辈子没结过婚，守着那堆零件过日子，从不占人便宜。医生私下里嘀咕，说老周的代谢速度慢得惊人，这或许解释了他为什么总是那么冷静、那么凉。"
         ];
-
         function find() {
             let v = document.getElementById('pass').value.trim();
             if(v) window.location.href = v + ".html";
@@ -73,9 +72,7 @@
             const lastTime = parseInt(localStorage.getItem('last_record_timestamp') || 0);
             const now = Date.now();
             const cooldown = 180000; 
-
             if (archives.length >= TASK_POOL.length) return;
-
             if (!localStorage.getItem('current_task_content') && (now - lastTime >= cooldown)) {
                 localStorage.setItem('current_task_content', TASK_POOL[archives.length]);
                 location.reload(); 
