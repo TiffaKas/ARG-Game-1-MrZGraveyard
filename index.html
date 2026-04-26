@@ -6,7 +6,7 @@
     <title>访问协议 - 千安公墓管理系统</title>
     <style>
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
-        body { margin: 0; font-family: sans-serif; background-color: #fff; overflow: hidden; }
+        body { margin: 0; font-family: "Microsoft YaHei", sans-serif; background-color: #fff; overflow: hidden; }
 
         #welcome {
             height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center;
@@ -41,10 +41,11 @@
 
     <script>
         function go() {
+            // 触发淡出效果
             document.getElementById('welcome').style.opacity = '0';
             setTimeout(() => {
-                // 跳转至主系统
-                window.location.href = "system.html";
+                // 核心逻辑修改：跳转至浏览器主页 summary.html
+                window.location.href = "summary.html";
             }, 800);
         }
     </script>
