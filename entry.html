@@ -4,99 +4,147 @@
     <meta charset="UTF-8">
     <title>档案录入终端 - 千安公墓管理平台</title>
     <style>
-        :root { --ink: #000; --paper: #fff; --gold: #b8977e; --bg: #f0f2f5; }
-        body { background: var(--bg); font-family: "SimSun", serif; padding: 40px; margin: 0; display: flex; justify-content: center; transition: background 0.2s; }
+        :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; --paper: #fff; }
+        body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
+
+        /* 侧栏样式 - 与 system.html 保持 100% 一致 */
+        .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-menu { margin-top: 20px; flex: 1; overflow-y: auto; }
+        .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
+        .nav-item { padding: 12px 25px; font-size: 14px; color: var(--gold); cursor: pointer; transition: all 0.3s; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .nav-item:hover { background: rgba(255,255,255,0.1); padding-left: 30px; }
+        .nav-item span { margin-right: 15px; font-size: 10px; }
+
+        /* 主区域样式 */
+        .main { flex: 1; overflow-y: auto; padding: 40px; display: flex; gap: 30px; justify-content: center; align-items: flex-start; }
+        
+        /* 错误闪烁动画 */
         .flash-fail { animation: flash 0.3s ease-in-out; }
-        @keyframes flash { 0% {background:var(--bg);} 50% {background:#d0d0d0;} 100% {background:var(--bg);} }
-        .form-container { max-width: 650px; width: 100%; background: var(--paper); padding: 40px; border: 1px solid var(--ink); position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h2 { text-align: center; border-bottom: 2px solid var(--ink); padding-bottom: 15px; margin-top: 0; letter-spacing: 2px; font-weight: normal; }
+        @keyframes flash { 0% {background:#f0f2f5;} 50% {background:#d0d0d0;} 100% {background:#f0f2f5;} }
+
+        /* 录入容器 */
+        .form-container { width: 100%; max-width: 600px; background: var(--paper); padding: 40px; border: 1px solid #ddd; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; }
+        
+        /* 参考框优化 */
+        .ref-box { width: 300px; background: #fff; border: 1px solid var(--gold); padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); flex-shrink: 0; }
+        .ref-title { font-weight: bold; border-bottom: 1px solid var(--gold); margin-bottom: 15px; padding-bottom: 8px; color: var(--p-bg); font-size: 14px; }
+        #ref-content { font-size: 13px; color: #555; line-height: 1.8; white-space: pre-wrap; height: 500px; overflow-y: auto; }
+
+        h2 { border-left: 4px solid var(--gold); padding-left: 15px; font-weight: normal; margin-bottom: 30px; color: var(--dark); font-size: 18px; margin-top: 0; }
+        
         .field { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; color: #333; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; outline: none; background: #fafafa; font-size: 14px; }
-        input:focus, textarea:focus { border-color: var(--ink); background: #fff; }
-        .submit-btn { background: #1d2731; color: var(--gold); border: none; padding: 18px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; transition: opacity 0.2s; }
-        .submit-btn:hover { opacity: 0.9; }
-        #hint-text { text-align: center; height: 20px; margin-top: 10px; font-size: 13px; color: #cc0000; font-weight: bold; visibility: hidden; }
-        .ref-box { position: fixed; left: 20px; top: 100px; width: 280px; background: #fff; border: 1px solid #ddd; padding: 20px; font-size: 13px; color: #555; max-height: 70vh; overflow-y: auto; line-height: 1.6; }
-        .ref-title { font-weight: bold; border-bottom: 1px solid #eee; margin-bottom: 10px; padding-bottom: 5px; color: #000; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 13px; color: #444; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; box-sizing: border-box; font-family: inherit; outline: none; background: #fafafa; font-size: 14px; }
+        input:focus, textarea:focus { border-color: var(--gold); background: #fff; }
+        
+        .submit-btn { background: var(--p-bg); color: var(--gold); border: none; padding: 15px; cursor: pointer; width: 100%; font-size: 15px; font-weight: bold; margin-top: 10px; }
+        .submit-btn:hover { background: #2c3b4a; }
+        
+        #hint-text { text-align: center; height: 20px; margin-bottom: 10px; font-size: 13px; color: #cc0000; font-weight: bold; visibility: hidden; }
     </style>
 </head>
 <body>
 
-<div class="ref-box">
-    <div class="ref-title">原始附单参考</div>
-    <div id="ref-content" style="white-space: pre-wrap;">等待附单导入...</div>
-</div>
+    <div class="side">
+        <div style="padding:40px 20px; text-align:center">
+            <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
+            <p style="font-size:10px; color:#555; margin-top:5px;">ADMIN TERMINAL v7.0</p>
+        </div>
+        <div class="nav-menu">
+            <div class="menu-label">内部管理</div>
+            <div class="nav-item" onclick="location.href='rules.html'"><span> [00] </span> 员工工作守则</div>
+            <div class="nav-item" onclick="location.href='system.html'"><span> [01] </span> 档案检索模块</div>
+            <div class="nav-item" onclick="location.href='entry.html'"><span> [02] </span> 数据录入终端</div>
+            <div class="nav-item" onclick="location.href='list.html'"><span> [03] </span> 已录入档案库</div>
+            <div class="nav-item" onclick="location.href='diagram.html'"><span> [04] </span> 实时墓位平面图</div>
+            <div class="nav-item" onclick="location.href='complain.html'"><span> [05] </span> 异常投诉报告</div>
+            <div class="nav-item" onclick="location.href='email.html'"><span> [06] </span> 内部行政邮箱</div>
 
-<div class="form-container">
-    <h2>逝者数字化档案录入表</h2>
-    <div id="hint-text">好像不太对</div>
-    
-    <div class="field">
-        <label>姓名 (Full Name)</label>
-        <input type="text" id="lastName" placeholder="请输入附单中的法定姓名">
+            <div class="menu-label">外部连接</div>
+            <div class="nav-item" onclick="location.href='official.html'"><span> - </span> 访问对外官网</div>
+            <div class="nav-item" onclick="window.open('https://www.google.com')"><span> - </span> 全网搜索引擎</div>
+        </div>
+        <div style="padding:20px; font-size:11px; color:#444;">系统状态：稳定<br>© 2026 Q-A Admin</div>
     </div>
-    <div class="field">
-        <label>生理特征提取 (Biological Traits)</label>
-        <textarea id="bioData" rows="5" placeholder="请根据原始附单提取核心生理观测数据..."></textarea>
+
+    <div class="main">
+        <div class="ref-box">
+            <div class="ref-title">原始附单参考 (Read Only)</div>
+            <div id="ref-content">等待系统指派任务...</div>
+        </div>
+
+        <div class="form-container">
+            <h2>数字化档案录入表</h2>
+            <div id="hint-text">好像不太对</div>
+            
+            <div class="field">
+                <label>姓名 (Full Name)</label>
+                <input type="text" id="lastName" placeholder="请输入附单中的法定姓名">
+            </div>
+            <div class="field">
+                <label>生理特征提取 (Biological Traits)</label>
+                <textarea id="bioData" rows="6" placeholder="请从参考附单中提取核心生理关键词 (如: 瞳孔颜色、骨密度等)..."></textarea>
+            </div>
+            <div class="field">
+                <label>生平总结 (Biography)</label>
+                <textarea id="desc" rows="4" placeholder="行政存档使用，简述其社会背景..."></textarea>
+            </div>
+            
+            <button class="submit-btn" onclick="saveData()">提交并存档</button>
+        </div>
     </div>
-    <div class="field">
-        <label>生平总结 (Biography)</label>
-        <textarea id="desc" rows="4" placeholder="行政存档使用"></textarea>
-    </div>
-    
-    <button class="submit-btn" onclick="saveData()">提交并存档</button>
-</div>
 
-<script>
-    const MASTER_KEYS = {
-        "陈建": ["骨", "密度", "高", "灰", "瞳孔"],
-        "宋涵": ["高", "骨化", "纤维", "增殖", "硬"],
-        "周诚": ["凉", "体温", "低", "指甲", "蓝"]
-    };
+    <script>
+        const MASTER_KEYS = {
+            "陈建": ["骨", "密度", "高", "灰", "瞳孔"],
+            "宋涵": ["高", "骨化", "纤维", "增殖", "硬"],
+            "周诚": ["凉", "体温", "低", "指甲", "蓝"]
+        };
 
-    window.onload = () => {
-        const task = localStorage.getItem('current_task_content');
-        document.getElementById('ref-content').innerText = task || "暂无待处理任务。";
-    }
+        window.onload = () => {
+            const task = localStorage.getItem('current_task_content');
+            document.getElementById('ref-content').innerText = task || "当前暂无待处理任务，请返回检索模块等待新任务分配。";
+        }
 
-    function feedback(msg) {
-        document.body.classList.remove('flash-fail');
-        void document.body.offsetWidth;
-        document.body.classList.add('flash-fail');
-        const h = document.getElementById('hint-text');
-        h.innerText = msg; h.style.visibility = 'visible';
-        setTimeout(() => h.style.visibility = 'hidden', 2000);
-    }
+        function feedback(msg) {
+            document.body.classList.remove('flash-fail');
+            void document.body.offsetWidth;
+            document.body.classList.add('flash-fail');
+            const h = document.getElementById('hint-text');
+            h.innerText = msg; h.style.visibility = 'visible';
+            setTimeout(() => h.style.visibility = 'hidden', 2000);
+        }
 
-    function saveData() {
-        const nameInput = document.getElementById('lastName').value.trim();
-        const bio = document.getElementById('bioData').value.trim();
-        const desc = document.getElementById('desc').value.trim();
-        const task = localStorage.getItem('current_task_content');
+        function saveData() {
+            const nameInput = document.getElementById('lastName').value.trim();
+            const bio = document.getElementById('bioData').value.trim();
+            const desc = document.getElementById('desc').value.trim();
+            const task = localStorage.getItem('current_task_content');
 
-        if (!task) { feedback("别那么无聊"); return; }
-        if (!nameInput || !bio) { feedback("好像不太对"); return; }
+            if (!task) { feedback("当前无有效任务指派"); return; }
+            if (!nameInput || !bio) { feedback("基本项未填写完整"); return; }
 
-        const pureName = nameInput.split('（')[0].split('(')[0].trim();
-        const keys = MASTER_KEYS[pureName];
-        if(!keys) { feedback("好像不太对"); return; }
+            const pureName = nameInput.split('（')[0].split('(')[0].trim();
+            const keys = MASTER_KEYS[pureName];
+            if(!keys) { feedback("数据库中未查见此身份"); return; }
 
-        const matchCount = keys.filter(k => bio.includes(k)).length;
-        if(matchCount < 2) { feedback("好像不太对"); return; }
+            const matchCount = keys.filter(k => bio.includes(k)).length;
+            if(matchCount < 2) { feedback("生理特征提取不完整"); return; }
 
-        let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-        archives.push({ 
-            name: nameInput, 
-            time: new Date().toLocaleString('zh-CN', { hour12: false }),
-            bio: bio,
-            desc: desc 
-        });
-        localStorage.setItem('cemetery_files', JSON.stringify(archives));
-        localStorage.removeItem('current_task_content');
-        localStorage.setItem('last_record_timestamp', Date.now());
-        window.location.href = 'system.html';
-    }
-</script>
+            let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
+            archives.push({ 
+                name: nameInput, 
+                time: new Date().toLocaleString('zh-CN', { hour12: false }),
+                bio: bio,
+                desc: desc 
+            });
+            localStorage.setItem('cemetery_files', JSON.stringify(archives));
+            localStorage.removeItem('current_task_content');
+            localStorage.setItem('last_record_timestamp', Date.now());
+            
+            // 录入成功后跳转回检索系统
+            window.location.href = 'system.html';
+        }
+    </script>
 </body>
 </html>
