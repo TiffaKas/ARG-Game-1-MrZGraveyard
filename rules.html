@@ -7,7 +7,7 @@
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; --paper: #ffffff; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
 
-        /* 侧栏样式 - 与 system.html 保持 100% 一致 */
+        /* 侧栏样式 */
         .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; flex-shrink: 0; }
         .nav-menu { margin-top: 20px; flex: 1; overflow-y: auto; }
         .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
@@ -20,26 +20,33 @@
         
         /* 文档模拟样式 */
         .manual-page {
-            width: 100%; max-width: 800px; background: var(--paper);
+            width: 100%; max-width: 750px; background: var(--paper);
             padding: 60px 80px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border: 1px solid #ccc; position: relative;
+            border: 1px solid #ccc; position: relative; margin-bottom: 40px;
         }
 
-        h1 { text-align: center; font-size: 24px; margin-bottom: 40px; text-decoration: underline; color: #000; letter-spacing: 2px; }
-        h2 { font-size: 18px; margin-top: 35px; border-bottom: 1px solid #000; padding-bottom: 8px; color: #000; font-weight: bold; }
-        p, li { line-height: 1.8; color: #1a1a1a; font-size: 14px; text-align: justify; }
-        ul { list-style-type: none; padding-left: 0; }
-        li { margin-bottom: 12px; position: relative; padding-left: 20px; }
-        li::before { content: "•"; position: absolute; left: 0; color: var(--gold); }
+        h1 { text-align: center; font-size: 24px; margin-bottom: 20px; text-decoration: underline; color: #000; letter-spacing: 2px; }
+        .manual-subtitle { text-align: center; font-size: 12px; color: #666; margin-bottom: 40px; font-style: italic; }
         
-        .perforated-line {
-            margin: 50px 0; border-top: 1px dashed #999; position: relative;
+        h2 { font-size: 18px; margin-top: 35px; border-bottom: 2px solid #000; padding-bottom: 8px; color: #000; font-weight: bold; }
+        .rule-block { margin: 18px 0; }
+        .rule-title { font-weight: bold; color: #000; margin-bottom: 4px; display: block; font-size: 15px; }
+        .rule-content { line-height: 1.8; color: #1a1a1a; font-size: 14px; text-align: justify; display: block; padding-left: 1.5em; }
+        
+        .warning-text { color: #900; font-weight: bold; }
+
+        /* 中间虚线区域 */
+        .perforated-container {
+            width: 100%; margin: 45px 0; text-align: center; position: relative;
         }
-        .perforated-line::after {
-            content: "沿着虚线剪开 (内嵌紧急感应器)"; position: absolute; right: 0; top: -20px; font-size: 10px; color: #999;
+        .perforated-line {
+            border-top: 2px dashed #bbb; width: calc(100% + 160px); margin-left: -80px;
+        }
+        .sensor-tag {
+            font-size: 10px; color: #aaa; letter-spacing: 2px; margin-top: 10px; text-transform: uppercase;
         }
 
-        .footer-note { margin-top: 80px; font-size: 12px; text-align: center; color: #666; border-top: 1px solid #eee; padding-top: 20px; }
+        .footer-note { margin-top: 80px; font-size: 12px; text-align: center; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
     </style>
 </head>
 <body>
@@ -51,6 +58,7 @@
         </div>
         <div class="nav-menu">
             <div class="menu-label">内部管理</div>
+            <div class="nav-item" onclick="location.href='rules.html'"><span> [00] </span> 员工工作守则</div>
             <div class="nav-item" onclick="location.href='system.html'"><span> [01] </span> 档案检索模块</div>
             <div class="nav-item" onclick="location.href='entry.html'"><span> [02] </span> 数据录入终端</div>
             <div class="nav-item" onclick="location.href='list.html'"><span> [03] </span> 已录入档案库</div>
@@ -68,39 +76,67 @@
     <div class="main">
         <div class="manual-page">
             <h1>工作守则</h1>
-            <p style="text-align: center; font-style: italic; color: #888;">[ 数字化备份版本 7.0.2 - 仅供内部参阅 ]</p>
+            <p class="manual-subtitle">本守则和实体手册相同，但推荐在数字化终端保存备份。</p>
 
             <h2>第一章：行为准则与职业操守</h2>
-            <ul>
-                <li><strong>严禁收受贿赂</strong>：员工不得向丧家索取或收受任何非法费用，违者将依法处理。</li>
-                <li><strong>敬业与尊重</strong>：遵循“尊严、尊重”的原则。严禁直接提及死者的大名，这被视为严重的不尊重行为，除非获得家属明确许可。</li>
-                <li><strong>保密义务</strong>：对用户个人资料、墓位信息、联系方式等负有绝对保密义务，不得泄露给任何第三方机构。</li>
-            </ul>
+            <div class="rule-block">
+                <span class="rule-title">1.1 廉洁准则</span>
+                <span class="rule-content">严禁收受贿赂。员工不得向丧家索取或收受任何非法费用，违者将依法处理。</span>
+            </div>
+            <div class="rule-block">
+                <span class="rule-title">1.2 敬业与禁忌</span>
+                <span class="rule-content">遵循“尊严、尊重”原则。保持环境整洁肃穆。<span class="warning-text">以任何方式直接提及死者的大名是对死者的不尊重，你不是死者的亲属。</span></span>
+            </div>
+            <div class="rule-block">
+                <span class="rule-title">1.3 保密义务</span>
+                <span class="rule-content">对用户资料、墓位信息、联系方式等负有绝对保密义务。</span>
+            </div>
+
+            <div class="perforated-container">
+                <div class="perforated-line"></div>
+                <div class="sensor-tag">实体感应器埋藏路径 - 严禁在此处涂改或装订</div>
+            </div>
 
             <h2>第二章：工作职责与管理流程</h2>
-            <ul>
-                <li><strong>墓基管理</strong>：负责公墓巡查，确保施工单位严格按规定埋葬，杜绝违法违规营葬。</li>
-                <li><strong>环境维护</strong>：维护墓园整洁，负责废弃物处理。<strong>注意：</strong>严禁私自处理或挪用死者的遗物。</li>
-                <li><strong>档案数字化</strong>：确保每一份墓位档案包含清晰的黑白照片、生平简述及完整的生理资料。</li>
-            </ul>
+            <div class="rule-block">
+                <span class="rule-title">2.1 墓基管理</span>
+                <span class="rule-content">负责巡查、准确测量墓基，确保施工单位按规定营葬，杜绝违法违规行为。</span>
+            </div>
+            <div class="rule-block">
+                <span class="rule-title">2.2 环境维护</span>
+                <span class="rule-content">负责巡查查报、墓区清理、废弃物处理。<span class="warning-text">注：严禁处理死者的遗物。</span></span>
+            </div>
+            <div class="rule-block">
+                <span class="rule-title">2.3 档案数字化</span>
+                <span class="rule-content">定期核查档案，确保每一份墓位记录包含死者的清晰黑白照片、姓氏、生平简述及生理资料。</span>
+            </div>
 
-            <h2>第三章：服务与紧急处理规范</h2>
-            <ul>
-                <li><strong>接待准则</strong>：礼貌、耐心地服务祭扫家属，保持肃穆的工作态度。</li>
-                <li><strong>紧急响应</strong>：如遇无法解决的突发状况（如墓穴异动），请立即撕开实体手册虚线触发传感器。数字化平台亦会自动同步警报。</li>
-            </ul>
+            <h2>第三章：服务规范与紧急预案</h2>
+            <div class="rule-block">
+                <span class="rule-title">3.1 业务指导</span>
+                <span class="rule-content">礼貌解答咨询。指导使用人合法依规申请、使用墓位。</span>
+            </div>
+            <div class="rule-block">
+                <span class="rule-title">3.2 紧急联动报警</span>
+                <span class="rule-content">
+                    如遇墓园突发事件或无法解决的异常状况，请立即将实体手册沿着<span style="text-decoration: underline;">中间虚线</span>撕开（防止撕坏内部传感器）。
+                    传感器将自动向数字化行政中心发送高频信号请求。
+                </span>
+            </div>
 
-            <div class="perforated-line"></div>
-
-            <h2>第四章：考勤与日常安全</h2>
-            <ul>
-                <li><strong>轮班制度</strong>：确保墓园 24 小时监控及服务不断档。</li>
-                <li><strong>防火规范</strong>：严禁火种带入非指定区域，数字化感烟系统将全天候监控。</li>
-            </ul>
+            <h2>第四章：日常考勤与安全</h2>
+            <div class="rule-block">
+                <span class="rule-title">4.1 轮班制度</span>
+                <span class="rule-content">遵循 24 小时轮班制，确保管理服务不断档。</span>
+            </div>
+            <div class="rule-block">
+                <span class="rule-title">4.2 安全禁火</span>
+                <span class="rule-content">严禁将火种带入墓区（指定地点除掉），确保墓园绝对安全。</span>
+            </div>
 
             <div class="footer-note">
-                千安公墓管理处<br>
-                数字化行政中心 2026
+                千安公墓数字化行政中心<br>
+                INTERNAL DOCUMENT - V7.0.2 (2026)
             </div>
         </div>
     </div>
