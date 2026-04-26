@@ -4,96 +4,34 @@
     <meta charset="UTF-8">
     <title>档案详情 - 千安公墓管理平台</title>
     <style>
-        /* 继承 system.html 的全局样式 */
+        /* 完全同步 system.html 的全局变量与侧栏样式 */
         :root { --p-bg: #1d2731; --gold: #b8977e; --border: #dcdfe6; --dark: #333; }
-        body { 
-            margin: 0; 
-            font-family: "SimSun", serif; 
-            background-color: #f0f2f5; 
-            display: flex; 
-            height: 100vh; 
-            overflow: hidden; 
-        }
+        body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
 
-        /* 侧栏样式 (保持与 system.html 一致) */
-        .side { 
-            width: 260px; 
-            background: var(--p-bg); 
-            color: #fff; 
-            border-right: 4px solid var(--gold); 
-            display: flex; 
-            flex-direction: column; 
-            flex-shrink: 0;
-        }
-        .nav-menu { margin-top: 20px; flex: 1; }
+        /* 侧栏样式 - 与 system.html 保持 100% 一致 */
+        .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-menu { margin-top: 20px; flex: 1; overflow-y: auto; }
         .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
-        .nav-item { 
-            padding: 12px 25px; 
-            font-size: 14px; 
-            color: var(--gold); 
-            cursor: pointer; 
-            transition: all 0.3s; 
-            display: flex; 
-            align-items: center; 
-            border-bottom: 1px solid rgba(255,255,255,0.03); 
-            text-decoration: none; 
-        }
+        .nav-item { padding: 12px 25px; font-size: 14px; color: var(--gold); cursor: pointer; transition: all 0.3s; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
         .nav-item:hover { background: rgba(255,255,255,0.1); padding-left: 30px; }
         .nav-item span { margin-right: 15px; font-size: 10px; }
 
         /* 右侧主显示区域 */
-        .main { 
-            flex: 1; 
-            overflow-y: auto; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 40px; 
-        }
+        .main { flex: 1; overflow-y: auto; display: flex; align-items: center; justify-content: center; padding: 40px; }
 
         /* 档案卡片样式 */
-        .record-card { 
-            width: 100%; 
-            max-width: 800px; 
-            background: #fff; 
-            border: 1px solid var(--border); 
-            padding: 40px; 
-            box-shadow: 0 2px 12px rgba(0,0,0,0.1); 
-        }
-        .section-header { border-left: 4px solid var(--p-bg); padding-left: 12px; font-size: 18px; font-weight: bold; margin-bottom: 30px; }
+        .record-card { width: 100%; max-width: 800px; background: #fff; border: 1px solid var(--border); padding: 40px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+        .section-header { border-left: 4px solid var(--gold); padding-left: 12px; font-size: 18px; font-weight: bold; margin-bottom: 30px; color: var(--dark); }
         .main-info { display: flex; gap: 30px; margin-bottom: 30px; border-bottom: 1px solid #f0f0f0; padding-bottom: 30px; }
         
         .photo-box { width: 140px; text-align: center; }
-        .photo-box img { 
-            width: 140px; 
-            height: 180px; 
-            object-fit: cover; 
-            border: 1px solid #eee; 
-            filter: grayscale(100%) contrast(1.1); /* 保持黑白风格 */
-        }
+        .photo-box img { width: 140px; height: 180px; object-fit: cover; border: 1px solid #eee; filter: grayscale(100%) contrast(1.1); }
         
-        .info-table { 
-            flex: 1; 
-            display: grid; 
-            grid-template-columns: 100px 1fr 100px 1fr; 
-            border-top: 1px solid #ebeef5; 
-            border-left: 1px solid #ebeef5; 
-        }
+        .info-table { flex: 1; display: grid; grid-template-columns: 100px 1fr 100px 1fr; border-top: 1px solid #ebeef5; border-left: 1px solid #ebeef5; }
         .info-table div { padding: 12px; border-right: 1px solid #ebeef5; border-bottom: 1px solid #ebeef5; font-size: 14px; }
         .t-label { background: #fafafa; color: #606266; font-weight: bold; }
         
-        .content-box { 
-            background: #fcfcfc; 
-            border: 1px solid #eee; 
-            padding: 15px; 
-            font-size: 14px; 
-            line-height: 1.8; 
-            color: #444; 
-            min-height: 60px; 
-            margin-bottom: 20px; 
-            white-space: pre-wrap; 
-            text-align: justify;
-        }
+        .content-box { background: #fcfcfc; border: 1px solid #eee; padding: 15px; font-size: 14px; line-height: 1.8; color: #444; min-height: 60px; margin-bottom: 20px; white-space: pre-wrap; text-align: justify; }
     </style>
 </head>
 <body>
@@ -101,17 +39,20 @@
     <div class="side">
         <div style="padding:40px 20px; text-align:center">
             <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
-            <p style="font-size:10px; color:#555; margin-top:5px;">OBSERVER TERMINAL v7.0</p>
+            <p style="font-size:10px; color:#555; margin-top:5px;">ADMIN TERMINAL v7.0</p>
         </div>
         <div class="nav-menu">
             <div class="menu-label">内部管理</div>
-            <a class="nav-item" href="system.html"><span>[01]</span> 档案检索模块</a>
-            <a class="nav-item" href="entry.html"><span>[02]</span> 数据录入终端</a>
-            <a class="nav-item" href="list.html"><span>[03]</span> 已录入档案库</a>
+            <div class="nav-item" onclick="location.href='system.html'"><span> [01] </span> 档案检索模块</div>
+            <div class="nav-item" onclick="location.href='entry.html'"><span> [02] </span> 数据录入终端</div>
+            <div class="nav-item" onclick="location.href='list.html'"><span> [03] </span> 已录入档案库</div>
+            <div class="nav-item" onclick="location.href='diagram.html'"><span> [04] </span> 实时墓位平面图</div>
+            <div class="nav-item" onclick="location.href='complain.html'"><span> [05] </span> 异常投诉报告</div>
+            <div class="nav-item" onclick="location.href='email.html'"><span> [06] </span> 内部行政邮箱</div>
+
             <div class="menu-label">外部连接</div>
-            <a class="nav-item" href="official.html"><span>●</span> 访问对外官网</a>
-            <a class="nav-item" href="wechat.html"><span>●</span> 移动通讯快讯</a>
-            <a class="nav-item" href="email.html"><span>●</span> 内部行政邮箱</a>
+            <div class="nav-item" onclick="location.href='official.html'"><span> - </span> 访问对外官网</div>
+            <div class="nav-item" onclick="window.open('https://www.google.com')"><span> - </span> 全网搜索引擎</div>
         </div>
         <div style="padding:20px; font-size:11px; color:#444;">系统状态：稳定<br>© 2026 Q-A Admin</div>
     </div>
@@ -152,14 +93,13 @@
                 document.getElementById('v-bio').innerText = data.bio;
                 document.getElementById('v-desc').innerText = data.desc || "无行政描述。";
                 
-                // 亚洲中国人像生成逻辑
                 let img = "";
                 if (name.includes("陈建")) {
-                    img = "陈建.png"; // 亚洲男性
+                    img = "陈建.png"; 
                 } else if (name.includes("宋涵")) {
-                    img = "宋涵.png"; // 亚洲女性
+                    img = "宋涵.png";
                 } else if (name.includes("周诚")) {
-                    img = "周诚.png"; // 亚洲老年男性
+                    img = "周诚.png";
                 } else {
                     img = "https://i.pravatar.cc/300?u=generic-asian-" + encodeURIComponent(name);
                 }
