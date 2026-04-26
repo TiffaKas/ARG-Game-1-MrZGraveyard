@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <style>
+        /* 地图容器：保持比例并居中 */
+        .map-container {
+            position: relative;
+            width: 90vw; /* 根据系统 UI 调整宽度 */
+            max-width: 1200px;
+            margin: 20px auto;
+            border: 2px solid #b8977e;
+            overflow: hidden;
+        }
+
+        /* 墓园底图 */
+        #cemetery-map {
+            width: 100%;
+            display: block;
+            filter: brightness(0.8); /* 配合系统深色调 */
+        }
+
+        /* 实时红点 */
+        .dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff0000;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+            z-index: 10;
+            pointer-events: none;
+            /* 平滑移动的核心：0.8秒内完成位置过渡 */
+            transition: left 0.8s ease-in-out, top 0.8s ease-in-out;
+        }
+
+        /* 红点呼吸灯效果（增加诡异感） */
+        .dot::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            border-radius: inherit;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="map-container">
+    <img src="your-image-path.jpg" id="cemetery-map">
+    <div id="observer-dot" class="dot" style="left: 50%; top: 50%;"></div>
+</div>
+
+<script>
+    const dot = document.getElementById('observer-dot');
+
+    /**
+     * 移动红点到指定坐标（百分比）
+     * @param {number} x - 横向坐标 0-100
+     * @param {number} y - 纵向坐标 0-100
+     */
+    function updatePosition(x, y) {
+        dot.style.left = x + '%';
+        dot.style.top = y + '%';
+    }
+
+    // 模拟实时巡逻路径逻辑
+    function startPatrol() {
+        // 定义几个关键点的百分比坐标（根据你的图片编号手动微调）
+        const path = [
+            {x: 48, y: 52}, // 慈云殿中心 (1)
+            {x: 65, y: 28}, // 4号区路口
+            {x: 75, y: 35}, // 6号区边缘
+            {x: 55, y: 80}, // 人工湖畔 (8)
+            {x: 25, y: 40}  // 2号区内部
+        ];
+        
+        let index = 0;
+        setInterval(() => {
+            const pos = path[index];
+            updatePosition(pos.x, pos.y);
+            index = (index + 1) % path.length;
+            console.log(`[监控] 目标当前位置: 区块 ${index}`);
+        }, 3000); // 每3秒移动一次
+    }
+
+    // 启动模拟
+    window.onload = startPatrol;
+</script>
+
+</body>
+</html>
