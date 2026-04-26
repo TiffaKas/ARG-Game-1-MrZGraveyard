@@ -2,53 +2,92 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>千安墓园 - 实时平面图监控 v7.1</title>
+    <title>千安公墓 - 实时对焦系统 v7.1</title>
     <style>
-        :root {
-            --b8977e: #b8977e; /* 金棕色 */
-            --1d2731: #1d2731; /* 深蓝背景 */
+        /* 1. 基础布局样式 (继承自 system.html) */
+        :root { 
+            --p-bg: #1d2731; 
+            --gold: #b8977e; 
+            --dark: #333; 
+        }
+        
+        body { 
+            margin: 0; 
+            font-family: "SimSun", serif; 
+            background-color: #000; /* 监控页背景改为纯黑增加沉浸感 */
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
         }
 
-        body {
-            background-color: var(--1d2731);
-            color: var(--b8977e);
-            font-family: "SimSun", serif;
-            margin: 0;
+        /* 侧边栏样式 */
+        .side { 
+            width: 260px; 
+            background: var(--p-bg); 
+            color: #fff; 
+            border-right: 4px solid var(--gold); 
+            display: flex; 
+            flex-direction: column; 
+            z-index: 100;
+        }
+        
+        .nav-menu { margin-top: 20px; flex: 1; overflow-y: auto; }
+        .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
+        .nav-item { 
+            padding: 12px 25px; 
+            font-size: 14px; 
+            color: var(--gold); 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            display: flex; 
+            align-items: center; 
+            border-bottom: 1px solid rgba(255,255,255,0.03); 
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.1); padding-left: 30px; }
+        .nav-item span { margin-right: 15px; font-size: 10px; }
+
+        /* 右侧主监控区 */
+        .main { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            position: relative;
         }
 
-        h1 {
+        /* 2. 监控大屏特定样式 (继承自原 diagram.html) */
+        h1.monitor-title {
+            color: var(--gold);
             font-weight: normal;
             letter-spacing: 2px;
             font-size: 20px;
-            border-bottom: 1px solid var(--b8977e);
+            margin: 0 0 20px 0;
+            border-bottom: 1px solid var(--gold);
             padding-bottom: 10px;
+            width: 80%;
+            text-align: center;
         }
 
-        /* 地图容器 */
         .map-container {
             position: relative;
-            width: 90vw;
-            max-width: 1100px;
-            margin: 20px auto;
-            border: 2px solid var(--b8977e);
+            width: 100%;
+            max-width: 1000px; /* 适配侧边栏后的宽度 */
+            border: 2px solid var(--gold);
             box-shadow: 0 0 30px rgba(184, 151, 126, 0.2);
             overflow: hidden;
             background: #000;
         }
 
-        /* 墓园底图 */
         #cemetery-map {
             width: 100%;
             display: block;
-            filter: brightness(0.7) contrast(1.1); /* 配合系统深色调 */
+            filter: brightness(0.7) contrast(1.1);
             user-select: none;
         }
 
-        /* 实时红点 通用样式 */
+        /* 实时红点样式 */
         .dot {
             position: absolute;
             width: 8px;
@@ -56,17 +95,14 @@
             border-radius: 50%;
             z-index: 10;
             pointer-events: none;
-            /* 平滑移动的核心：1.2秒内完成位置过渡，模拟缓慢行走 */
             transition: left 1.2s linear, top 1.2s linear;
         }
 
-        /* 不同观察者的红点颜色微调，增加层次感 */
         #observer-1 { background-color: #ff0000; box-shadow: 0 0 10px #ff0000; }
         #observer-2 { background-color: #ff3333; box-shadow: 0 0 10px #ff3333; }
         #observer-3 { background-color: #ff5555; box-shadow: 0 0 10px #ff5555; filter: hue-rotate(15deg); }
         #observer-4 { background-color: #ff1111; box-shadow: 0 0 10px #ff1111; filter: saturate(2); }
 
-        /* 红点呼吸灯效果 */
         .dot::after {
             content: '';
             position: absolute;
@@ -82,146 +118,116 @@
             100% { transform: scale(3); opacity: 0; }
         }
 
-        /* 监控状态栏 */
         .status-bar {
-            width: 90vw;
-            max-width: 1100px;
+            width: 80%;
             font-size: 12px;
             color: #666;
             text-align: left;
-            margin-top: -10px;
-            margin-bottom: 20px;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 
-    <h1>千安墓园动态平面对焦系统 v7.1</h1>
-    
-    <div class="map-container">
-        <img src="https://drive.google.com/uc?export=view&id=17t-xDEwBMnWDz2WI40qBbBDl21T7m9P0" id="cemetery-map" alt="千安公墓实时平面图">
-        
-        <div id="observer-1" class="dot"></div>
-        <div id="observer-2" class="dot"></div>
-        <div id="observer-3" class="dot"></div>
-        <div id="observer-4" class="dot"></div>
+    <div class="side">
+        <div style="padding:40px 20px; text-align:center">
+            <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
+            <p style="font-size:10px; color:#555; margin-top:5px;">ADMIN TERMINAL v7.0</p>
+        </div>
+        <div class="nav-menu">
+            <div class="menu-label">内部管理</div>
+            <div class="nav-item" onclick="location.href='system.html'"><span> [01] </span> 档案检索模块</div>
+            <div class="nav-item" onclick="location.href='entry.html'"><span> [02] </span> 数据录入终端</div>
+            <div class="nav-item" onclick="location.href='list.html'"><span> [03] </span> 已录入档案库</div>
+            <div class="nav-item" onclick="location.href='diagram.html'"><span> [04] </span> 实时墓位平面图</div>
+            <div class="nav-item" onclick="location.href='complain.html'"><span> [05] </span> 异常投诉报告</div>
+            <div class="nav-item" onclick="location.href='email.html'"><span> [06] </span> 内部行政邮箱</div>
+
+            <div class="menu-label">外部连接</div>
+            <div class="nav-item" onclick="location.href='official.html'"><span> - </span> 访问对外官网</div>
+            <div class="nav-item" onclick="window.open('https://www.google.com')"><span> - </span> 全网搜索引擎</div>
+        </div>
+        <div style="padding:20px; font-size:11px; color:#444;">系统状态：稳定<br>© 2026 Q-A Admin</div>
     </div>
 
-    <div class="status-bar">
-        [终端状态] 认知稳定性: 98% | 实时对焦数: 4 | 当前观测模式: 随机网络巡逻
+    <div class="main">
+        <h1 class="monitor-title">千安墓园动态平面对焦系统 v7.1</h1>
+        
+        <div class="map-container">
+            <img src="https://drive.google.com/uc?export=view&id=17t-xDEwBMnWDz2WI40qBbBDl21T7m9P0" id="cemetery-map" alt="实时平面图">
+            
+            <div id="observer-1" class="dot"></div>
+            <div id="observer-2" class="dot"></div>
+            <div id="observer-3" class="dot"></div>
+            <div id="observer-4" class="dot"></div>
+        </div>
+
+        <div class="status-bar">
+            [终端状态] 认知稳定性: 98% | 实时对焦数: 4 | 当前观测模式: 随机网络巡逻
+        </div>
     </div>
 
 <script>
-    // ==========================================
-    // 1. 定义灰色道路网络 (Road Network)
-    // 每一个节点都是灰色道路上的一个十字路口、转折点或端点。
-    // ==========================================
+    // 道路网络节点定义
     const roadNetwork = {
-        // 慈云殿/主轴线区域
         'gate_main': { x: 49.6, y: 88.5, adjacent: ['hub_south'] },
         'hub_south': { x: 49.6, y: 72.8, adjacent: ['gate_main', 'hub_mid_south', 'lake_west', 'lake_east'] },
         'hub_mid_south': { x: 49.6, y: 56.7, adjacent: ['hub_south', 'hub_main', 'road_2_3', 'road_4_5'] },
         'hub_main': { x: 49.6, y: 44.5, adjacent: ['hub_mid_south', 'temple_entrance', 'road_1_2_mid', 'road_5_6_mid'] },
         'temple_entrance': { x: 49.6, y: 31.0, adjacent: ['hub_main'] },
-
-        // 横向主支路 (中间段)
         'road_2_3': { x: 38.0, y: 56.7, adjacent: ['hub_mid_south', 'road_1_2_south', 'zone_3_corner'] },
         'road_4_5': { x: 61.5, y: 56.7, adjacent: ['hub_mid_south', 'road_5_6_south', 'zone_4_corner'] },
-        
-        // 横向支路 (上段)
         'road_1_2_mid': { x: 34.0, y: 44.5, adjacent: ['hub_main', 'road_1_corner_up'] },
         'road_5_6_mid': { x: 66.0, y: 44.5, adjacent: ['hub_main', 'road_6_corner_up'] },
-
-        // 外部环路西侧
         'road_1_corner_up': { x: 17.5, y: 44.5, adjacent: ['road_1_2_mid', 'road_1_west_gate'] },
         'road_1_west_gate': { x: 10.0, y: 54.0, adjacent: ['road_1_corner_up', 'road_1_2_south'] },
         'road_1_2_south': { x: 17.5, y: 56.7, adjacent: ['road_1_west_gate', 'road_2_3', 'zone_1_lower'] },
-
-        // 外部环路东侧
         'road_6_corner_up': { x: 82.5, y: 44.5, adjacent: ['road_5_6_mid', 'road_6_east_gate'] },
         'road_6_east_gate': { x: 90.0, y: 54.0, adjacent: ['road_6_corner_up', 'road_5_6_south'] },
         'road_5_6_south': { x: 82.5, y: 56.7, adjacent: ['road_6_east_gate', 'road_4_5', 'zone_6_lower'] },
-
-        // 区域内部灰色节点 (模拟特定路径)
         'zone_1_lower': { x: 25.0, y: 64.0, adjacent: ['road_1_2_south'] },
         'zone_3_corner': { x: 42.0, y: 35.0, adjacent: ['road_2_3'] },
         'zone_4_corner': { x: 57.0, y: 35.0, adjacent: ['road_4_5'] },
         'zone_6_lower': { x: 74.0, y: 64.0, adjacent: ['road_5_6_south'] },
-
-        // 南侧湖泊/蛇区道路
         'lake_west': { x: 36.5, y: 72.8, adjacent: ['hub_south', 'snake_1'] },
         'lake_east': { x: 68.0, y: 72.8, adjacent: ['hub_south', 'snake_2'] },
         'snake_1': { x: 28.0, y: 78.0, adjacent: ['lake_west'] },
         'snake_2': { x: 78.0, y: 78.0, adjacent: ['lake_east'] }
     };
 
-    const nodeIds = Object.keys(roadNetwork);
-
-    // ==========================================
-    // 2. 红点观测者类
-    // ==========================================
     class Observer {
         constructor(id, initialNodeId) {
             this.el = document.getElementById(id);
             this.currentNodeId = initialNodeId;
-            // 初始放置到节点位置
             this.updateCssPosition(roadNetwork[initialNodeId]);
         }
-
         updateCssPosition(pos) {
             this.el.style.left = pos.x + '%';
             this.el.style.top = pos.y + '%';
         }
-
-        /**
-         * 选择一个随机的相邻节点并移动过去
-         */
         moveToNextRandomNode() {
             const currentNode = roadNetwork[this.currentNodeId];
             const adjacentNodes = currentNode.adjacent;
-
             if (adjacentNodes && adjacentNodes.length > 0) {
-                // 随机选择一个
-                const randomIndex = Math.floor(Math.random() * adjacentNodes.length);
-                const nextNodeId = adjacentNodes[randomIndex];
-                const nextNode = roadNetwork[nextNodeId];
-
-                // 执行过渡移动
-                this.updateCssPosition(nextNode);
-                
-                // 核心：在 transition 完成前，不要触发 console
+                const nextNodeId = adjacentNodes[Math.floor(Math.random() * adjacentNodes.length)];
+                this.updateCssPosition(roadNetwork[nextNodeId]);
                 this.currentNodeId = nextNodeId;
             }
         }
     }
 
-    // ==========================================
-    // 3. 初始化 4 个观测者并启动模拟
-    // ==========================================
     window.onload = () => {
-        // 在不同主要路口初始化 4 个红点
         const observers = [
-            new Observer('observer-1', 'gate_main'),      // 主大门
-            new Observer('observer-2', 'temple_entrance'), // 慈云殿
-            new Observer('observer-3', 'road_1_corner_up'),// 西侧环路
-            new Observer('observer-4', 'road_6_east_gate') // 东侧大门
+            new Observer('observer-1', 'gate_main'),
+            new Observer('observer-2', 'temple_entrance'),
+            new Observer('observer-3', 'road_1_corner_up'),
+            new Observer('observer-4', 'road_6_east_gate')
         ];
 
-        // 启动定时寻路逻辑
-        // 使用 2.5s 到 4s 之间的随机间隔，避免它们移动太同步。
-        observers.forEach((obs, index) => {
-            const interval = 2500 + Math.random() * 1500; 
-            setInterval(() => {
-                obs.moveToNextRandomNode();
-            }, interval);
+        observers.forEach((obs) => {
+            setInterval(() => obs.moveToNextRandomNode(), 2500 + Math.random() * 1500);
         });
-
-        // 可选：添加认知不稳定时的诡异效果（比如红点抖动）
-        // if(localStorage.getItem('san_value') < 40) {
-        //     document.querySelectorAll('.dot').forEach(d => d.style.animationDuration = '0.5s');
-        // }
     };
-
 </script>
 
 </body>
