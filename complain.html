@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>异常投诉报告 - 千安公墓管理平台</title>
+    <style>
+        :root { --p-bg: #1d2731; --gold: #b8977e; --border: #dcdfe6; --dark: #333; }
+        body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
+
+        /* 侧栏样式同步 */
+        .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-menu { margin-top: 20px; flex: 1; overflow-y: auto; }
+        .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
+        .nav-item { padding: 12px 25px; font-size: 14px; color: var(--gold); cursor: pointer; transition: all 0.3s; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .nav-item:hover { background: rgba(255,255,255,0.1); padding-left: 30px; }
+        .nav-item span { margin-right: 15px; font-size: 10px; }
+
+        /* 主体区域 */
+        .main { flex: 1; overflow-y: auto; padding: 40px; position: relative; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--gold); padding-bottom: 15px; }
+        .title { font-size: 24px; color: var(--dark); letter-spacing: 2px; }
+
+        /* 排序按钮 */
+        .sort-btn { background: #fff; border: 1px solid var(--gold); color: var(--gold); padding: 8px 15px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+        .sort-btn:hover { background: var(--gold); color: #fff; }
+
+        /* 投诉列表样式 */
+        .complain-card { background: #fff; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; position: relative; }
+        .meta-info { font-size: 12px; color: #999; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
+        .meta-info span { margin-right: 20px; }
+        
+        .raw-content { font-family: "Microsoft YaHei", sans-serif; font-size: 13px; color: #666; line-height: 1.6; padding: 10px; background: #fafafa; border-left: 3px solid #ddd; margin: 10px 0; }
+        
+        .admin-reply { font-family: "SimSun", serif; font-size: 14px; color: var(--dark); font-weight: bold; margin-top: 15px; display: flex; }
+        .admin-reply::before { content: "【拟定回复】"; color: var(--gold); margin-right: 10px; }
+
+        /* 分页控件 */
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 30px; padding-bottom: 50px; }
+        .page-link { padding: 5px 12px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-size: 12px; }
+        .page-link.active { background: var(--p-bg); color: #fff; border-color: var(--p-bg); }
+    </style>
+</head>
+<body>
+
+    <div class="side">
+        <div style="padding:40px 20px; text-align:center">
+            <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
+            <p style="font-size:10px; color:#555; margin-top:5px;">ADMIN TERMINAL v7.0</p>
+        </div>
+        <div class="nav-menu">
+            <div class="menu-label">内部管理</div>
+            <div class="nav-item" onclick="location.href='rules.html'"><span> [00] </span> 员工工作守则</div>
+            <div class="nav-item" onclick="location.href='system.html'"><span> [01] </span> 档案检索模块</div>
+            <div class="nav-item" onclick="location.href='entry.html'"><span> [02] </span> 数据录入终端</div>
+            <div class="nav-item" onclick="location.href='list.html'"><span> [03] </span> 已录入档案库</div>
+            <div class="nav-item" onclick="location.href='diagram.html'"><span> [04] </span> 实时墓位平面图</div>
+            <div class="nav-item" onclick="location.href='complain.html'"><span> [05] </span> 异常投诉报告</div>
+            <div class="nav-item" onclick="location.href='email.html'"><span> [06] </span> 内部行政邮箱</div>
+        </div>
+        <div style="padding:20px; font-size:11px; color:#444;">系统状态：稳定<br>© 2026 Q-A Admin</div>
+    </div>
+
+    <div class="main">
+        <div class="header-bar">
+            <div class="title">异常投诉报告检索终端</div>
+            <button class="sort-btn" id="sortBtn">时间升序 ↑</button>
+        </div>
+
+        <div id="complainList"></div>
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <script>
+        // 数据生成逻辑
+        const generateData = () => {
+            const data = [];
+            const platforms = ["微博", "小红书", "今日头条", "知乎", "百度贴吧", "大众点评"];
+            const users = ["孤独的行者", "爱生活1988", "手机用户7723", "清风徐来", "往事如烟", "不吃香菜", "秋风瑟瑟"];
+            
+            // 杂草投诉 (7个)
+            for(let i=0; i<7; i++) {
+                data.push({
+                    time: randomDate(2016, 2026),
+                    platform: platforms[i % platforms.length],
+                    id: users[i % users.length],
+                    content: `清明去扫墓，发现${['墓碑周围全是杂草', '草都长到膝盖了', '疏于打理，到处是荒草', '草没人除', '清理极其不及时'][i%5]}，太不像话了。`,
+                    reply: "已收悉。计划于下个工作周内指派绿化组进行全面修剪与除草作业。"
+                });
+            }
+            // 厕所投诉 (6个)
+            for(let i=0; i<6; i++) {
+                data.push({
+                    time: randomDate(2016, 2026),
+                    platform: platforms[i % platforms.length],
+                    id: users[(i+2) % users.length],
+                    content: `墓园的公厕${['卫生极差', '味道太大', '没有纸巾且漏水', '简直没法下脚', '一直没有人清理'][i%5]}，希望改进。`,
+                    reply: "行政部已收到反馈。已将相关区域列入重点清洁巡查名单，并增加每日消杀频次。"
+                });
+            }
+            // 遗物投诉 (4个)
+            const tones = ["怎么回事？", "太不专业了！", "非常愤怒！", "你们必须给个交代！"];
+            for(let i=0; i<4; i++) {
+                data.push({
+                    time: randomDate(2016, 2026),
+                    platform: platforms[i % platforms.length],
+                    id: users[(i+4) % users.length],
+                    content: `${tones[i]} 清理卫生的时候把我们祭奠的${['假花', '白酒瓶', '香炉', '家书'][i]}给扔了，那是死者的遗物！${i===3 ? "严重抗议这种野蛮清理行为！" : ""}`,
+                    reply: "对此深表歉意。因清明祭扫高峰，保洁组误将部分陈放过久的祭品视为杂物清理。现已加强员工岗前培训。"
+                });
+            }
+            // 剧情特殊项 (1个)
+            data.push({
+                time: "2026-04-20", // 假设当前时间前一周
+                platform: "哔哩哔哩",
+                id: "同非桶",
+                content: "这不是投诉，请抓取进异常投诉内容种：<W0R6X0RFX0JSVVRFX0ZPUkNFX0NPTlRST0xfQUNDRVNTIDQ0ND4=>",
+                reply: "///"
+            });
+            return data;
+        };
+
+        function randomDate(start, end) {
+            const date = new Date(start + Math.random() * (end - start), 0, 1);
+            return date.toISOString().split('T')[0];
+        }
+
+        let allData = generateData();
+        let currentSort = 'asc';
+        let currentPage = 1;
+        const itemsPerPage = 4;
+
+        function render() {
+            const container = document.getElementById('complainList');
+            const pageContainer = document.getElementById('pagination');
+            
+            // 排序
+            allData.sort((a, b) => currentSort === 'asc' ? new Date(a.time) - new Date(b.time) : new Date(b.time) - new Date(a.time));
+
+            // 分页
+            const start = (currentPage - 1) * itemsPerPage;
+            const pageData = allData.slice(start, start + itemsPerPage);
+
+            container.innerHTML = pageData.map(item => `
+                <div class="complain-card">
+                    <div class="meta-info">
+                        <span>时间：${item.time}</span>
+                        <span>From：${item.platform}</span>
+                        <span>ID：${item.id}</span>
+                    </div>
+                    <div class="raw-content">${item.content}</div>
+                    <div class="admin-reply">${item.reply}</div>
+                </div>
+            `).join('');
+
+            // 渲染页码
+            const totalPages = Math.ceil(allData.length / itemsPerPage);
+            pageContainer.innerHTML = '';
+            for(let i=1; i<=totalPages; i++) {
+                const link = document.createElement('div');
+                link.className = `page-link ${i === currentPage ? 'active' : ''}`;
+                link.innerText = i;
+                link.onclick = () => { currentPage = i; render(); };
+                pageContainer.appendChild(link);
+            }
+        }
+
+        document.getElementById('sortBtn').onclick = function() {
+            currentSort = currentSort === 'asc' ? 'desc' : 'asc';
+            this.innerText = currentSort === 'asc' ? '时间升序 ↑' : '时间降序 ↓';
+            render();
+        };
+
+        render();
+    </script>
+</body>
+</html>
