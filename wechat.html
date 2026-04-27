@@ -2,65 +2,185 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>微信 (WeChat)</title>
+    <title>微信WeChat - PC</title>
     <style>
-        body { margin: 0; background: #ededed; font-family: sans-serif; display: flex; justify-content: center; height: 100vh; }
-        .phone-container { width: 375px; background: #f3f3f3; display: flex; flex-direction: column; border: 1px solid #ddd; box-shadow: 0 0 50px rgba(0,0,0,0.1); }
+        :root {
+            --win-bg: #f5f5f5;
+            --side-black: #2e2e2e;
+            --list-gray: #e6e5e5;
+            --active-gray: #c8c8c8;
+            --text-main: #333;
+            --wechat-green: #07c160;
+        }
+
+        body { margin: 0; font-family: "Microsoft YaHei", sans-serif; background-color: #d1d1d1; display: flex; height: 100vh; overflow: hidden; }
+
+        /* 外部容器模拟窗口 */
+        .wechat-window {
+            width: 850px;
+            height: 600px;
+            background: var(--win-bg);
+            margin: auto;
+            display: flex;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        /* 1. 最左侧导航栏 (Narrow Sidebar) */
+        .win-side {
+            width: 60px;
+            background: var(--side-black);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+        .win-side .avatar-main { width: 35px; height: 35px; background: #555; border-radius: 4px; margin-bottom: 25px; }
+        .win-side .icon { color: #919191; font-size: 20px; margin-bottom: 25px; cursor: pointer; }
+        .win-side .icon.active { color: var(--wechat-green); }
+
+        /* 2. 中间联系人列表 (Contact List) */
+        .win-list {
+            width: 250px;
+            background: #eeeae8;
+            border-right: 1px solid #dcd9d8;
+            display: flex;
+            flex-direction: column;
+        }
+        .list-search { padding: 25px 12px 10px; }
+        .list-search input { width: 100%; border: none; background: #dbd9d8; padding: 4px 8px; font-size: 12px; border-radius: 2px; box-sizing: border-box; }
         
-        /* 头部 */
-        .header { background: #ededed; padding: 40px 15px 10px; border-bottom: 1px solid #dbdbdb; text-align: center; font-weight: bold; position: relative; }
-        .back-btn { position: absolute; left: 15px; bottom: 12px; color: #07c160; cursor: pointer; font-weight: normal; font-size: 14px; text-decoration: none; }
+        .contact-item { padding: 12px; display: flex; align-items: center; background: var(--active-gray); cursor: pointer; }
+        .contact-avatar { width: 40px; height: 40px; background: #889; border-radius: 2px; margin-right: 10px; }
+        .contact-info { flex: 1; overflow: hidden; }
+        .contact-name { font-size: 14px; color: #000; margin-bottom: 4px; }
+        .contact-last-msg { font-size: 12px; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* 聊天区域 */
-        .chat-area { flex: 1; overflow-y: auto; padding: 20px 15px; }
-        .msg { margin-bottom: 20px; display: flex; align-items: flex-start; }
-        .avatar { width: 40px; height: 40px; background: #ccc; border-radius: 4px; margin-right: 10px; flex-shrink: 0; }
-        .bubble { background: #fff; padding: 10px 12px; border-radius: 6px; font-size: 15px; line-height: 1.4; max-width: 240px; position: relative; }
-        .bubble::before { content: ""; position: absolute; left: -6px; top: 12px; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-right: 6px solid #fff; }
+        /* 3. 右侧主聊天区域 (Main Chat) */
+        .win-chat { flex: 1; display: flex; flex-direction: column; background: var(--win-bg); position: relative; }
+        
+        /* 聊天头部 */
+        .chat-header { 
+            height: 60px; 
+            padding: 0 25px; 
+            border-bottom: 1px solid #e5e5e5; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+        }
+        .chat-title { font-size: 18px; color: var(--text-main); }
+        .chat-more { color: #999; cursor: pointer; font-size: 20px; letter-spacing: 2px; }
 
-        /* 输入框屏蔽 */
-        .footer { background: #f7f7f7; padding: 15px; border-top: 1px solid #dbdbdb; text-align: center; color: #999; font-size: 13px; }
+        /* 对话展示区 */
+        .chat-body { flex: 1; overflow-y: auto; padding: 20px 25px; }
+        .msg-row { margin-bottom: 20px; display: flex; }
+        .msg-bubble { 
+            background: #fff; 
+            padding: 8px 12px; 
+            border-radius: 4px; 
+            font-size: 14px; 
+            max-width: 70%; 
+            line-height: 1.6;
+            color: #000;
+            position: relative;
+        }
+        /* 撤回消息样式 */
+        .msg-recall { text-align: center; color: #b2b2b2; font-size: 12px; margin: 15px 0; width: 100%; }
+
+        /* 底部输入屏蔽区 */
+        .chat-footer { height: 180px; border-top: 1px solid #e5e5e5; background: #fff; display: flex; flex-direction: column; }
+        .footer-tools { padding: 10px 20px; display: flex; gap: 15px; color: #888; font-size: 18px; }
+        .footer-input { flex: 1; padding: 0 20px; font-size: 14px; color: #ccc; }
+        .footer-status { padding: 10px 20px; display: flex; justify-content: flex-end; }
+        .send-btn { background: #f5f5f5; border: 1px solid #e5e5e5; color: #999; padding: 4px 20px; font-size: 13px; border-radius: 2px; }
+
+        /* 系统覆盖提示 */
+        .system-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: grayscale(0.5);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .overlay-msg { background: rgba(0,0,0,0.6); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 12px; letter-spacing: 1px; }
+        
+        .back-btn { position: absolute; top: 10px; right: 10px; font-size: 12px; color: #888; text-decoration: none; border: 1px solid #ccc; padding: 2px 8px; border-radius: 4px; }
+        .back-btn:hover { background: #eee; }
     </style>
 </head>
 <body>
 
-<div class="phone-container">
-    <div class="header">
-        <a href="system.html" class="back-btn">管理后台</a>
-        张顺的家属 (张晓华)
+    <a href="system.html" class="back-btn">退出监测模式</a>
+
+    <div class="wechat-window">
+        <div class="win-side">
+            <div class="avatar-main"></div>
+            <div class="icon active">●</div> <div class="icon">○</div> <div class="icon" style="margin-top: auto;">≡</div> </div>
+
+        <div class="win-list">
+            <div class="list-search">
+                <input type="text" placeholder="搜索">
+            </div>
+            <div class="contact-item">
+                <div class="contact-avatar"></div>
+                <div class="contact-info">
+                    <div class="contact-name">张晓华 (张顺家属)</div>
+                    <div class="contact-last-msg">对方撤回了一条消息</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="win-chat">
+            <div class="chat-header">
+                <div class="chat-title">张顺的家属 (张晓华)</div>
+                <div class="chat-more">...</div>
+            </div>
+
+            <div class="chat-body">
+                <div class="msg-row">
+                    <div class="contact-avatar" style="width:34px; height:34px;"></div>
+                    <div class="msg-bubble">管理员您好，我是张顺的侄子。我想问下，我叔叔的档案录入了吗？</div>
+                </div>
+
+                <div class="msg-row">
+                    <div class="contact-avatar" style="width:34px; height:34px;"></div>
+                    <div class="msg-bubble">他生前确实很怪，但他人不坏的。他只是...只是身体比一般人硬一些。</div>
+                </div>
+
+                <div class="msg-row">
+                    <div class="contact-avatar" style="width:34px; height:34px;"></div>
+                    <div class="msg-bubble">那天我帮他搬家，他从楼梯上滑下去，我吓坏了，结果他站起来说地板质量真差。</div>
+                </div>
+
+                <div class="msg-row">
+                    <div class="contact-avatar" style="width:34px; height:34px;"></div>
+                    <div class="msg-bubble">你说，人怎么能把实木地板给砸裂缝了呢？</div>
+                </div>
+
+                <div class="msg-recall">对方撤回了一条消息</div>
+            </div>
+
+            <div class="chat-footer">
+                <div class="footer-tools">
+                    <span>☺</span> <span>📁</span> <span>✂</span> <span>✉</span>
+                </div>
+                <div class="footer-input">
+                    [ 系统提示：单向实时观测已开启 ]
+                </div>
+                <div class="footer-status">
+                    <button class="send-btn">发送(S)</button>
+                </div>
+            </div>
+
+            <div class="system-overlay">
+                <div class="overlay-msg">TERMINAL V7.0 - READ ONLY MODE</div>
+            </div>
+        </div>
     </div>
-    
-    <div class="chat-area">
-        <div class="msg">
-            <div class="avatar" style="background-color: #889;"></div>
-            <div class="bubble">管理员您好，我是张顺的侄子。我想问下，我叔叔的档案录入了吗？</div>
-        </div>
-        
-        <div class="msg">
-            <div class="avatar" style="background-color: #889;"></div>
-            <div class="bubble">他生前确实很怪，但他人不坏的。他只是...只是身体比一般人硬一些。</div>
-        </div>
-
-        <div class="msg">
-            <div class="avatar" style="background-color: #889;"></div>
-            <div class="bubble">那天我帮他搬家，他从楼梯上滑下去，我吓坏了，结果他站起来说地板质量真差。</div>
-        </div>
-
-        <div class="msg">
-            <div class="avatar" style="background-color: #889;"></div>
-            <div class="bubble">你说，人怎么能把实木地板给砸裂缝了呢？</div>
-        </div>
-
-        <div class="msg" style="opacity: 0.5;">
-            <div class="avatar" style="background-color: #889;"></div>
-            <div class="bubble">对方撤回了一条消息</div>
-        </div>
-    </div>
-
-    <div class="footer">
-        [ 系统：当前处于单向观测模式，禁止回复 ]
-    </div>
-</div>
 
 </body>
 </html>
