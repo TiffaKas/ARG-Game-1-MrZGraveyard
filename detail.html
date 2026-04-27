@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <title>档案详情 - 千安公墓管理平台</title>
     <style>
-        /* 完全同步 system.html 的全局变量与侧栏样式 */
+        /* 核心变量与 system.html 保持 100% 一致 */
         :root { --p-bg: #1d2731; --gold: #b8977e; --border: #dcdfe6; --dark: #333; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
 
-        /* 侧栏样式 - 与 system.html 保持 100% 一致 */
+        /* 侧栏样式 - 全局同步 */
         .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; flex-shrink: 0; }
         .nav-menu { margin-top: 20px; flex: 1; overflow-y: auto; }
         .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
@@ -17,21 +17,26 @@
         .nav-item span { margin-right: 15px; font-size: 10px; }
 
         /* 右侧主显示区域 */
-        .main { flex: 1; overflow-y: auto; display: flex; align-items: center; justify-content: center; padding: 40px; }
+        .main { flex: 1; overflow-y: auto; display: flex; align-items: flex-start; justify-content: center; padding: 40px; }
 
-        /* 档案卡片样式 */
-        .record-card { width: 100%; max-width: 800px; background: #fff; border: 1px solid var(--border); padding: 40px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
-        .section-header { border-left: 4px solid var(--gold); padding-left: 12px; font-size: 18px; font-weight: bold; margin-bottom: 30px; color: var(--dark); }
-        .main-info { display: flex; gap: 30px; margin-bottom: 30px; border-bottom: 1px solid #f0f0f0; padding-bottom: 30px; }
+        /* 档案卡片样式优化 */
+        .record-card { width: 100%; max-width: 850px; background: #fff; border: 1px solid var(--border); padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .section-header { border-left: 4px solid var(--gold); padding-left: 15px; font-size: 20px; font-weight: normal; margin-bottom: 40px; color: var(--dark); letter-spacing: 1px; }
         
-        .photo-box { width: 140px; text-align: center; }
-        .photo-box img { width: 140px; height: 180px; object-fit: cover; border: 1px solid #eee; filter: grayscale(100%) contrast(1.1); }
+        .main-info { display: flex; gap: 40px; margin-bottom: 30px; border-bottom: 1px solid #f0f0f0; padding-bottom: 30px; }
         
-        .info-table { flex: 1; display: grid; grid-template-columns: 100px 1fr 100px 1fr; border-top: 1px solid #ebeef5; border-left: 1px solid #ebeef5; }
-        .info-table div { padding: 12px; border-right: 1px solid #ebeef5; border-bottom: 1px solid #ebeef5; font-size: 14px; }
+        .photo-box { width: 160px; text-align: center; }
+        .photo-box img { width: 160px; height: 210px; object-fit: cover; border: 1px solid #ddd; filter: grayscale(100%) contrast(1.1); transition: filter 0.3s; }
+        .photo-box img:hover { filter: grayscale(0%); }
+        
+        .info-table { flex: 1; display: grid; grid-template-columns: 100px 1fr 100px 1fr; border-top: 1px solid #ebeef5; border-left: 1px solid #ebeef5; align-content: start; }
+        .info-table div { padding: 15px; border-right: 1px solid #ebeef5; border-bottom: 1px solid #ebeef5; font-size: 14px; }
         .t-label { background: #fafafa; color: #606266; font-weight: bold; }
         
-        .content-box { background: #fcfcfc; border: 1px solid #eee; padding: 15px; font-size: 14px; line-height: 1.8; color: #444; min-height: 60px; margin-bottom: 20px; white-space: pre-wrap; text-align: justify; }
+        .content-title { font-weight: bold; margin-bottom: 15px; font-size: 14px; color: var(--p-bg); display: flex; align-items: center; }
+        .content-title::before { content: ""; width: 8px; height: 8px; background: var(--gold); margin-right: 10px; }
+
+        .content-box { background: #fcfcfc; border: 1px solid #eee; padding: 20px; font-size: 14px; line-height: 2; color: #444; min-height: 80px; margin-bottom: 30px; white-space: pre-wrap; text-align: justify; }
     </style>
 </head>
 <body>
@@ -43,6 +48,7 @@
         </div>
         <div class="nav-menu">
             <div class="menu-label">内部管理</div>
+            <div class="nav-item" onclick="location.href='rules.html'"><span> [00] </span> 员工工作守则</div>
             <div class="nav-item" onclick="location.href='system.html'"><span> [01] </span> 档案检索模块</div>
             <div class="nav-item" onclick="location.href='entry.html'"><span> [02] </span> 数据录入终端</div>
             <div class="nav-item" onclick="location.href='list.html'"><span> [03] </span> 已录入档案库</div>
@@ -60,23 +66,24 @@
     <div class="main">
         <div class="record-card">
             <div class="section-header">人员电子档案明细</div>
+            
             <div class="main-info">
                 <div class="photo-box">
                     <img id="v-photo" src="" alt="系统对焦照片">
-                    <div style="font-size:11px; color:#999; margin-top:5px;">系统对焦图像</div>
+                    <div style="font-size:11px; color:#999; margin-top:8px;">系统对焦图像 [24位色]</div>
                 </div>
                 <div class="info-table">
                     <div class="t-label">姓名</div><div id="v-name">-</div>
-                    <div class="t-label">状态</div><div style="color: green;">正常存档</div>
+                    <div class="t-label">状态</div><div style="color: green; font-weight: bold;">正常存档</div>
                     <div class="t-label">录入时间</div><div id="v-time">-</div>
-                    <div class="t-label">分类</div><div>数字化墓区</div>
+                    <div class="t-label">数据分类</div><div>数字化核心墓区</div>
                 </div>
             </div>
             
-            <div style="font-weight:bold; margin-bottom:10px;">生理特征提取 (Physical Observation)</div>
+            <div class="content-title">生理特征提取 (Physical Observation)</div>
             <div class="content-box" id="v-bio"></div>
             
-            <div style="font-weight:bold; margin-bottom:10px;">生平简述 (Biography Summary)</div>
+            <div class="content-title">生平简述 (Biography Summary)</div>
             <div class="content-box" id="v-desc"></div>
         </div>
     </div>
@@ -91,9 +98,10 @@
                 document.getElementById('v-name').innerText = data.name;
                 document.getElementById('v-time').innerText = data.time;
                 document.getElementById('v-bio').innerText = data.bio;
-                document.getElementById('v-desc').innerText = data.desc || "无行政描述。";
+                document.getElementById('v-desc').innerText = data.desc || "无进一步行政描述信息。";
                 
                 let img = "";
+                // 简单的图片映射逻辑
                 if (name.includes("陈建")) {
                     img = "陈建.png"; 
                 } else if (name.includes("宋涵")) {
@@ -101,11 +109,18 @@
                 } else if (name.includes("周诚")) {
                     img = "周诚.png";
                 } else {
-                    img = "https://i.pravatar.cc/300?u=generic-asian-" + encodeURIComponent(name);
+                    // 通用占位符
+                    img = "https://i.pravatar.cc/300?u=qa-cemetery-" + encodeURIComponent(name);
                 }
                 document.getElementById('v-photo').src = img;
             } else {
-                document.querySelector('.record-card').innerHTML = "<h2>档案检索失败：数据已抹除或未对焦。</h2>";
+                document.querySelector('.record-card').innerHTML = `
+                    <div class="section-header" style="color: #cc0000;">档案读取异常</div>
+                    <div class="content-box" style="text-align: center; color: #666;">
+                        未在本地数据库中发现名为 "${name || '未知'}" 的档案条目。<br>
+                        可能是由于网络原因或数据已被删除。
+                    </div>
+                `;
             }
         };
     </script>
