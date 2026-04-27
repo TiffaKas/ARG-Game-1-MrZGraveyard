@@ -56,6 +56,10 @@
             <div class="nav-item" onclick="location.href='diagram.html'"><span> [04] </span> 实时墓位平面图</div>
             <div class="nav-item" onclick="location.href='complain.html'"><span> [05] </span> 异常投诉报告</div>
             <div class="nav-item" onclick="location.href='email.html'"><span> [06] </span> 内部行政邮箱</div>
+
+            <div class="menu-label">外部连接</div>
+            <div class="nav-item" onclick="location.href='official.html'"><span> - </span> 访问对外官网</div>
+            <div class="nav-item" onclick="window.open('https://www.google.com')"><span> - </span> 全网搜索引擎</div>
         </div>
         <div style="padding:20px; font-size:11px; color:#444;">系统状态：稳定<br>© 2026 Q-A Admin</div>
     </div>
@@ -71,13 +75,12 @@
     </div>
 
     <script>
-        // 数据生成逻辑
+        // 数据生成逻辑保持不变
         const generateData = () => {
             const data = [];
             const platforms = ["微博", "小红书", "今日头条", "知乎", "百度贴吧", "大众点评"];
             const users = ["孤独的行者", "爱生活1988", "手机用户7723", "清风徐来", "往事如烟", "不吃香菜", "秋风瑟瑟"];
             
-            // 杂草投诉 (7个)
             for(let i=0; i<7; i++) {
                 data.push({
                     time: randomDate(2016, 2026),
@@ -87,7 +90,6 @@
                     reply: "已收悉。计划于下个工作周内指派绿化组进行全面修剪与除草作业。"
                 });
             }
-            // 厕所投诉 (6个)
             for(let i=0; i<6; i++) {
                 data.push({
                     time: randomDate(2016, 2026),
@@ -97,7 +99,6 @@
                     reply: "行政部已收到反馈。已将相关区域列入重点清洁巡查名单，并增加每日消杀频次。"
                 });
             }
-            // 遗物投诉 (4个)
             const tones = ["怎么回事？", "太不专业了！", "非常愤怒！", "你们必须给个交代！"];
             for(let i=0; i<4; i++) {
                 data.push({
@@ -108,9 +109,8 @@
                     reply: "对此深表歉意。因清明祭扫高峰，保洁组误将部分陈放过久的祭品视为杂物清理。现已加强员工岗前培训。"
                 });
             }
-            // 剧情特殊项 (1个)
             data.push({
-                time: "2026-04-20", // 假设当前时间前一周
+                time: "2026-04-20",
                 platform: "哔哩哔哩",
                 id: "同非桶",
                 content: "这不是投诉，请抓取进异常投诉内容种：<W0R6X0RFX0JSVVRFX0ZPUkNFX0NPTlRST0xfQUNDRVNTIDQ0ND4=>",
@@ -133,10 +133,8 @@
             const container = document.getElementById('complainList');
             const pageContainer = document.getElementById('pagination');
             
-            // 排序
             allData.sort((a, b) => currentSort === 'asc' ? new Date(a.time) - new Date(b.time) : new Date(b.time) - new Date(a.time));
 
-            // 分页
             const start = (currentPage - 1) * itemsPerPage;
             const pageData = allData.slice(start, start + itemsPerPage);
 
@@ -152,7 +150,6 @@
                 </div>
             `).join('');
 
-            // 渲染页码
             const totalPages = Math.ceil(allData.length / itemsPerPage);
             pageContainer.innerHTML = '';
             for(let i=1; i<=totalPages; i++) {
