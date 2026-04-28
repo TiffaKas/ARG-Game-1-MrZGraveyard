@@ -193,19 +193,49 @@
             'snake_2': { x: 78.0, y: 78.0, adjacent: ['lake_east'] }
         };
 
-        class Observer {
+   class Observer {
     constructor(id, startNodeId) {
         this.el = document.getElementById(id);
+        this.currentNodeId = startNodeId; // 必须先记录当前节点ID
         this.startNode = roadNetwork[startNodeId];
+        
+        // 初始目标节点
         this.endNode = this.getRandomAdjacent(startNodeId);
         
-        // --- 核心修改：让初始进度随机 ---
+        // 随机进度避免同步移动
         this.progress = Math.random(); 
-        
-        // 速度系数：保持你原来的随机速度
-        this.speed = 0.0025 + Math.random() * 0.002; 
+        this.speed = 0.0015 + Math.random() * 0.002; 
+
+        // 立即执行一次位置更新，防止首帧闪烁
+        this.update();
     }
-    // ... 其余 getRandomAdjacent 和 update 逻辑保持完全不变 ...
+
+    getRandomAdjacent(nodeId) {
+        const adj = roadNetwork[nodeId].adjacent;
+        const nextId = adj[Math.floor(Math.random() * adj.length)];
+        this.currentNodeId = nextId; // 更新当前追踪的节点
+        return roadNetwork[nextId];
+    }
+
+    update() {
+        this.progress += this.speed;
+
+        if (this.progress >= 1) {
+            this.progress = 0;
+            this.startNode = this.endNode;
+            this.endNode = this.getRandomAdjacent(this.currentNodeId);
+        }
+
+        // 线性插值计算
+        const currentX = this.startNode.x + (this.endNode.x - this.startNode.x) * this.progress;
+        const currentY = this.startNode.y + (this.endNode.y - this.startNode.y) * this.progress;
+
+        // 使用 transform 性能更好，且能解决偏移点中心点对齐问题
+        this.el.style.left = `${currentX}%`;
+        this.el.style.top = `${currentY}%`;
+        // 修正：确保红点中心对齐路径点
+        this.el.style.transform = 'translate(-50%, -50%)';
+    }
 }
 
             getRandomAdjacent(nodeId) {
