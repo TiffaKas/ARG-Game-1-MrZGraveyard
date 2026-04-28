@@ -2,140 +2,58 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>千安公墓 - 实时对焦系统 v7.2</title>
+    <title>实时墓位平面图 - 千安公墓管理平台</title>
     <style>
-        :root { 
-            --p-bg: #1d2731; 
-            --gold: #b8977e; 
-            --dark: #333; 
-        }
-        
-        body { 
-            margin: 0; 
-            font-family: "SimSun", serif; 
-            background-color: #000; 
-            display: flex; 
-            height: 100vh; 
-            overflow: hidden; 
-        }
+        :root { --p-bg: #1d2731; --gold: #b8977e; --border: #dcdfe6; --dark: #333; }
+        body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
 
-        /* 侧栏样式 - 全系统一致 */
-        .side { 
-            width: 260px; 
-            background: var(--p-bg); 
-            color: #fff; 
-            border-right: 4px solid var(--gold); 
-            display: flex; 
-            flex-direction: column; 
-            z-index: 100;
-            flex-shrink: 0;
-        }
+        /* 侧栏样式 - 保持全局同步 */
+        .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; flex-shrink: 0; }
+        .side-header { padding: 40px 20px; text-align: center; }
+        .side-header h1 { color: var(--gold); font-size: 22px; letter-spacing: 4px; margin: 0; border: none; text-decoration: none; }
         
         .nav-menu { margin-top: 20px; flex: 1; overflow-y: auto; }
         .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
-        .nav-item { 
-            padding: 12px 25px; 
-            font-size: 14px; 
-            color: var(--gold); 
-            cursor: pointer; 
-            transition: all 0.3s; 
-            display: flex; 
-            align-items: center; 
-            border-bottom: 1px solid rgba(255,255,255,0.03); 
-        }
+        .nav-item { padding: 12px 25px; font-size: 14px; color: var(--gold); cursor: pointer; transition: all 0.3s; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
         .nav-item:hover { background: rgba(255,255,255,0.1); padding-left: 30px; }
         .nav-item span { margin-right: 15px; font-size: 10px; }
 
-        /* 右侧主监控区 */
-        .main { 
+        /* 主体区域 */
+        .main { flex: 1; padding: 40px; display: flex; flex-direction: column; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--gold); padding-bottom: 15px; }
+        .title { font-size: 24px; color: var(--dark); letter-spacing: 2px; }
+
+        /* 画布容器 */
+        .map-container { 
             flex: 1; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 20px;
-            position: relative;
-        }
-
-        h1.monitor-title {
-            color: var(--gold);
-            font-weight: normal;
-            letter-spacing: 2px;
-            font-size: 20px;
-            margin: 0 0 20px 0;
-            border-bottom: 1px solid var(--gold);
-            padding-bottom: 10px;
-            width: 80%;
-            text-align: center;
-        }
-
-        .map-container {
-            position: relative;
-            width: 100%;
-            max-width: 1000px; 
-            border: 2px solid var(--gold);
-            box-shadow: 0 0 30px rgba(184, 151, 126, 0.2);
+            background: #2a3642; 
+            border: 1px solid var(--gold); 
+            position: relative; 
             overflow: hidden;
-            background: #000;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        #cemetery-map {
-            width: 100%;
-            display: block;
-            filter: brightness(0.7) contrast(1.1);
-            user-select: none;
-        }
-
-        /* 实时红点样式 - 移除 CSS transition 以便 JS 驱动 */
-        .dot {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        #observer-1 { background-color: #ff0000; box-shadow: 0 0 10px #ff0000; }
-        #observer-2 { background-color: #ff3333; box-shadow: 0 0 10px #ff3333; }
-        #observer-3 { background-color: #ff5555; box-shadow: 0 0 10px #ff5555; filter: hue-rotate(15deg); }
-        #observer-4 { background-color: #ff1111; box-shadow: 0 0 10px #ff1111; filter: saturate(2); }
-
-        .dot::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: inherit;
-            border-radius: inherit;
-            animation: pulse 1.8s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(3); opacity: 0; }
-        }
-
-        .status-bar {
-            width: 80%;
-            font-size: 12px;
-            color: #666;
-            text-align: left;
-            margin-top: 15px;
-            font-family: monospace;
+        #mapCanvas { background-image: radial-gradient(#3a4a5a 1px, transparent 1px); background-size: 20px 20px; cursor: crosshair; }
+        
+        .status-panel { 
+            position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); 
+            color: #00ff00; padding: 15px; font-family: monospace; font-size: 12px;
+            border-left: 3px solid #00ff00; pointer-events: none;
         }
     </style>
 </head>
 <body>
 
     <div class="side">
-        <div style="padding:40px 20px; text-align:center">
-            <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
+        <div class="side-header">
+            <h1>千安公墓</h1>
             <p style="font-size:10px; color:#555; margin-top:5px;">ADMIN TERMINAL v7.0</p>
         </div>
         <div class="nav-menu">
             <div class="menu-label">内部管理</div>
-            <div class="nav-item" onclick="location.href='rules.html'"><span> [00] </span> 员工工作守则</div>
+            <div class="nav-item" onclick="location.href='rules.html'"><span> [00] </span> 员工工作守责</div>
             <div class="nav-item" onclick="location.href='system.html'"><span> [01] </span> 档案检索模块</div>
             <div class="nav-item" onclick="location.href='entry.html'"><span> [02] </span> 数据录入终端</div>
             <div class="nav-item" onclick="location.href='list.html'"><span> [03] </span> 已录入档案库</div>
@@ -151,98 +69,100 @@
     </div>
 
     <div class="main">
-        <h1 class="monitor-title">千安墓园实时概览系统 v7.2</h1>
-        
-        <div class="map-container">
-            <img src="墓地.png" id="cemetery-map" alt="千安公墓实时平面图" referrerpolicy="no-referrer">
-            <div id="observer-1" class="dot"></div>
-            <div id="observer-2" class="dot"></div>
-            <div id="observer-3" class="dot"></div>
-            <div id="observer-4" class="dot"></div>
+        <div class="header-bar">
+            <div class="title">区域实时动态监控</div>
+            <div style="color:var(--gold); font-size:12px;">已加密链路：AES-256</div>
         </div>
 
-        <div class="status-bar">
-            [终端状态] 稳定性: 99.4% | 实时移动人数: 4 | 模式: 常规巡逻&工作
+        <div class="map-container">
+            <canvas id="mapCanvas"></canvas>
+            <div class="status-panel">
+                > 链路状态: 正常<br>
+                > 实时节点: 04<br>
+                > 刷新率: 60Hz<br>
+                > 数据源: 北斗卫星-QA分支
+            </div>
         </div>
     </div>
 
     <script>
-        const roadNetwork = {
-            'gate_main': { x: 49.6, y: 88.5, adjacent: ['hub_south'] },
-            'hub_south': { x: 49.6, y: 72.8, adjacent: ['gate_main', 'hub_mid_south', 'lake_west', 'lake_east'] },
-            'hub_mid_south': { x: 49.6, y: 56.7, adjacent: ['hub_south', 'hub_main', 'road_2_3', 'road_4_5'] },
-            'hub_main': { x: 49.6, y: 44.5, adjacent: ['hub_mid_south', 'temple_entrance', 'road_1_2_mid', 'road_5_6_mid'] },
-            'temple_entrance': { x: 49.6, y: 31.0, adjacent: ['hub_main'] },
-            'road_2_3': { x: 38.0, y: 56.7, adjacent: ['hub_mid_south', 'road_1_2_south', 'zone_3_corner'] },
-            'road_4_5': { x: 61.5, y: 56.7, adjacent: ['hub_mid_south', 'road_5_6_south', 'zone_4_corner'] },
-            'road_1_2_mid': { x: 34.0, y: 44.5, adjacent: ['hub_main', 'road_1_corner_up'] },
-            'road_5_6_mid': { x: 66.0, y: 44.5, adjacent: ['hub_main', 'road_6_corner_up'] },
-            'road_1_corner_up': { x: 17.5, y: 44.5, adjacent: ['road_1_2_mid', 'road_1_west_gate'] },
-            'road_1_west_gate': { x: 10.0, y: 54.0, adjacent: ['road_1_corner_up', 'road_1_2_south'] },
-            'road_1_2_south': { x: 17.5, y: 56.7, adjacent: ['road_1_west_gate', 'road_2_3', 'zone_1_lower'] },
-            'road_6_corner_up': { x: 82.5, y: 44.5, adjacent: ['road_5_6_mid', 'road_6_east_gate'] },
-            'road_6_east_gate': { x: 90.0, y: 54.0, adjacent: ['road_6_corner_up', 'road_5_6_south'] },
-            'road_5_6_south': { x: 82.5, y: 56.7, adjacent: ['road_6_east_gate', 'road_4_5', 'zone_6_lower'] },
-            'zone_1_lower': { x: 25.0, y: 64.0, adjacent: ['road_1_2_south'] },
-            'zone_3_corner': { x: 42.0, y: 35.0, adjacent: ['road_2_3'] },
-            'zone_4_corner': { x: 57.0, y: 35.0, adjacent: ['road_4_5'] },
-            'zone_6_lower': { x: 74.0, y: 64.0, adjacent: ['road_5_6_south'] },
-            'lake_west': { x: 36.5, y: 72.8, adjacent: ['hub_south', 'snake_1'] },
-            'lake_east': { x: 68.0, y: 72.8, adjacent: ['hub_south', 'snake_2'] },
-            'snake_1': { x: 28.0, y: 78.0, adjacent: ['lake_west'] },
-            'snake_2': { x: 78.0, y: 78.0, adjacent: ['lake_east'] }
-        };
+        const canvas = document.getElementById('mapCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 动态调整画布大小
+        function resize() {
+            canvas.width = canvas.parentElement.clientWidth - 40;
+            canvas.height = canvas.parentElement.clientHeight - 40;
+        }
+        window.onresize = resize;
+        resize();
 
-        class Observer {
-            constructor(id, startNodeId) {
-                this.el = document.getElementById(id);
-                this.startNode = roadNetwork[startNodeId];
-                this.endNode = this.getRandomAdjacent(startNodeId);
-                this.progress = 0;
-                // 速度系数：决定移动快慢
-                this.speed = 0.0025 + Math.random() * 0.002; 
-            }
+        // 巡逻员数据：progress 设为随机值以解决“刷新重置”问题
+        const patrols = [
+            { id: "P-01", progress: Math.random(), speed: 0.0005, color: "#ff4d4f" },
+            { id: "P-02", progress: Math.random(), speed: 0.0007, color: "#ff4d4f" },
+            { id: "P-03", progress: Math.random(), speed: 0.0004, color: "#ff4d4f" },
+            { id: "P-04", progress: Math.random(), speed: 0.0006, color: "#ff4d4f" }
+        ];
 
-            getRandomAdjacent(nodeId) {
-                const adj = roadNetwork[nodeId].adjacent;
-                const nextId = adj[Math.floor(Math.random() * adj.length)];
-                this.currentNodeId = nextId;
-                return roadNetwork[nextId];
-            }
+        // 简化的路径映射函数 (矩形环绕路径)
+        function getPos(progress) {
+            const margin = 80;
+            const w = canvas.width - margin * 2;
+            const h = canvas.height - margin * 2;
+            const total = (w + h) * 2;
+            let d = progress * total;
 
-            update() {
-                this.progress += this.speed;
-
-                if (this.progress >= 1) {
-                    this.progress = 0;
-                    this.startNode = this.endNode;
-                    this.endNode = this.getRandomAdjacent(this.currentNodeId);
-                }
-
-                // 线性插值计算当前百分比坐标
-                const currentX = this.startNode.x + (this.endNode.x - this.startNode.x) * this.progress;
-                const currentY = this.startNode.y + (this.endNode.y - this.startNode.y) * this.progress;
-
-                this.el.style.left = currentX + '%';
-                this.el.style.top = currentY + '%';
-            }
+            if (d < w) return { x: margin + d, y: margin };
+            d -= w;
+            if (d < h) return { x: margin + w, y: margin + d };
+            d -= h;
+            if (d < w) return { x: margin + w - d, y: margin + h };
+            d -= w;
+            return { x: margin, y: margin + h - d };
         }
 
-        window.onload = () => {
-            const observers = [
-                new Observer('observer-1', 'gate_main'),
-                new Observer('observer-2', 'temple_entrance'),
-                new Observer('observer-3', 'road_1_corner_up'),
-                new Observer('observer-4', 'road_6_east_gate')
-            ];
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            function animate() {
-                observers.forEach(obs => obs.update());
-                requestAnimationFrame(animate);
+            // 绘制墓区网格背景简图
+            ctx.strokeStyle = "rgba(184, 151, 126, 0.2)";
+            ctx.lineWidth = 1;
+            for(let i=0; i<5; i++) {
+                ctx.strokeRect(100 + i*120, 100, 80, 200);
+                ctx.strokeRect(100 + i*120, 350, 80, 200);
             }
-            
-            animate();
-        };
+
+            // 更新并绘制巡逻点
+            patrols.forEach(p => {
+                p.progress = (p.progress + p.speed) % 1;
+                const pos = getPos(p.progress);
+
+                // 绘制光晕
+                ctx.beginPath();
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 2, pos.x, pos.y, 15);
+                grad.addColorStop(0, p.color);
+                grad.addColorStop(1, "transparent");
+                ctx.fillStyle = grad;
+                ctx.arc(pos.x, pos.y, 15, 0, Math.PI*2);
+                ctx.fill();
+
+                // 绘制核心点
+                ctx.beginPath();
+                ctx.fillStyle = p.color;
+                ctx.arc(pos.x, pos.y, 4, 0, Math.PI*2);
+                ctx.fill();
+
+                // 绘制 ID 标签
+                ctx.fillStyle = "rgba(255,255,255,0.7)";
+                ctx.font = "10px monospace";
+                ctx.fillText(p.id, pos.x + 8, pos.y - 8);
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
     </script>
 </body>
 </html>
