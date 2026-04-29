@@ -71,7 +71,7 @@
             box-sizing: border-box;
             transition: box-shadow 0.2s;
         }
-        .search-bar:hover, .search-bar:focus {
+        .search-bar:hover, .search-bar:focus{
             box-shadow: 0 1px 6px rgba(32,33,36,0.28);
             border-color: rgba(223,225,229,0);
         }
@@ -148,7 +148,8 @@
         </div>
 
         <div class="search-container">
-            <input type="text" class="search-bar" placeholder="搜索 Google 或输入网址">
+            <!-- 添加了 id="searchInput" 用于 JS 监听 -->
+            <input type="text" id="searchInput" class="search-bar" placeholder="搜索 Google 或输入网址" autocomplete="off">
         </div>
 
         <div class="shortcuts">
@@ -184,6 +185,27 @@
             </div>
         </div>
     </div>
+
+    <!-- JavaScript 逻辑 -->
+    <script>
+        const searchInput = document.getElementById('searchInput');
+
+        // 监听键盘事件
+        searchInput.addEventListener('keydown', function(event) {
+            // 当按下回车键时
+            if (event.key === 'Enter') {
+                const query = searchInput.value.trim();
+
+                // 核心逻辑：如果输入包含“马小同”，跳转到对应的搜索结果页
+                if (query.includes('马小同')) {
+                    window.location.href = 'search_results_ma.html';
+                } else if (query !== "") {
+                    // 如果输入其他内容，可以根据需要决定是否跳转到通用 404 或其他页面
+                    console.log("用户搜索了未知内容: " + query);
+                }
+            }
+        });
+    </script>
 
 </body>
 </html>
