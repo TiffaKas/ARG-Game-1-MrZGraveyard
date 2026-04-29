@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>微信WeChat - PC</title>
+    <title>微信 WeChat - 终端监控模式</title>
     <style>
         :root {
             --win-bg: #f5f5f5;
@@ -13,103 +13,60 @@
             --wechat-green: #07c160;
         }
 
-        body { margin: 0; font-family: "Microsoft YaHei", sans-serif; background-color: #d1d1d1; display: flex; height: 100vh; overflow: hidden; }
+        body { margin: 0; font-family: "Microsoft YaHei", sans-serif; background-color: #f5f5f5; display: flex; height: 100vh; overflow: hidden; }
 
-        /* 外部容器模拟窗口 */
-        .wechat-window {
-            width: 850px;
-            height: 600px;
-            background: var(--win-bg);
-            margin: auto;
-            display: flex;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
-            border-radius: 4px;
-            overflow: hidden;
-        }
+        /* 全屏容器 */
+        .wechat-window { width: 100vw; height: 100vh; display: flex; background: var(--win-bg); position: relative; }
 
-        /* 1. 最左侧导航栏 (Narrow Sidebar) */
-        .win-side {
-            width: 60px;
-            background: var(--side-black);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 0;
-        }
-        .win-side .avatar-main { width: 35px; height: 35px; background: #555; border-radius: 4px; margin-bottom: 25px; }
+        /* 左侧导航栏 */
+        .win-side { width: 60px; background: var(--side-black); display: flex; flex-direction: column; align-items: center; padding: 20px 0; flex-shrink: 0; }
+        .avatar-main { width: 35px; height: 35px; background: #555; border-radius: 4px; margin-bottom: 25px; }
         .win-side .icon { color: #919191; font-size: 20px; margin-bottom: 25px; cursor: pointer; }
         .win-side .icon.active { color: var(--wechat-green); }
 
-        /* 2. 中间联系人列表 (Contact List) */
-        .win-list {
-            width: 250px;
-            background: #eeeae8;
-            border-right: 1px solid #dcd9d8;
-            display: flex;
-            flex-direction: column;
-        }
-        .list-search { padding: 25px 12px 10px; }
-        .list-search input { width: 100%; border: none; background: #dbd9d8; padding: 4px 8px; font-size: 12px; border-radius: 2px; box-sizing: border-box; }
+        /* 中间联系人列表 */
+        .win-list { width: 280px; background: #eeeae8; border-right: 1px solid #dcd9d8; display: flex; flex-direction: column; flex-shrink: 0; }
+        .list-search { padding: 25px 12px 10px; position: relative; }
+        .list-search input { width: 100%; border: none; background: #dbd9d8; padding: 6px 10px; font-size: 12px; border-radius: 2px; outline: none; }
         
-        .contact-item { padding: 12px; display: flex; align-items: center; background: var(--active-gray); cursor: pointer; }
-        .contact-avatar { width: 40px; height: 40px; background: #889; border-radius: 2px; margin-right: 10px; }
+        #searchResultBox { position: absolute; top: 60px; left: 12px; right: 12px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none; z-index: 100; }
+        .search-item { padding: 10px; display: flex; align-items: center; cursor: pointer; border: 1px solid #eee; }
+        .search-item:hover { background: #f2f2f2; }
+
+        .contact-item { padding: 12px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; border-bottom: 1px solid #e0dbda; }
+        .contact-item:hover { background: #e2dfde; }
+        .contact-item.active { background: var(--active-gray); }
+        .contact-avatar { width: 40px; height: 40px; background: #ccc; border-radius: 2px; margin-right: 10px; flex-shrink: 0; }
         .contact-info { flex: 1; overflow: hidden; }
         .contact-name { font-size: 14px; color: #000; margin-bottom: 4px; }
         .contact-last-msg { font-size: 12px; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* 3. 右侧主聊天区域 (Main Chat) */
+        /* 右侧主聊天区 */
         .win-chat { flex: 1; display: flex; flex-direction: column; background: var(--win-bg); position: relative; }
-        
-        /* 聊天头部 */
-        .chat-header { 
-            height: 60px; 
-            padding: 0 25px; 
-            border-bottom: 1px solid #e5e5e5; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between;
-        }
+        .chat-header { height: 60px; padding: 0 25px; border-bottom: 1px solid #e5e5e5; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
         .chat-title { font-size: 18px; color: var(--text-main); }
-        .chat-more { color: #999; cursor: pointer; font-size: 20px; letter-spacing: 2px; }
 
-        /* 对话展示区 */
-        .chat-body { flex: 1; overflow-y: auto; padding: 20px 25px; }
+        .chat-body { flex: 1; overflow-y: auto; padding: 20px 25px; display: none; }
+        .chat-body.active { display: block; }
+        
         .msg-row { margin-bottom: 20px; display: flex; }
-        .msg-bubble { 
-            background: #fff; 
-            padding: 8px 12px; 
-            border-radius: 4px; 
-            font-size: 14px; 
-            max-width: 70%; 
-            line-height: 1.6;
-            color: #000;
-            position: relative;
-        }
-        /* 撤回消息样式 */
+        .msg-bubble { background: #fff; padding: 8px 12px; border-radius: 4px; font-size: 14px; max-width: 70%; line-height: 1.6; color: #000; position: relative; box-shadow: 0 1px 1px rgba(0,0,0,0.05); }
         .msg-recall { text-align: center; color: #b2b2b2; font-size: 12px; margin: 15px 0; width: 100%; }
 
-        /* 底部输入屏蔽区 */
-        .chat-footer { height: 180px; border-top: 1px solid #e5e5e5; background: #fff; display: flex; flex-direction: column; }
+        /* 底部输入区 */
+        .chat-footer { height: 200px; border-top: 1px solid #e5e5e5; background: #fff; display: flex; flex-direction: column; flex-shrink: 0; }
         .footer-tools { padding: 10px 20px; display: flex; gap: 15px; color: #888; font-size: 18px; }
-        .footer-input { flex: 1; padding: 0 20px; font-size: 14px; color: #ccc; }
-        .footer-status { padding: 10px 20px; display: flex; justify-content: flex-end; }
-        .send-btn { background: #f5f5f5; border: 1px solid #e5e5e5; color: #999; padding: 4px 20px; font-size: 13px; border-radius: 2px; }
+        .footer-input-box { flex: 1; padding: 0 20px; font-size: 14px; color: #bbb; cursor: default; }
+        .send-btn-row { padding: 10px 20px; display: flex; justify-content: flex-end; }
+        .send-btn { background: #f5f5f5; border: 1px solid #e5e5e5; color: #999; padding: 4px 20px; border-radius: 2px; }
 
-        /* 系统覆盖提示 */
-        .system-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: grayscale(0.5);
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .overlay-msg { background: rgba(0,0,0,0.6); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 12px; letter-spacing: 1px; }
-        
-        .back-btn { position: absolute; top: 10px; right: 10px; font-size: 12px; color: #888; text-decoration: none; border: 1px solid #ccc; padding: 2px 8px; border-radius: 4px; }
-        .back-btn:hover { background: #eee; }
+        /* 资料弹窗 */
+        #overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.3); display: none; z-index: 999; }
+        #profileModal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; background: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.2); border-radius: 4px; display: none; z-index: 1000; padding: 30px; }
+        .profile-btn { width: 100%; padding: 10px; background: var(--wechat-green); color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; }
+        .profile-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        .back-btn { position: absolute; top: 15px; right: 20px; font-size: 12px; color: #999; text-decoration: none; z-index: 10; border: 1px solid #ddd; padding: 4px 10px; background: #fff; }
     </style>
 </head>
 <body>
@@ -119,68 +76,176 @@
     <div class="wechat-window">
         <div class="win-side">
             <div class="avatar-main"></div>
-            <div class="icon active">●</div> <div class="icon">○</div> <div class="icon" style="margin-top: auto;">≡</div> </div>
+            <div class="icon active">🗨</div>
+            <div class="icon">👤</div>
+            <div class="icon" style="margin-top: auto;">≡</div>
+        </div>
 
         <div class="win-list">
             <div class="list-search">
-                <input type="text" placeholder="搜索">
+                <input type="text" id="searchInput" placeholder="搜索" autocomplete="off">
+                <div id="searchResultBox">
+                    <div class="search-item" onclick="showProfile()">
+                        <div class="contact-avatar"></div>
+                        <div>
+                            <div class="contact-name">同非桶</div>
+                            <div class="contact-last-msg">微信号: 14019093321</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="contact-item">
-                <div class="contact-avatar"></div>
-                <div class="contact-info">
-                    <div class="contact-name">张晓华 (张顺家属)</div>
-                    <div class="contact-last-msg">对方撤回了一条消息</div>
+            <div id="contactList">
+                <div class="contact-item active" id="item-family" onclick="switchChat('family')">
+                    <div class="contact-avatar"></div>
+                    <div class="contact-info">
+                        <div class="contact-name">张晓华 (张顺家属)</div>
+                        <div class="contact-last-msg">对方撤回了一条消息</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="win-chat">
             <div class="chat-header">
-                <div class="chat-title">张顺的家属 (张晓华)</div>
-                <div class="chat-more">...</div>
+                <div class="chat-title" id="chatTitle">张顺的家属 (张晓华)</div>
             </div>
 
-            <div class="chat-body">
+            <div id="chat-family" class="chat-body active">
                 <div class="msg-row">
                     <div class="contact-avatar" style="width:34px; height:34px;"></div>
                     <div class="msg-bubble">管理员您好，我是张顺的侄子。我想问下，我叔叔的档案录入了吗？</div>
                 </div>
-
-                <div class="msg-row">
-                    <div class="contact-avatar" style="width:34px; height:34px;"></div>
-                    <div class="msg-bubble">他生前确实很怪，但他人不坏的。他只是...只是身体比一般人硬一些。</div>
-                </div>
-
-                <div class="msg-row">
-                    <div class="contact-avatar" style="width:34px; height:34px;"></div>
-                    <div class="msg-bubble">那天我帮他搬家，他从楼梯上滑下去，我吓坏了，结果他站起来说地板质量真差。</div>
-                </div>
-
-                <div class="msg-row">
-                    <div class="contact-avatar" style="width:34px; height:34px;"></div>
-                    <div class="msg-bubble">你说，人怎么能把实木地板给砸裂缝了呢？</div>
-                </div>
-
                 <div class="msg-recall">对方撤回了一条消息</div>
             </div>
 
-            <div class="chat-footer">
-                <div class="footer-tools">
-                    <span>☺</span> <span>📁</span> <span>✂</span> <span>✉</span>
-                </div>
-                <div class="footer-input">
-                    [ 系统提示：单向实时观测已开启 ]
-                </div>
-                <div class="footer-status">
-                    <button class="send-btn">发送(S)</button>
+            <div id="chat-tong" class="chat-body">
+                <div class="msg-recall">已通过申请，现在可以开始聊天了</div>
+                <div class="msg-row">
+                    <div class="contact-avatar" style="width:34px; height:34px;"></div>
+                    <div class="msg-bubble">你好。你是接手这个终端的人吗？</div>
                 </div>
             </div>
 
-            <div class="system-overlay">
-                <div class="overlay-msg">TERMINAL V7.0 - READ ONLY MODE</div>
+            <div class="chat-footer">
+                <div class="footer-tools"><span>☺</span> <span>📁</span> <span>✂</span> <span>✉</span></div>
+                <div class="footer-input-box">[ 终端只读模式：无法发送消息 ]</div>
+                <div class="send-btn-row"><button class="send-btn">发送(S)</button></div>
             </div>
         </div>
     </div>
 
+    <div id="overlay"></div>
+    <div id="profileModal">
+        <div style="display: flex; align-items: center;">
+            <div class="contact-avatar" style="width:50px; height:50px;"></div>
+            <div style="margin-left: 15px;">
+                <div style="font-weight: bold; font-size: 18px;">同非桶</div>
+                <div style="font-size: 12px; color: #999;">微信号: 14019093321</div>
+            </div>
+        </div>
+        <button class="profile-btn" id="addBtn" onclick="sendApply()">添加到通讯录</button>
+        <div style="text-align: center; margin-top: 10px;"><a href="#" onclick="closeProfile()" style="font-size: 12px; color: #999;">取消</a></div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchResultBox = document.getElementById('searchResultBox');
+        const profileModal = document.getElementById('profileModal');
+        const overlay = document.getElementById('overlay');
+        const addBtn = document.getElementById('addBtn');
+        const contactList = document.getElementById('contactList');
+
+        // 1. 搜索判定
+        searchInput.addEventListener('input', (e) => {
+            searchResultBox.style.display = (e.target.value === '14019093321') ? 'block' : 'none';
+        });
+
+        function showProfile() {
+            searchResultBox.style.display = 'none';
+            profileModal.style.display = 'block';
+            overlay.style.display = 'block';
+            
+            // 如果已经申请过，更新按钮状态
+            if (localStorage.getItem('tong_apply_timestamp')) {
+                updateAddButtonStatus();
+            }
+        }
+
+        function closeProfile() {
+            profileModal.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+
+        // 2. 持久化申请逻辑
+        function sendApply() {
+            localStorage.setItem('tong_apply_timestamp', Date.now());
+            updateAddButtonStatus();
+            setTimeout(closeProfile, 800);
+            checkStatus(); // 立即启动检测
+        }
+
+        function updateAddButtonStatus() {
+            addBtn.innerText = '已发送申请';
+            addBtn.disabled = true;
+        }
+
+        function checkStatus() {
+            const applyTime = localStorage.getItem('tong_apply_timestamp');
+            const alreadyAdded = localStorage.getItem('tong_added');
+
+            if (alreadyAdded === 'true') {
+                renderTongSidebar();
+                return;
+            }
+
+            if (applyTime) {
+                const elapsed = Date.now() - parseInt(applyTime);
+                const waitTime = 180000; // 3分钟
+
+                if (elapsed >= waitTime) {
+                    localStorage.setItem('tong_added', 'true');
+                    renderTongSidebar();
+                    alert("系统提示：同非桶 已通过你的好友申请。");
+                } else {
+                    // 每5秒轮询一次，直到时间到达
+                    setTimeout(checkStatus, 5000);
+                }
+            }
+        }
+
+        function renderTongSidebar() {
+            if (document.getElementById('item-tong')) return;
+            const div = document.createElement('div');
+            div.className = 'contact-item';
+            div.id = 'item-tong';
+            div.onclick = () => switchChat('tong');
+            div.innerHTML = `
+                <div class="contact-avatar"></div>
+                <div class="contact-info">
+                    <div class="contact-name">同非桶</div>
+                    <div class="contact-last-msg">你好。</div>
+                </div>
+            `;
+            contactList.appendChild(div);
+        }
+
+        function switchChat(target) {
+            document.querySelectorAll('.chat-body').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.contact-item').forEach(i => i.classList.remove('active'));
+            
+            if (target === 'family') {
+                document.getElementById('chat-family').classList.add('active');
+                document.getElementById('item-family').classList.add('active');
+                document.getElementById('chatTitle').innerText = '张顺的家属 (张晓华)';
+            } else {
+                document.getElementById('chat-tong').classList.add('active');
+                document.getElementById('item-tong').classList.add('active');
+                document.getElementById('chatTitle').innerText = '同非桶';
+            }
+        }
+
+        // 页面初始化检查
+        window.onload = checkStatus;
+    </script>
 </body>
 </html>
