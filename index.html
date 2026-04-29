@@ -12,39 +12,41 @@
             height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center;
             transition: opacity 0.8s;
         }
-        .box { max-width: 600px; padding: 40px; line-height: 1.6; color: var(--dark); }
-        details { margin: 20px 0; background: #fff9e6; border: 1px dashed var(--gold); padding: 10px; font-size: 13px; }
-        summary { cursor: pointer; color: var(--gold); font-weight: bold; }
+        .box { max-width: 600px; padding: 40px; line-height: 1.8; color: var(--dark); }
+        .author-note { margin: 25px 0; padding: 15px; border-left: 4px solid var(--gold); background: #f9f9f9; font-size: 14px; }
         .disclaim { font-size: 12px; color: #888; border-top: 1px solid #eee; margin-top: 20px; padding-top: 10px; }
-        .btn { margin-top: 30px; padding: 15px 50px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; width: 100%; letter-spacing: 2px; }
+        .btn { margin-top: 30px; padding: 15px 50px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; width: 100%; letter-spacing: 2px; transition: 0.3s; }
+        .btn:hover { background: #2c3e50; }
     </style>
 </head>
 <body>
 
     <div id="welcome">
         <div class="box">
-            <h2 style="text-align:center; color:var(--p-bg)">作者寄语</h2>
-            <p>欢迎。你是一个墓地管理员，来到千安公墓工作。你的任务是在正常工作中，通过系统检索发现异常，并调查怪异的源头。</p>
-            <p>建议在手边准备一个<strong>记事本</strong>，记录下观察到的所有变化。在这个系统里，细节决定真相。</p>
+            <h2 style="text-align:center; color:var(--p-bg); letter-spacing: 4px;">入职协议</h2>
             
-            <details>
-                <summary>提示：（建议一周目没懂的二周目看）</summary>
-                <p>提示：档案显示的触发条件与访问者的 <strong>San值（理智值）</strong> 相关。</p>
-            </details>
+            <p>你的名字是<strong>顾叙</strong>，你来到了千安公墓工作，一个平平无奇的丧葬业公司。</p>
+            <p>因为是居家办公，即使工资不多，你也很欣然地接受了现状。这是你入职的<strong>第二周</strong>，和同事的关系处于熟与不熟之间。</p>
+            <p>好好进行今天的工作，常规地录入档案吧！</p>
+
+            <div class="author-note">
+                <strong>作者的话：</strong><br>
+                建议在手边准备一个记事本，记录下观察到的所有变化。在这个系统里，细节决定真相。
+            </div>
 
             <div class="disclaim">
                 <strong>免责声明：</strong> 本网站为虚构艺术作品，与现实机构无关。所有编号及记录纯属虚构。
             </div>
+            
             <button class="btn" onclick="go()">开启终端</button>
         </div>
     </div>
 
     <script>
         function go() {
-            // 触发淡出效果
             document.getElementById('welcome').style.opacity = '0';
             setTimeout(() => {
-                // 核心逻辑修改：跳转至浏览器主页 summary.html
+                // 跳转至浏览器主页
                 window.location.href = "summary.html";
             }, 800);
         }
