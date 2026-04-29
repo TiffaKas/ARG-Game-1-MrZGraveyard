@@ -2,91 +2,92 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>马小同 FOP - Google 搜索</title>
+    <title>马小同 - 维基百科，自由的百科全书</title>
     <style>
-        body { font-family: arial, sans-serif; background: #fff; margin: 0; padding: 0; }
-        .header { border-bottom: 1px solid #ebebeb; padding: 20px 30px; position: sticky; top: 0; background: #fff; z-index: 100; }
-        .logo { color: #4285f4; font-size: 24px; font-weight: bold; text-decoration: none; }
-        .search-container { max-width: 650px; margin-left: 150px; padding: 20px; }
-        .stats { color: #70757a; font-size: 14px; margin-bottom: 20px; }
-        .result { margin-bottom: 35px; }
-        .result a { text-decoration: none; cursor: pointer; }
-        .result h3 { color: #1a0dab; font-size: 20px; margin: 0 0 5px 0; font-weight: normal; }
-        .result h3:hover { text-decoration: underline; }
-        .result .cite { color: #202124; font-size: 14px; font-style: normal; margin-bottom: 4px; display: block; }
-        .result .desc { color: #4d5156; font-size: 14px; line-height: 1.58; }
-        .result em { font-weight: bold; font-style: normal; }
-        .related-search { margin-top: 50px; border-top: 1px solid #ebebeb; padding-top: 20px; }
-        .related-search h2 { font-size: 20px; font-weight: normal; margin-bottom: 15px; }
-        .related-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .related-item { color: #1a0dab; text-decoration: none; font-size: 14px; }
-        .related-item:hover { text-decoration: underline; }
+        body { font-family: sans-serif; line-height: 1.6; color: #202124; background: #f6f6f6; margin: 0; padding: 0; }
+        .wrapper { max-width: 1200px; margin: 0 auto; background: #fff; padding: 40px; border: 1px solid #a7d7f9; }
+        
+        /* 维基百科样式顶部 */
+        .firstHeading { border-bottom: 1px solid #a2a9b1; margin-bottom: 0.25em; padding: 0; font-family: 'Linux Libertine','Georgia','Times',serif; font-size: 1.8em; }
+        .siteSub { font-size: 12.8px; margin-bottom: 20px; }
+        
+        /* 侧边信息框 */
+        .infobox { border: 1px solid #a2a9b1; background-color: #f8f9fa; margin: 0.5em 0 0.5em 1em; padding: 0.2em; float: right; clear: right; width: 22em; font-size: 88%; line-height: 1.5em; }
+        .infobox th { background-color: #cedff2; text-align: center; }
+        .infobox td { padding: 4px; }
+        .infobox-image { text-align: center; padding: 10px; background: #eaecf0; color: #54595d; }
+
+        /* 目录 */
+        .toc { border: 1px solid #a2a9b1; background-color: #f8f9fa; padding: 7px; font-size: 95%; display: table; margin-top: 20px; margin-bottom: 20px; }
+        .toc h2 { font-size: 100%; font-weight: bold; text-align: center; margin: 0; }
+        .toc ul { list-style: none; padding: 0; margin: 0.5em 0 0; }
+        .toc li { margin-bottom: 4px; }
+
+        /* 正文 */
+        h2 { border-bottom: 1px solid #a2a9b1; margin-top: 1.5em; }
+        p { margin: 0.5em 0 1em 0; }
+        .quote { background: #f9f9f9; border-left: 10px solid #ccc; margin: 1.5em 10px; padding: 0.5em 10px; font-style: italic; }
+        
+        /* 链接样式 */
+        a { color: #0645ad; text-decoration: none; }
+        a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <a href="summary.html" class="logo"><span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span></a>
+
+<div class="wrapper">
+    <h1 class="firstHeading">马小同</h1>
+    <div class="siteSub">维基百科，自由的百科全书</div>
+
+    <!-- 侧边信息框 -->
+    <table class="infobox">
+        <tr><th colspan="2">马小同 <br>Xiao-Tong Ma</th></tr>
+        <tr><td colspan="2" class="infobox-image">暂无图片<br>[学者形象存档]</td></tr>
+        <tr><th>出生</th><td>1990年 (36岁)</td></tr>
+        <tr><th>国籍</th><td>中国</td></tr>
+        <tr><th>母校</th><td>宾夕法尼亚大学 (PhD/Postdoc)</td></tr>
+        <tr><th>职业</th><td>医学博士、转化医学专家、罕见病研究员</td></tr>
+        <tr><th>已知作品</th><td>FOP 早期诊断协议、ACVR1 信号通路研究</td></tr>
+        <tr><th>雇主</th><td>某跨国药企罕见病事业部 (2024-至今)</td></tr>
+    </table>
+
+    <p><b>马小同</b>（Xiao-Tong Ma，1990年—），中国籍医学博士，国际知名罕见病专家。他主要致力于<b>进行性肌肉骨化症</b>（FOP）的研究与临床转化。马小同曾长期在北美顶尖生物医学实验室深造，是国内推动罕见病特效药进入医保与落地的关键人物之一。</p>
+
+    <div class="toc">
+        <h2>目录</h2>
+        <ul>
+            <li>1 <a href="#early">学术生涯</a></li>
+            <li>2 <a href="#career">职业经历与 Palovarotene</a></li>
+            <li>3 <a href="#philosophy">研究理念</a></li>
+            <li>4 <a href="#awards">荣誉与评价</a></li>
+        </ul>
     </div>
-    <div class="search-container">
-        <div class="stats">找到约 3,420 条结果 （用时 0.38 秒）</div>
 
-        <!-- 维基百科词条 -->
-        <div class="result">
-            <a href="xiaotong_wiki.html">
-                <span class="cite">https://zh.wikipedia.org › wiki › 马小同</span>
-                <h3>马小同 - 维基百科，自由的百科全书</h3>
-            </a>
-            <div class="desc"><em>马小同</em>（Xiao-Tong Ma），1990年出生，医学博士，罕见病研究专家。他以对进行性肌肉骨化症（<em>FOP</em>）的转化医学贡献而闻名。曾赴<em>宾夕法尼亚大学</em>（UPenn）深造...</div>
-        </div>
+    <h2 id="early">学术生涯</h2>
+    <p>马小同在完成国内临床医学本科教育后，赴美国<b>宾夕法尼亚大学</b>（University of Pennsylvania）攻读博士学位。期间，他加入了全球顶尖的骨骼发育与罕见病实验室，师从 FOP 研究领域的奠基人。他的博士后研究方向聚焦于 $ACVR1$ 基因突变导致的异位骨化机制。</p>
+    <p>在学术界，马小同以其严谨的逻辑框架和对“约束分析”的应用著称。他曾发表多篇关于信号通路阻断的重磅论文，为后续药物研发奠定了理论基础。</p>
 
-        <!-- 学术论文词条 -->
-        <div class="result">
-            <a href="#">
-                <span class="cite">https://www.nature.com › articles › bone-ossification-study</span>
-                <h3>Mechanism of ACVR1 Mutation in Bone Formation - Nature Communications</h3>
-            </a>
-            <div class="desc">...collaboratively researched by <em>Dr. Xiao-Tong Ma</em> and the UPenn team. The study clarifies how the $ACVR1$ mutation triggers heterotopic ossification in <em>FOP</em> patients...</div>
-        </div>
+    <h2 id="career">职业经历与 Palovarotene</h2>
+    <p>2024年，马小同受邀加入某知名跨国药企，担任罕见病事业部首席医学顾问。他放弃了在国外实验室的安逸环境，选择回国推动罕见病特效药物 <b>Palovarotene</b> 的落地工作。</p>
+    <p>在其实验室背景的支持下，他成功协调了国内多中心临床试验，使该药物在中国的获批进程缩短了近两年时间。他曾多次在公开演讲中呼吁社会关注“孤儿药”的高昂研发成本与社会价值之间的平衡。</p>
 
-        <!-- 行业新闻 -->
-        <div class="result">
-            <a href="#">
-                <span class="cite">https://www.biotech-china.com › news › palovarotene-update</span>
-                <h3>专访马小同：推动罕见病“孤儿药”进入中国市场的最后一步</h3>
-            </a>
-            <div class="desc">作为跨国药企罕见病事业部的带头人，<em>马小同</em>博士在采访中谈到了推动 Palovarotene 落地中国的艰辛历程。他表示：“我们必须为下一代研究者点亮一盏灯。”</div>
-        </div>
-
-        <!-- 医学科普 -->
-        <div class="result">
-            <a href="#">
-                <span class="cite">https://www.msdmanuals.com › 罕见病 › FOP</span>
-                <h3>进行性肌肉骨化症 (FOP) - 症状、原因和诊断 - 默沙东诊疗手册</h3>
-            </a>
-            <div class="desc">进行性肌肉骨化症 (FOP) 是一种极其罕见的遗传性结缔组织疾病。该疾病的主要临床表现为先天性大脚趾畸形以及全身肌肉逐渐骨化... 专家建议：严禁进行肌肉活检。</div>
-        </div>
-
-        <!-- 国际组织 -->
-        <div class="result">
-            <a href="#">
-                <span class="cite">https://www.ifopa.org › global-network › china</span>
-                <h3>China Support Network - International FOP Association</h3>
-            </a>
-            <div class="desc">IFOPA 致力于连接全球患者。在中国区，我们得到了<em>马小同</em>博士团队的技术支持，旨在为患者提供最新的临床试验招募信息与专家咨询。</div>
-        </div>
-
-        <!-- 相关搜索 -->
-        <div class="related-search">
-            <h2>相关搜索</h2>
-            <div class="related-list">
-                <a href="#" class="related-item">FOP 疾病最新治疗进展</a>
-                <a href="#" class="related-item">ACVR1 基因编辑技术</a>
-                <a href="#" class="related-item">宾夕法尼亚大学 骨科研究中心</a>
-                <a href="#" class="related-item">Palovarotene 中国上市时间</a>
-                <a href="#" class="related-item">罕见病 转化医学 专家</a>
-                <a href="#" class="related-item">千安管理终端 系统架构</a>
-            </div>
-        </div>
+    <h2 id="philosophy">研究理念</h2>
+    <p>马小同在学术界和公共媒体上表现出极强的理想主义色彩。面对 FOP 这种目前仍无法完全治愈的“不治之症”，他曾在一篇自传性质的随笔中写道：</p>
+    
+    <div class="quote">
+        “医学的本质是在黑暗中摸索。我或许无法在这短短数十年内治愈所有人，但我能用我的研究为下一代研究者点亮一盏灯，让他们不至于在同样的起点迷路。”
     </div>
+
+    <h2 id="awards">荣誉与评价</h2>
+    <ul>
+        <li>2025年 转化医学领军人才奖</li>
+        <li>IFOPA（国际 FOP 协会）杰出贡献奖候选人</li>
+    </ul>
+    <p>外界评价马小同是一位“带着手术刀的诗人”，他不仅在实验室中追求真理，更在社会层面为罕见病群体争取尊严。</p>
+
+    <hr>
+    <p style="font-size: 12px; color: #54595d;">最后修订于 2026年3月 | 本页面为模拟百科界面，仅供 ARG 叙事使用。</p>
+</div>
+
 </body>
 </html>
