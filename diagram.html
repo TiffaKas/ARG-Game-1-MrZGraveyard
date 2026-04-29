@@ -19,7 +19,7 @@
             overflow: hidden; 
         }
 
-        /* 侧栏样式 - 全系统一致 */
+        /* 侧栏样式 */
         .side { 
             width: 260px; 
             background: var(--p-bg); 
@@ -70,7 +70,7 @@
         }
 
         .map-container {
-            position: relative;
+            position: relative; /* 关键：红点定位基准 */
             width: 100%;
             max-width: 1000px; 
             border: 2px solid var(--gold);
@@ -86,7 +86,7 @@
             user-select: none;
         }
 
-        /* 实时红点样式 - 移除 CSS transition 以便 JS 驱动 */
+        /* 实时红点样式 */
         .dot {
             position: absolute;
             width: 8px;
@@ -94,6 +94,8 @@
             border-radius: 50%;
             z-index: 10;
             pointer-events: none;
+            /* 初始状态设为 invisible 防止闪烁 */
+            transform: translate(-50%, -50%);
         }
 
         #observer-1 { background-color: #ff0000; box-shadow: 0 0 10px #ff0000; }
@@ -142,7 +144,6 @@
             <div class="nav-item" onclick="location.href='diagram.html'"><span> [04] </span> 实时墓位平面图</div>
             <div class="nav-item" onclick="location.href='complain.html'"><span> [05] </span> 异常投诉报告</div>
             <div class="nav-item" onclick="location.href='email.html'"><span> [06] </span> 内部行政邮箱</div>
-
             <div class="menu-label">外部连接</div>
             <div class="nav-item" onclick="location.href='official.html'"><span> - </span> 访问对外官网</div>
             <div class="nav-item" onclick="window.open('https://www.google.com')"><span> - </span> 全网搜索引擎</div>
@@ -193,56 +194,25 @@
             'snake_2': { x: 78.0, y: 78.0, adjacent: ['lake_east'] }
         };
 
-   class Observer {
-    constructor(id, startNodeId) {
-        this.el = document.getElementById(id);
-        this.currentNodeId = startNodeId; // 必须先记录当前节点ID
-        this.startNode = roadNetwork[startNodeId];
-        
-        // 初始目标节点
-        this.endNode = this.getRandomAdjacent(startNodeId);
-        
-        // 随机进度避免同步移动
-        this.progress = Math.random(); 
-        this.speed = 0.0015 + Math.random() * 0.002; 
+        class Observer {
+            constructor(id, startNodeId) {
+                this.el = document.getElementById(id);
+                this.currentNodeId = startNodeId;
+                this.startNode = roadNetwork[startNodeId];
+                
+                // 初始化第一个目标节点
+                this.setNextDestination();
+                
+                // 随机进度与速度
+                this.progress = Math.random(); 
+                this.speed = 0.001 + Math.random() * 0.002; 
+                this.update();
+            }
 
-        // 立即执行一次位置更新，防止首帧闪烁
-        this.update();
-    }
-
-    getRandomAdjacent(nodeId) {
-        const adj = roadNetwork[nodeId].adjacent;
-        const nextId = adj[Math.floor(Math.random() * adj.length)];
-        this.currentNodeId = nextId; // 更新当前追踪的节点
-        return roadNetwork[nextId];
-    }
-
-    update() {
-        this.progress += this.speed;
-
-        if (this.progress >= 1) {
-            this.progress = 0;
-            this.startNode = this.endNode;
-            this.endNode = this.getRandomAdjacent(this.currentNodeId);
-        }
-
-        // 线性插值计算
-        const currentX = this.startNode.x + (this.endNode.x - this.startNode.x) * this.progress;
-        const currentY = this.startNode.y + (this.endNode.y - this.startNode.y) * this.progress;
-
-        // 使用 transform 性能更好，且能解决偏移点中心点对齐问题
-        this.el.style.left = `${currentX}%`;
-        this.el.style.top = `${currentY}%`;
-        // 修正：确保红点中心对齐路径点
-        this.el.style.transform = 'translate(-50%, -50%)';
-    }
-}
-
-            getRandomAdjacent(nodeId) {
-                const adj = roadNetwork[nodeId].adjacent;
-                const nextId = adj[Math.floor(Math.random() * adj.length)];
-                this.currentNodeId = nextId;
-                return roadNetwork[nextId];
+            setNextDestination() {
+                const adj = roadNetwork[this.currentNodeId].adjacent;
+                this.nextNodeId = adj[Math.floor(Math.random() * adj.length)];
+                this.endNode = roadNetwork[this.nextNodeId];
             }
 
             update() {
@@ -251,15 +221,16 @@
                 if (this.progress >= 1) {
                     this.progress = 0;
                     this.startNode = this.endNode;
-                    this.endNode = this.getRandomAdjacent(this.currentNodeId);
+                    this.currentNodeId = this.nextNodeId;
+                    this.setNextDestination();
                 }
 
-                // 线性插值计算当前百分比坐标
+                // 线性插值计算
                 const currentX = this.startNode.x + (this.endNode.x - this.startNode.x) * this.progress;
                 const currentY = this.startNode.y + (this.endNode.y - this.startNode.y) * this.progress;
 
-                this.el.style.left = currentX + '%';
-                this.el.style.top = currentY + '%';
+                this.el.style.left = `${currentX}%`;
+                this.el.style.top = `${currentY}%`;
             }
         }
 
