@@ -41,17 +41,19 @@
 <body>
 
     <div class="sidebar">
-        <div class="sidebar-header">千安墓园后台管理系统</div>
+        <!-- 点击标题跳转回主页（示例） -->
+        <div class="sidebar-header" style="cursor:pointer;" onclick="window.open('index.html', '_blank')">千安墓园后台管理系统</div>
         <div class="contact-list">
             <div class="contact-item active">
                 <div class="avatar">杨</div>
                 <div>杨先生 (内勤部)</div>
             </div>
-            <div class="contact-item">
+            <!-- 修改后的跳转示例 -->
+            <div class="contact-item" onclick="window.open('system_status.html', '_blank')">
                 <div class="avatar">技</div>
                 <div>系统技术支持</div>
             </div>
-            <div class="contact-item">
+            <div class="contact-item" onclick="window.open('maintenance.html', '_blank')">
                 <div class="avatar">后</div>
                 <div>后勤维保组</div>
             </div>
