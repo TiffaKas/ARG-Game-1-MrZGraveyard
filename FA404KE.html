@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>404 Not Found - Terminal System Error</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            color: #333;
+            font-family: "Courier New", Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background: #fff;
+            box-shadow: 10px 10px 0px #bbb;
+        }
+
+        h1 {
+            font-size: 80px;
+            margin: 0;
+            color: #8b0000;
+            border-bottom: 2px solid #8b0000;
+        }
+
+        .error-code {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            letter-spacing: 2px;
+        }
+
+        .cipher-text {
+            background: #222;
+            color: #0f0;
+            padding: 15px;
+            font-size: 14px;
+            word-break: break-all;
+            margin-top: 30px;
+            border-radius: 4px;
+        }
+
+        .hint-footer {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 10px;
+            color: #aaa;
+            user-select: none;
+        }
+
+        .status {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* 模拟光标闪烁 */
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 15px;
+            background: #0f0;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>404</h1>
+        <div class="error-code">RESOURCE_NOT_FOUND_EXCEPTION</div>
+        <p>你访问的资源由于权限不足或已进入“安息状态”而无法显示。</p>
+        
+        <div class="cipher-text">
+            [ENCRYPTED_LOG_ENTRY]:<br>
+            mhiug://intufypx.uxyvjg.wd/FFV-Lobj-1-AgEUgfjtdogi/patu.wyaa<span class="cursor"></span>
+        </div>
+
+        <div class="status">
+            Server Time: 2026-04-29 16:14:17 | Node: QA-GRAVE-04
+        </div>
+    </div>
+
+    <div class="hint-footer">
+        维吉尼亚｜钥匙是我的追求
+    </div>
+
+</body>
+</html>
