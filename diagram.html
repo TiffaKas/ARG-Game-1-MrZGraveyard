@@ -19,32 +19,7 @@
             overflow: hidden; 
         }
 
-        /* 侧栏样式 */
-        .side { 
-            width: 260px; 
-            background: var(--p-bg); 
-            color: #fff; 
-            border-right: 4px solid var(--gold); 
-            display: flex; 
-            flex-direction: column; 
-            z-index: 100;
-            flex-shrink: 0;
-        }
-        
-        .nav-menu { margin-top: 20px; flex: 1; overflow-y: auto; }
-        .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
-        .nav-item { 
-            padding: 12px 25px; 
-            font-size: 14px; 
-            color: var(--gold); 
-            cursor: pointer; 
-            transition: all 0.3s; 
-            display: flex; 
-            align-items: center; 
-            border-bottom: 1px solid rgba(255,255,255,0.03); 
-        }
-        .nav-item:hover { background: rgba(255,255,255,0.1); padding-left: 30px; }
-        .nav-item span { margin-right: 15px; font-size: 10px; }
+        /* 侧栏样式已移除，由 sidebar.js 统一管理 */
 
         /* 右侧主监控区 */
         .main { 
@@ -130,26 +105,8 @@
 </head>
 <body>
 
-    <div class="side">
-        <div style="padding:40px 20px; text-align:center">
-            <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
-            <p style="font-size:10px; color:#555; margin-top:5px;">ADMIN TERMINAL v7.0</p>
-        </div>
-        <div class="nav-menu">
-            <div class="menu-label">内部管理</div>
-            <div class="nav-item" onclick="location.href='rules.html'"><span> [00] </span> 员工工作守则</div>
-            <div class="nav-item" onclick="location.href='system.html'"><span> [01] </span> 档案检索模块</div>
-            <div class="nav-item" onclick="location.href='entry.html'"><span> [02] </span> 数据录入终端</div>
-            <div class="nav-item" onclick="location.href='list.html'"><span> [03] </span> 已录入档案库</div>
-            <div class="nav-item" onclick="location.href='diagram.html'"><span> [04] </span> 实时墓位平面图</div>
-            <div class="nav-item" onclick="location.href='complain.html'"><span> [05] </span> 异常投诉报告</div>
-            <div class="nav-item" onclick="location.href='email.html'"><span> [06] </span> 内部行政邮箱</div>
-            <div class="menu-label">外部连接</div>
-            <div class="nav-item" onclick="location.href='official.html'"><span> - </span> 访问对外官网</div>
-            <div class="nav-item" onclick="window.open('https://www.google.com')"><span> - </span> 全网搜索引擎</div>
-        </div>
-        <div style="padding:20px; font-size:11px; color:#444;">系统状态：稳定<br>© 2026 Q-A Admin</div>
-    </div>
+    <!-- 引用统一侧边栏脚本 -->
+    <script src="sidebar.js"></script>
 
     <div class="main">
         <h1 class="monitor-title">千安墓园实时概览系统 v7.2</h1>
