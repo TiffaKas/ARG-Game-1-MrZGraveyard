@@ -6,12 +6,9 @@
     <style>
         :root { --p-bg: #1d2731; --gold: #b8977e; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f8f9fa; display: flex; height: 100vh; }
-
         .main { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
         .history-container { width: 100%; max-width: 700px; }
-        
         h1 { color: var(--p-bg); border-bottom: 1px solid var(--gold); padding-bottom: 15px; font-weight: normal; font-size: 20px; margin-bottom: 30px; letter-spacing: 1px; }
-
         .task-card { 
             background: #fff; 
             border: 1px solid #e0e0e0; 
@@ -22,52 +19,41 @@
             font-size: 15px;
             white-space: pre-wrap;
             box-shadow: 2px 2px 10px rgba(0,0,0,0.02);
+            border-left: 4px solid var(--gold);
         }
-
-        .empty-msg { 
-            text-align: center; 
-            color: #999; 
-            margin-top: 150px; 
-            font-size: 16px; 
-        }
+        .empty-msg { text-align: center; color: #999; margin-top: 150px; font-size: 16px; }
     </style>
 </head>
 <body>
-
     <script src="sidebar.js"></script>
-
     <div class="main">
         <div class="history-container">
             <h1>已完成任务描述存档</h1>
-            <div id="content-area">
-                <!-- 动态内容 -->
-            </div>
+            <div id="content-area"></div>
         </div>
     </div>
-
     <script>
         window.onload = () => {
             const container = document.getElementById('content-area');
             let data = [];
-
             try {
-                // 仅读取存储中的档案数组
+                // 读取已存储的所有档案记录
                 data = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-            } catch(e) {
-                data = [];
-            }
+            } catch(e) { data = []; }
 
-            if (data.length === 0) {
+            // 过滤并仅保留有描述文本的档案
+            const completedTasks = data.filter(item => item.task_desc);
+
+            if (completedTasks.length === 0) {
                 container.innerHTML = '<div class="empty-msg">今天没有已完成任务</div>';
                 return;
             }
 
-            // 仅渲染描述内容
-            data.reverse().forEach(item => {
-                const desc = item.task_desc || "（无描述记录）";
+            // 倒序渲染，确保最新的任务在最上方
+            completedTasks.reverse().forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'task-card';
-                div.textContent = desc;
+                div.textContent = item.task_desc;
                 container.appendChild(div);
             });
         };
