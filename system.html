@@ -4,20 +4,18 @@
     <meta charset="UTF-8">
     <title>千安公墓 - 数字化管理平台</title>
     <style>
+        /* 仅保留业务逻辑相关的核心样式 */
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
-        .side { width: 260px; background: var(--p-bg); color: #fff; border-right: 4px solid var(--gold); display: flex; flex-direction: column; }
-        .nav-menu { margin-top: 20px; flex: 1; overflow-y: auto; }
-        .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #555; letter-spacing: 1px; }
-        .nav-item { padding: 12px 25px; font-size: 14px; color: var(--gold); cursor: pointer; transition: all 0.3s; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        .nav-item:hover { background: rgba(255,255,255,0.1); padding-left: 30px; }
-        .nav-item span { margin-right: 15px; font-size: 10px; }
+
+        /* 主区域样式 */
         .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
         .card { background: #fff; padding: 50px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         h2 { border-left: 4px solid var(--gold); padding-left: 15px; font-weight: normal; margin-bottom: 30px; color: var(--dark); font-size: 18px; }
         input { width: 100%; padding: 15px; border: 1px solid #ddd; margin: 20px 0; box-sizing: border-box; outline: none; }
         #search-btn { width: 100%; padding: 15px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; }
         
+        /* 待处理任务弹窗样式 - 必须保留 */
         .work-popup { position: fixed; bottom: 20px; right: 20px; width: 380px; max-height: 450px; background: #fff; border: 2px solid var(--gold); display: flex; flex-direction: column; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
         .popup-header { background: var(--p-bg); color: var(--gold); padding: 12px 20px; font-weight: bold; font-size: 13px; }
         .popup-content { padding: 20px; overflow-y: auto; font-size: 14px; line-height: 1.8; white-space: pre-wrap; background: #fdfdfd; flex: 1; color: #333; }
@@ -26,27 +24,9 @@
     </style>
 </head>
 <body>
-    <div class="side">
-        <div style="padding:40px 20px; text-align:center">
-            <h1 style="color:var(--gold); font-size:22px; letter-spacing:4px; margin:0">千安公墓</h1>
-            <p style="font-size:10px; color:#555; margin-top:5px;">ADMIN TERMINAL v7.0</p>
-        </div>
-        <div class="nav-menu">
-            <div class="menu-label">内部管理</div>
-            <div class="nav-item" onclick="window.open('rules.html', '_blank')"><span> [00] </span> 员工工作守则</div>
-            <div class="nav-item" onclick="window.open('system.html', '_blank')"><span> [01] </span> 档案检索模块</div>
-            <div class="nav-item" onclick="window.open('entry.html', '_blank')"><span> [02] </span> 数据录入终端</div>
-            <div class="nav-item" onclick="window.open('list.html', '_blank')"><span> [03] </span> 已录入档案库</div>
-            <div class="nav-item" onclick="window.open('diagram.html', '_blank')"><span> [04] </span> 实时墓位平面图</div>
-            <div class="nav-item" onclick="window.open('complain.html', '_blank')"><span> [05] </span> 异常投诉报告</div>
-            <div class="nav-item" onclick="window.open('email.html', '_blank')"><span> [06] </span> 内部行政邮箱</div>
 
-            <div class="menu-label">外部连接</div>
-            <div class="nav-item" onclick="window.open('official.html', '_blank')"><span> - </span> 访问对外官网</div>
-            <div class="nav-item" onclick="window.open('https://www.google.com', '_blank')"><span> - </span> 全网搜索引擎</div>
-        </div>
-        <div style="padding:20px; font-size:11px; color:#444;">系统状态：稳定<br>© 2026 Q-A Admin</div>
-    </div>
+    <!-- 引用统一侧边栏脚本 -->
+    <script src="sidebar.js"></script>
 
     <div class="main">
         <div class="card">
@@ -65,14 +45,12 @@
 
         function find() {
             let v = document.getElementById('pass').value.trim();
-            // 修复：添加 encodeURIComponent 确保路径安全
             if(v) window.location.href = encodeURIComponent(v) + ".html";
         }
 
         function checkNewTask() {
             let archives = [];
             try {
-                // 修复：增加对本地存储解析的安全保护
                 archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
             } catch(e) {
                 archives = [];
@@ -81,7 +59,6 @@
             const now = Date.now();
             const cooldown = 180000; 
 
-            // 逻辑检查：池满或已有任务则退出
             if (archives.length >= TASK_POOL.length) return;
             if (localStorage.getItem('current_task_content')) return;
 
@@ -93,12 +70,10 @@
                 return;
             }
 
-            // 修复：确保时间解析为有效整数
             const startTime = parseInt(storedStartTime);
             const elapsed = now - startTime;
 
             if (elapsed >= cooldown) {
-                // 修复：基于已录入数量匹配任务池索引
                 localStorage.setItem('current_task_content', TASK_POOL[archives.length]);
                 localStorage.removeItem('task_cooldown_start');
                 location.reload(); 
@@ -109,9 +84,7 @@
         }
 
         window.onload = () => {
-            // 修复：初始化立即检查逻辑
             checkNewTask();
-            
             setInterval(checkNewTask, 5000);
 
             const task = localStorage.getItem('current_task_content');
