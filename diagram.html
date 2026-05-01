@@ -160,9 +160,10 @@
                 // 初始化第一个目标节点
                 this.setNextDestination();
                 
-                // 随机进度与速度
+                // 随机进度
                 this.progress = Math.random(); 
-                this.speed = 0.001 + Math.random() * 0.002; 
+                // 调整速度：这里已减速约 3-4 倍
+                this.speed = 0.0003 + Math.random() * 0.0005; 
                 this.update();
             }
 
