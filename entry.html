@@ -2,75 +2,119 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>千安公墓 - 档案录入</title>
+    <title>档案录入终端 - 千安公墓管理平台</title>
     <style>
-        :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
-        body { margin: 0; font-family: "SimSun", serif; background: #f0f2f5; display: flex; height: 100vh; }
-        .main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .entry-card { background: #fff; padding: 40px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 4px solid var(--p-bg); }
-        h2 { font-weight: normal; color: var(--dark); border-bottom: 1px solid #eee; padding-bottom: 15px; }
-        .field { margin: 20px 0; }
-        label { display: block; margin-bottom: 8px; color: #666; font-size: 14px; }
-        input { width: 100%; padding: 12px; border: 1px solid #ddd; box-sizing: border-box; outline: none; }
-        .btn-group { margin-top: 30px; }
-        #submit-btn { width: 100%; padding: 15px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; letter-spacing: 2px; }
-        #submit-btn:hover { filter: brightness(1.2); }
+        /* 仅保留主内容区域相关的核心样式 */
+        :root { --gold: #b8977e; --dark: #333; --paper: #fff; }
+        body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; height: 100vh; overflow: hidden; }
+
+        /* 主区域样式 - 适配 sidebar.js 的 padding-left */
+        .main { width: 100%; height: 100vh; overflow-y: auto; padding: 40px; display: flex; gap: 30px; justify-content: center; align-items: flex-start; box-sizing: border-box; }
+        
+        /* 错误闪烁动画 */
+        .flash-fail { animation: flash 0.3s ease-in-out; }
+        @keyframes flash { 0% {background:#f0f2f5;} 50% {background:#d0d0d0;} 100% {background:#f0f2f5;} }
+
+        /* 录入容器 */
+        .form-container { width: 100%; max-width: 600px; background: var(--paper); padding: 40px; border: 1px solid #ddd; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; }
+        
+        /* 参考框优化 */
+        .ref-box { width: 300px; background: #fff; border: 1px solid var(--gold); padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); flex-shrink: 0; }
+        .ref-title { font-weight: bold; border-bottom: 1px solid var(--gold); margin-bottom: 15px; padding-bottom: 8px; color: #1d2731; font-size: 14px; }
+        #ref-content { font-size: 13px; color: #555; line-height: 1.8; white-space: pre-wrap; height: 500px; overflow-y: auto; }
+
+        h2 { border-left: 4px solid var(--gold); padding-left: 15px; font-weight: normal; margin-bottom: 30px; color: var(--dark); font-size: 18px; margin-top: 0; }
+        
+        .field { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 13px; color: #444; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; box-sizing: border-box; font-family: inherit; outline: none; background: #fafafa; font-size: 14px; }
+        input:focus, textarea:focus { border-color: var(--gold); background: #fff; }
+        
+        .submit-btn { background: #1d2731; color: var(--gold); border: none; padding: 15px; cursor: pointer; width: 100%; font-size: 15px; font-weight: bold; margin-top: 10px; }
+        .submit-btn:hover { background: #2c3b4a; }
+        
+        #hint-text { text-align: center; height: 20px; margin-bottom: 10px; font-size: 13px; color: #cc0000; font-weight: bold; visibility: hidden; }
     </style>
 </head>
 <body>
+    <!-- 引入统一侧边栏 -->
     <script src="sidebar.js"></script>
+
     <div class="main">
-        <div class="entry-card">
-            <h2>新档案录入</h2>
+        <div class="ref-box">
+            <div class="ref-title">原始附单参考 (Read Only)</div>
+            <div id="ref-content">等待系统指派任务...</div>
+        </div>
+
+        <div class="form-container">
+            <h2>数字化档案录入表</h2>
+            <div id="hint-text">好像不太对</div>
+            
             <div class="field">
-                <label>主体姓名</label>
-                <input type="text" id="target-name" placeholder="请输入姓名">
+                <label>姓名 (Full Name)</label>
+                <input type="text" id="lastName" placeholder="请输入附单中的法定姓名">
             </div>
             <div class="field">
-                <label>索引编号 (自动生成)</label>
-                <input type="text" id="target-index" readonly>
+                <label>生理特征提取 (Biological Traits)</label>
+                <textarea id="bioData" rows="6" placeholder="请从参考附单中提取核心生理关键词 (如: 瞳孔颜色、骨密度等)..."></textarea>
             </div>
-            <div class="btn-group">
-                <button id="submit-btn" onclick="saveRecord()">确认归档</button>
+            <div class="field">
+                <label>生平总结 (Biography)</label>
+                <textarea id="desc" rows="4" placeholder="行政存档使用，简述其社会背景..."></textarea>
             </div>
+            
+            <button class="submit-btn" onclick="saveData()">提交并存档</button>
         </div>
     </div>
 
     <script>
-        window.onload = () => {
-            // 自动生成一个简单的索引号
-            document.getElementById('target-index').value = "QA-" + Math.floor(Math.random()*9000 + 1000);
+        const MASTER_KEYS = {
+            "陈建": ["骨", "密度", "高", "灰", "瞳孔"],
+            "宋涵": ["高", "骨化", "纤维", "增殖", "硬"],
+            "周诚": ["凉", "体温", "低", "指甲", "蓝"]
         };
 
-        function saveRecord() {
-            const name = document.getElementById('target-name').value.trim();
-            if(!name) { alert("请输入姓名"); return; }
+        window.onload = () => {
+            const task = localStorage.getItem('current_task_content');
+            document.getElementById('ref-content').innerText = task || "当前暂无待处理任务，请返回检索模块等待新任务分配。";
+        }
 
-            // 1. 获取 system.html 派发的任务原文
-            const originalContent = localStorage.getItem('current_task_content');
-            
-            if(!originalContent) {
-                alert("当前无待处理任务，请返回系统页面等待。");
-                return;
-            }
+        function feedback(msg) {
+            document.body.classList.remove('flash-fail');
+            void document.body.offsetWidth;
+            document.body.classList.add('flash-fail');
+            const h = document.getElementById('hint-text');
+            h.innerText = msg; h.style.visibility = 'visible';
+            setTimeout(() => h.style.visibility = 'hidden', 2000);
+        }
 
-            // 2. 构造存档对象
-            const record = {
-                name: name,
-                index: document.getElementById('target-index').value,
-                task_desc: originalContent, // 核心：保存描述
-                time: new Date().toLocaleString()
-            };
+        function saveData() {
+            const nameInput = document.getElementById('lastName').value.trim();
+            const bio = document.getElementById('bioData').value.trim();
+            const desc = document.getElementById('desc').value.trim();
+            const task = localStorage.getItem('current_task_content');
 
-            // 3. 读取并更新 cemetery_files 数组
+            if (!task) { feedback("当前无有效任务指派"); return; }
+            if (!nameInput || !bio) { feedback("基本项未填写完整"); return; }
+
+            const pureName = nameInput.split('（')[0].split('(')[0].trim();
+            const keys = MASTER_KEYS[pureName];
+            if(!keys) { feedback("数据库中未查见此身份"); return; }
+
+            const matchCount = keys.filter(k => bio.includes(k)).length;
+            if(matchCount < 2) { feedback("生理特征提取不完整"); return; }
+
             let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-            archives.push(record);
+            archives.push({ 
+                name: nameInput, 
+                time: new Date().toLocaleString('zh-CN', { hour12: false }),
+                bio: bio,
+                desc: desc 
+            });
             localStorage.setItem('cemetery_files', JSON.stringify(archives));
-
-            // 4. 清除当前任务标记（触发 system.html 下一轮计时）
             localStorage.removeItem('current_task_content');
-
-            alert("档案已入库");
+            localStorage.setItem('last_record_timestamp', Date.now());
+            
             window.location.href = 'system.html';
         }
     </script>
