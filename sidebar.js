@@ -27,6 +27,7 @@
             <div class="nav-item" onclick="window.open('complain.html', '_blank')"><span> [05] </span> 异常投诉报告</div>
             <div class="nav-item" onclick="window.open('email.html', '_blank')"><span> [06] </span> 内部行政邮箱</div>
             <div class="nav-item" onclick="window.open('report.html', '_blank')"><span> [07] </span> 月度经营报告</div>
+            <div class="nav-item" onclick="window.open('history.html', '_blank')"><span> [08] </span> 历史任务记录</div>
 
             <div class="menu-label">外部连接</div>
             <div class="nav-item" onclick="window.open('official.html', '_blank')"><span> - </span> 访问对外官网</div>
