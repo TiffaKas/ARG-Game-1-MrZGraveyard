@@ -25,7 +25,7 @@
         
         .total-row { font-weight: bold; background: #fafafa; border-top: 1px solid #000; }
         
-        /* AI 助手 - 去色处理 */
+        /* AI 助手 - 黑白专业版 */
         #ai-assistant { 
             position: fixed; right: -400px; top: 100px; width: 320px; 
             background: var(--ai-bg); border: 1px solid #000; 
@@ -35,7 +35,7 @@
         }
         #ai-assistant.active { right: 30px; }
         .ai-title { font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 8px; margin-bottom: 15px; display: flex; align-items: center; }
-        .ai-title::before { content: "●"; color: #000; margin-right: 8px; } /* 提示灯改为黑色 */
+        .ai-title::before { content: "●"; color: #000; margin-right: 8px; }
         .ai-link { display: block; padding: 10px; margin: 8px 0; background: #fff; text-decoration: none; color: #333; border: 1px solid #ddd; font-size: 13px; }
         .ai-link:hover { background: #f0f0f0; border-color: #000; }
         .ai-desc { font-size: 11px; color: #666; margin-top: 4px; display: block; }
@@ -82,7 +82,7 @@
 
             <div style="font-size: 13px; color: #333; line-height: 1.6; border-top: 1px solid #000; padding-top: 20px;">
                 <strong>审计备注：</strong><br>
-                本季度由于“合同负债”计提比例调整（40%）及新增的“生态修复储备金”（20%），实收营收与账面销售额出现偏离。该核算方案已执行。
+                本季度审计结果显示，由于“合同负债”计提比例过高（40%）以及“生态修复储备金”（20%）的异常计入，企业实际留存利润严重低于行业平均水平。该报表已通过初步审核，建议针对异常科目进行专项穿透核查。
             </div>
         </div>
     </div>
@@ -93,64 +93,53 @@
         
         <a href="article1.html" class="ai-link">
             <strong>行业报告：墓位价格合理性评估</strong>
-            <span class="ai-desc">分析指出：千安墓园均价（34万）远高于区域红线，溢价率极高。</span>
+            <span class="ai-desc">分析指出：千安墓园均价（34万）远高于区域红线。</span>
         </a>
 
         <a href="article2.html" class="ai-link">
             <strong>《企业财务报告编制指南》常见错误</strong>
-            <span class="ai-desc">指出本报告在递延收益科目处理上的逻辑谬误。</span>
+            <span class="ai-desc">指出本报告在递延收益科目处理上的合规风险。</span>
         </a>
     </div>
 
     <script>
         window.onload = () => {
-            let archives = [];
-            try {
-                archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-            } catch(e) { archives = []; }
+            // 拟造的静态审计数据
+            const grossValue = 5100000; // 510万
+            const netValue = 727500;    // 最终利润
+            const retentionRate = "14.3%";
 
-            const count = archives.length;
-            const unitPrice = 340000;
-            const gross = count * unitPrice;
+            // 填充顶部数值卡片
+            document.getElementById('gross-total').textContent = "￥" + grossValue.toLocaleString();
+            document.getElementById('net-revenue').textContent = "￥" + netValue.toLocaleString(undefined, {minimumFractionDigits: 2});
+            document.getElementById('retention-rate').textContent = retentionRate;
 
-            // 财务扣除逻辑
-            const tax = gross * 0.125;           
-            const deferred = gross * 0.40;      
-            const ecoFund = gross * 0.20;       
-            const landCost = count * 45000;
-            
-            const net = count > 0 ? (gross - tax - deferred - ecoFund - landCost) : 0;
-            const rate = gross > 0 ? (net / gross * 100).toFixed(1) : 0;
-
-            // 填充顶部数值
-            document.getElementById('gross-total').textContent = "￥" + gross.toLocaleString();
-            document.getElementById('net-revenue').textContent = "￥" + net.toLocaleString(undefined, {minimumFractionDigits: 2});
-            document.getElementById('retention-rate').textContent = rate + "%";
-
-            // 填充表格数值
-            const tbody = document.getElementById('table-body');
+            // 拟造详细科目数据
             const dataRows = [
-                ["主营业务销售额", `￥${gross.toLocaleString()}`, "结算标准：340,000/件"],
-                ["减：营业税金 (12.5%)", `- ￥${tax.toLocaleString()}`, "政策性税费"],
-                ["减：合同负债 (预收递延)", `- ￥${deferred.toLocaleString()}`, "计提比例：40%"],
-                ["减：生态修复专项储备 (20%)", `- ￥${ecoFund.toLocaleString()}`, "专项储备支出"],
-                ["减：基础土地成本摊销", `- ￥${landCost.toLocaleString()}`, "固定资产摊销"]
+                ["主营业务销售额", "￥5,100,000", "结算标准：340,000/件 (共15件)"],
+                ["减：营业税金 (12.5%)", "- ￥637,500", "政策性税费支出"],
+                ["减：合同负债 (预收递延)", "- ￥2,040,000", "计提比例：40% (显著高于行业标准)"],
+                ["减：生态修复专项储备 (20%)", "- ￥1,020,000", "专项用途准备金计提"],
+                ["减：基础土地成本摊销", "- ￥675,000", "固定资产折旧及土地分摊"]
             ];
 
+            const tbody = document.getElementById('table-body');
             dataRows.forEach(r => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `<td>${r[0]}</td><td class="text-right">${r[1]}</td><td>${r[2]}</td>`;
                 tbody.appendChild(tr);
             });
 
+            // 汇总行
             const totalTr = document.createElement('tr');
             totalTr.className = "total-row";
-            totalTr.innerHTML = `<td>本季度净利润</td><td class="text-right">￥${net.toLocaleString(undefined, {minimumFractionDigits: 2})}</td><td>结算率：${rate}%</td>`;
+            totalTr.innerHTML = `<td>本季度净利润 (实收)</td><td class="text-right">￥727,500.00</td><td>综合结算率：${retentionRate}</td>`;
             tbody.appendChild(totalTr);
 
-            // AI 助手 2秒后滑入
+            // AI 助手 2秒后自动滑入
             setTimeout(() => {
-                document.getElementById('ai-assistant').classList.add('active');
+                const aiAssistant = document.getElementById('ai-assistant');
+                if (aiAssistant) aiAssistant.classList.add('active');
             }, 2000);
         };
     </script>
