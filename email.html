@@ -1,142 +1,32 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <title>千安公墓 - 内部行政邮箱 (测试版)</title>
-    <style>
-        /* 仅保留邮箱业务相关的核心样式 */
-        :root { --gold: #b8977e; --dark: #333; --p-bg: #1d2731; }
-        body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
+function switchContact(name, element) {
+    currentContact = name;
+    document.getElementById('currentChatName').innerHTML = `当前对话：<b>${name}</b>`;
+    document.querySelectorAll('.contact-item').forEach(i => i.classList.remove('active-contact'));
+    element.classList.add('active-contact');
+    
+    const chatBox = document.getElementById('chatBox');
+    chatBox.innerHTML = ''; 
 
-        /* 聊天主界面 */
-        .chat-main { flex: 1; display: flex; background: #fff; }
-        .contact-sidebar { width: 220px; background: #f8f9fa; border-right: 1px solid #eee; display: flex; flex-direction: column; }
-        
-        /* 这里的 menu-label 是联络人列表的小标题，需要保留 */
-        .contact-sidebar .menu-label { padding: 20px 20px 10px; font-size: 11px; color: #555; letter-spacing: 1px; }
-        
-        .contact-item { padding: 15px 20px; border-bottom: 1px solid #eee; cursor: pointer; transition: 0.3s; display: flex; align-items: center; font-size: 14px; }
-        .contact-item:hover { background: #edf0f2; }
-        .contact-item.active-contact { background: #fff; border-right: 4px solid var(--p-bg); font-weight: bold; }
-        
-        .chat-area { flex: 1; display: flex; flex-direction: column; position: relative; }
-        .chat-header { padding: 18px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .message-container { flex: 1; padding: 30px; overflow-y: auto; background: #f9fbff; display: flex; flex-direction: column; gap: 15px; }
-        
-        .msg { max-width: 75%; padding: 12px 16px; border-radius: 4px; font-size: 14px; line-height: 1.6; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .msg-left { align-self: flex-start; background: #fff; border: 1px solid #e0e0e0; }
-        .msg-right { align-self: flex-end; background: #dcf8c6; border: 1px solid #c5e1a5; }
-        .msg-time { font-size: 11px; color: #aaa; margin-top: 5px; display: block; }
-        
-        #typingIndicator { position: absolute; bottom: 85px; left: 30px; font-size: 12px; color: #999; display: none; }
-        .input-area { padding: 20px 30px; border-top: 1px solid #eee; display: flex; gap: 10px; }
-        #userInput { flex: 1; padding: 12px; border: 1px solid #ddd; outline: none; }
-        .send-btn { padding: 0 25px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; }
-        
-        .avatar { width: 30px; height: 30px; background: #7f8c8d; border-radius: 4px; margin-right: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; }
-    </style>
-</head>
-<body>
+    if(name === '杨先生') {
+        appendMessage('msg-left', "你好，我是杨先生。欢迎入职千安公墓。有问题可以随时联系我。");
+    } else if(name === '综合管理部 - 老张') {
+        // 注入活动链接
+        appendMessage('msg-left', "你好，小伙子。公司最近在搞企业文化建设，这是管理部发起的：<br><br> " + 
+                      "<a href='activity.html' style='color:#2980b9; font-weight:bold; text-decoration:underline;'>关于鼓励员工给公司提建议的活动</a>" + 
+                      "<br><br>你有空看看，多提提建设性意见。");
+    }
+}
 
-    <!-- 引用统一侧边栏脚本 -->
-    <script src="sidebar.js"></script>
-
-    <div class="chat-main">
-        <div class="contact-sidebar">
-            <div class="menu-label">联络人</div>
-            <div class="contact-item active-contact" onclick="switchContact('杨先生', this)">
-                <div class="avatar">杨</div> 杨先生 (内勤)
-            </div>
-            <!-- 测试：直接显示李沫子 -->
-            <div id="li-mo-zi-item" class="contact-item" onclick="switchContact('李沫子', this)" style="display:flex;">
-                <div class="avatar" style="background:#e67e22;">李</div> 李沫子 (财务)
-            </div>
-        </div>
-
-        <div class="chat-area">
-            <div class="chat-header">
-                <div id="currentChatName">当前对话：<b>杨先生</b></div>
-                <div style="font-size:12px; color:#27ae60;">● 在线</div>
-            </div>
-            <div class="message-container" id="chatBox"></div>
-            <div id="typingIndicator">正在输入...</div>
-            <div class="input-area">
-                <input type="text" id="userInput" placeholder="输入并回车发送...">
-                <button class="send-btn" onclick="sendMessage()">发送</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let currentContact = "杨先生";
-        const keywords = ["红点", "保安", "实时", "墓位", "平面图"];
-        const standardReply = "是正在巡逻的保安，我们的系统比较先进，他们巡逻的位置和实时信息会更新在实时墓位平面图上，不过信息是根据保安的对讲机走的，有时候他们对讲机忘拿了就会原地不动，如果你看到问题可以跟我说一下，我联系他们。";
-
-        if(!localStorage.getItem('system_start_time')) {
-            localStorage.setItem('system_start_time', Date.now());
+// 修改发送逻辑中的回复
+function sendMessage() {
+    // ... 前面发送逻辑保持不变 ...
+    setTimeout(() => {
+        indicator.style.display = 'none';
+        if (currentContact === "杨先生") {
+            const hit = keywords.some(k => text.includes(k));
+            appendMessage('msg-left', hit ? standardReply : "这个问题建议你先查阅《员工手册》或询问主管。");
+        } else if (currentContact === "综合管理部 - 老张") {
+            appendMessage('msg-left', "建议不在多，在于精。你先仔细阅读那个活动文档。");
         }
-
-        function switchContact(name, element) {
-            currentContact = name;
-            document.getElementById('currentChatName').innerHTML = `当前对话：<b>${name}</b>`;
-            document.querySelectorAll('.contact-item').forEach(i => i.classList.remove('active-contact'));
-            element.classList.add('active-contact');
-            
-            const chatBox = document.getElementById('chatBox');
-            chatBox.innerHTML = ''; 
-
-            if(name === '杨先生') {
-                appendMessage('msg-left', "你好，我是杨先生。欢迎入职千安公墓。有问题可以随时联系我。");
-            } else if(name === '李沫子') {
-                appendMessage('msg-left', "关于本季度 A 区报销的费用，总额 1,250 元，对账那边卡住了。需要你帮我登录财务内网核对一下 A 区的《资产数字化录入凭证》，看看类目勾选对不对。");
-            }
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('userInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            appendMessage('msg-right', text);
-            input.value = '';
-
-            const indicator = document.getElementById('typingIndicator');
-            indicator.style.display = 'block';
-            indicator.innerText = `${currentContact} 正在输入...`;
-
-            setTimeout(() => {
-                indicator.style.display = 'none';
-                if (currentContact === "杨先生") {
-                    const hit = keywords.some(k => text.includes(k));
-                    appendMessage('msg-left', hit ? standardReply : "这个问题建议你先查阅《员工手册》或询问主管。");
-                } else if (currentContact === "李沫子") {
-                    appendMessage('msg-left', "请尽快核对那个 1,250 元的类目，财务部那边催得很紧。");
-                }
-            }, 2000);
-        }
-
-        function appendMessage(type, content) {
-            const chatBox = document.getElementById('chatBox');
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `msg ${type}`;
-            msgDiv.innerHTML = `${content}<span class="msg-time">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>`;
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        function checkPlotProgress() {
-            // 直接保持显示
-            document.getElementById('li-mo-zi-item').style.display = 'flex';
-        }
-
-        document.getElementById('userInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
-
-        window.onload = () => {
-            appendMessage('msg-left', "你好，我是杨先生。欢迎入职千安公墓。有问题可以随时联系我。");
-            checkPlotProgress(); 
-        };
-    </script>
-</body>
-</html>
+    }, 2000);
+}
