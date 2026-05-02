@@ -33,27 +33,42 @@
         </div>
     </div>
     <script>
+        // 保持与 system.html 完全一致的任务池
+        const TASK_POOL = [
+            "陈建（阿建）身体挺不错的，没想到在家里就这么静静地走了。不知道是什么原因？之前摔跤后没有骨折，没有扭伤，我一直都觉得阿建身体很好，没有我们这个年纪常有的骨质疏松。也经常锻炼，每天都是走两万步以上，也很鼓舞人，可惜的就是没有一个好妻子陪伴着他，也无儿无女。还记得阿建当时是镇里唯一一个考上大学的人，可风光了，他是个好人。陈建是个好人，不是说他做过舍身为人的大善事，但是他一直守着本分，不越界；每当碰见有人需要帮助时，灰色的瞳孔总是让人感到安心，大家和他相处都很舒服。致：灰色的阿建。",
+            "果果.......是妈妈不好，要是妈妈当时没有失去理智就好了，是妈妈让你伤心了，但是孩子，这个世界太苦，你也太苦，这个石人病太折磨人了..................嗯......这对你来说也许也是一件好事，但是妈妈要带着这份愧疚活下去了，替你的；宋涵是个很好的同学，她人挺高的，成绩好，是个好班长，做事认真，客观。记得那一次，我差点被冤枉了，是她坚持调查下去我才被还回清白，要是她熟视无睹的话，就没有现在的我。发生这件事我也感到很伤心，她没有叫我的外号“马桶”，而是正常地直呼我的大名，干练的声音和一声声“小同”始终在我的脑海，宋涵，再见，祝你好运。",
+            "谁也没想到，老周，周诚，会在盛夏的午后，蜷缩在那个没有冷气的维修间里冻死。这听起来像个笑话，但他走的时候，身上确实覆盖着一层薄薄的白色霜华。我一直觉得老周是个怪人，虽然他身体看起来很硬朗，从不感冒，但他那双手摸起来总是像井水一样冰凉，夏天和他握手甚至能感到一阵寒意。老周是个实实在在的好人。记得那年学校电路短路引发小火灾，是他冒着烟冲进去抢救档案。大家后来问他怕不怕烫，他只是搓了嘱那双发蓝的指甲盖，憨厚地笑笑说：“我这人天生怕热不怕火。”他这辈子没结过婚，守着那堆零件过日子，从不占人便宜。医生私下里嘀咕，说老周的代谢速度慢得惊人，这或许解释了他为什么总是那么冷静、那么凉。"
+        ];
+
         window.onload = () => {
             const container = document.getElementById('content-area');
-            let data = [];
+            let archivesCount = 0;
+
             try {
-                // 读取已存储的所有档案记录
-                data = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-            } catch(e) { data = []; }
+                // 读取已完成的档案数量
+                const data = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
+                archivesCount = data.length;
+            } catch(e) { archivesCount = 0; }
 
-            // 过滤并仅保留有描述文本的档案
-            const completedTasks = data.filter(item => item.task_desc);
-
-            if (completedTasks.length === 0) {
+            if (archivesCount === 0) {
                 container.innerHTML = '<div class="empty-msg">今天没有已完成任务</div>';
                 return;
             }
 
-            // 倒序渲染，确保最新的任务在最上方
-            completedTasks.reverse().forEach(item => {
+            // 根据档案数量，从 TASK_POOL 中抓取对应条目
+            // 比如档案有2个，就抓取 TASK_POOL[0] 和 TASK_POOL[1]
+            let completedContent = [];
+            for(let i = 0; i < archivesCount; i++) {
+                if(TASK_POOL[i]) {
+                    completedContent.push(TASK_POOL[i]);
+                }
+            }
+
+            // 倒序展示最新的完成任务
+            completedContent.reverse().forEach(text => {
                 const div = document.createElement('div');
                 div.className = 'task-card';
-                div.textContent = item.task_desc;
+                div.textContent = text;
                 container.appendChild(div);
             });
         };
