@@ -4,44 +4,41 @@
     <meta charset="UTF-8">
     <title>千安公墓 - 季度财务结算报告</title>
     <style>
-        :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; --ai-bg: rgba(255, 255, 255, 0.95); }
-        body { margin: 0; font-family: "SimSun", serif; background-color: #f4f6f8; display: flex; height: 100vh; overflow: hidden; position: relative; }
+        :root { --p-bg: #333; --dark: #000; --ai-bg: #fff; }
+        body { margin: 0; font-family: "SimSun", serif; background-color: #f4f6f8; display: flex; height: 100vh; overflow: hidden; position: relative; color: var(--dark); }
         
         .main { flex: 1; padding: 50px; display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
-        .report-paper { background: #fff; width: 100%; max-width: 850px; padding: 60px; box-shadow: 0 0 20px rgba(0,0,0,0.1); box-sizing: border-box; }
+        .report-paper { background: #fff; width: 100%; max-width: 850px; padding: 60px; box-shadow: 0 0 10px rgba(0,0,0,0.05); box-sizing: border-box; border: 1px solid #ddd; }
         
         .header { text-align: center; border-bottom: 2px solid var(--dark); padding-bottom: 20px; margin-bottom: 40px; }
-        .header h1 { margin: 0; font-size: 26px; letter-spacing: 4px; color: var(--dark); }
+        .header h1 { margin: 0; font-size: 26px; letter-spacing: 4px; }
 
-        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #ddd; border: 1px solid #ddd; margin-bottom: 40px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #eee; border: 1px solid #eee; margin-bottom: 40px; }
         .summary-item { background: #fff; padding: 20px; text-align: center; }
-        .label { font-size: 12px; color: #888; margin-bottom: 10px; display: block; }
+        .label { font-size: 12px; color: #666; margin-bottom: 10px; display: block; }
         .value { font-size: 20px; font-family: "Georgia", serif; font-weight: bold; }
 
         table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 14px; }
-        table th { background: #f9f9f9; text-align: left; padding: 12px; border-bottom: 2px solid #eee; }
+        table th { background: #f9f9f9; text-align: left; padding: 12px; border-bottom: 1px solid #000; }
         table td { padding: 12px; border-bottom: 1px solid #eee; }
         .text-right { text-align: right; }
         
-        .total-row { font-weight: bold; background: #fff9f9; border-top: 2px solid var(--dark); }
-        .highlight-red { color: #8b0000; }
+        .total-row { font-weight: bold; background: #fafafa; border-top: 1px solid #000; }
         
-        /* AI 助手样式 */
+        /* AI 助手 - 去色处理 */
         #ai-assistant { 
             position: fixed; right: -400px; top: 100px; width: 320px; 
-            background: var(--ai-bg); border: 2px solid var(--p-bg); 
-            box-shadow: -5px 5px 20px rgba(0,0,0,0.2); 
+            background: var(--ai-bg); border: 1px solid #000; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.1); 
             transition: right 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             z-index: 1000; padding: 20px;
         }
         #ai-assistant.active { right: 30px; }
-        .ai-title { font-weight: bold; color: var(--p-bg); border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 15px; display: flex; align-items: center; }
-        .ai-title::before { content: "●"; color: #00ff00; margin-right: 8px; animation: blink 1.5s infinite; }
-        .ai-link { display: block; padding: 10px; margin: 8px 0; background: #f9f9f9; text-decoration: none; color: #444; border: 1px solid #eee; font-size: 13px; transition: 0.3s; }
-        .ai-link:hover { border-color: var(--gold); background: #fff; color: var(--gold); }
-        .ai-desc { font-size: 11px; color: #999; margin-top: 4px; display: block; }
-
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .ai-title { font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 8px; margin-bottom: 15px; display: flex; align-items: center; }
+        .ai-title::before { content: "●"; color: #000; margin-right: 8px; } /* 提示灯改为黑色 */
+        .ai-link { display: block; padding: 10px; margin: 8px 0; background: #fff; text-decoration: none; color: #333; border: 1px solid #ddd; font-size: 13px; }
+        .ai-link:hover { background: #f0f0f0; border-color: #000; }
+        .ai-desc { font-size: 11px; color: #666; margin-top: 4px; display: block; }
     </style>
 </head>
 <body>
@@ -62,7 +59,7 @@
                 </div>
                 <div class="summary-item">
                     <span class="label">本季实收毛利</span>
-                    <span class="value highlight-red" id="net-revenue">￥0.00</span>
+                    <span class="value" id="net-revenue">￥0.00</span>
                 </div>
                 <div class="summary-item">
                     <span class="label">资产留存率</span>
@@ -79,30 +76,29 @@
                     </tr>
                 </thead>
                 <tbody id="table-body">
-                    <!-- JS 填充 -->
+                    <!-- 数据由 JS 填充 -->
                 </tbody>
             </table>
 
-            <div style="font-size: 13px; color: #777; line-height: 1.6; border-top: 1px solid #eee; padding-top: 20px;">
-                <strong>异常说明：</strong><br>
-                本季度由于<span class="highlight-red">“合同负债”</span>计提比例调整（40%）及新增的<span class="highlight-red">“生态修复储备金”</span>（20%），实收营收与账面销售额出现重度偏离。该核算方案已由财务部执行备案。
+            <div style="font-size: 13px; color: #333; line-height: 1.6; border-top: 1px solid #000; padding-top: 20px;">
+                <strong>审计备注：</strong><br>
+                本季度由于“合同负债”计提比例调整（40%）及新增的“生态修复储备金”（20%），实收营收与账面销售额出现偏离。该核算方案已执行。
             </div>
         </div>
     </div>
 
-    <!-- AI 助手窗口 -->
     <div id="ai-assistant">
         <div class="ai-title">为你推荐</div>
-        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">检测到您正在查阅财务报告，为您筛选了相关信息：</p>
+        <p style="font-size: 13px; color: #333; margin-bottom: 15px;">检测到数据异常，建议查阅：</p>
         
         <a href="article1.html" class="ai-link">
             <strong>行业报告：墓位价格合理性评估</strong>
-            <span class="ai-desc">深度分析指出：千安墓园均价（34万）远高于区域红线，溢价率被认为“极不合适”。</span>
+            <span class="ai-desc">分析指出：千安墓园均价（34万）远高于区域红线，溢价率极高。</span>
         </a>
 
         <a href="article2.html" class="ai-link">
             <strong>《企业财务报告编制指南》常见错误</strong>
-            <span class="ai-desc">指出本报告在递延收益科目处理上的逻辑谬误：高比例扣除导致利润过度失真。</span>
+            <span class="ai-desc">指出本报告在递延收益科目处理上的逻辑谬误。</span>
         </a>
     </div>
 
@@ -117,30 +113,31 @@
             const unitPrice = 340000;
             const gross = count * unitPrice;
 
-            // 极端的财务扣除逻辑制造矛盾
+            // 财务扣除逻辑
             const tax = gross * 0.125;           
-            const deferred = gross * 0.40;      // 故意设高的递延服务费
-            const ecoFund = gross * 0.20;       // 新增的高额生态金
+            const deferred = gross * 0.40;      
+            const ecoFund = gross * 0.20;       
             const landCost = count * 45000;
             
             const net = count > 0 ? (gross - tax - deferred - ecoFund - landCost) : 0;
             const rate = gross > 0 ? (net / gross * 100).toFixed(1) : 0;
 
-            // 渲染数据
+            // 填充顶部数值
             document.getElementById('gross-total').textContent = "￥" + gross.toLocaleString();
             document.getElementById('net-revenue').textContent = "￥" + net.toLocaleString(undefined, {minimumFractionDigits: 2});
             document.getElementById('retention-rate').textContent = rate + "%";
 
+            // 填充表格数值
             const tbody = document.getElementById('table-body');
-            const rows = [
+            const dataRows = [
                 ["主营业务销售额", `￥${gross.toLocaleString()}`, "结算标准：340,000/件"],
-                ["减：营业税金 (12.5%)", `- ￥${tax.toLocaleString()}`, "政策性税费扣除"],
-                ["减：合同负债 (预收服务递延)", `- ￥${deferred.toLocaleString()}`, "高比例计提（风险项目）"],
-                ["减：生态修复专项储备 (20%)", `- ￥${ecoFund.toLocaleString()}`, "本季新增大规模拨备"],
-                ["减：基础土地成本摊销", `- ￥${landCost.toLocaleString()}`, "固定资产账面折旧"]
+                ["减：营业税金 (12.5%)", `- ￥${tax.toLocaleString()}`, "政策性税费"],
+                ["减：合同负债 (预收递延)", `- ￥${deferred.toLocaleString()}`, "计提比例：40%"],
+                ["减：生态修复专项储备 (20%)", `- ￥${ecoFund.toLocaleString()}`, "专项储备支出"],
+                ["减：基础土地成本摊销", `- ￥${landCost.toLocaleString()}`, "固定资产摊销"]
             ];
 
-            rows.forEach(r => {
+            dataRows.forEach(r => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `<td>${r[0]}</td><td class="text-right">${r[1]}</td><td>${r[2]}</td>`;
                 tbody.appendChild(tr);
@@ -148,7 +145,7 @@
 
             const totalTr = document.createElement('tr');
             totalTr.className = "total-row";
-            totalTr.innerHTML = `<td>本季度净利润</td><td class="text-right highlight-red">￥${net.toLocaleString(undefined, {minimumFractionDigits: 2})}</td><td>结算完成率：${rate}%</td>`;
+            totalTr.innerHTML = `<td>本季度净利润</td><td class="text-right">￥${net.toLocaleString(undefined, {minimumFractionDigits: 2})}</td><td>结算率：${rate}%</td>`;
             tbody.appendChild(totalTr);
 
             // AI 助手 2秒后滑入
