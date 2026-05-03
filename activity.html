@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>千安公墓 - 员工意见征集</title>
+    <style>
+        :root { --gold: #b8977e; --dark: #333; --office-red: #c0392b; }
+        body { margin: 0; font-family: "SimSun", serif; background-color: #f2f2f2; display: flex; height: 100vh; overflow: hidden; }
+        
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+        
+        .document-container { 
+            background: #fff; width: 100%; max-width: 800px; padding: 60px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; border-radius: 2px;
+        }
+
+        /* 公文头 */
+        .doc-header { border-bottom: 2px solid var(--office-red); text-align: center; margin-bottom: 30px; padding-bottom: 10px; }
+        .doc-header h1 { color: var(--office-red); font-size: 32px; margin: 0; letter-spacing: 4px; }
+        .doc-no { display: flex; justify-content: space-between; font-size: 13px; color: #666; margin-top: 10px; }
+
+        .doc-title { text-align: center; font-size: 22px; font-weight: bold; margin: 30px 0; }
+        .doc-body { font-size: 15px; line-height: 1.8; color: #333; }
+
+        /* 独立意见表单窗口 */
+        .form-window { 
+            margin-top: 40px; border: 1px solid #ddd; border-radius: 4px; 
+            background: #fff; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .form-header { background: #f8f9fa; padding: 12px 20px; border-bottom: 1px solid #ddd; font-weight: bold; font-size: 14px; color: var(--dark); }
+        .form-body { padding: 25px; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; margin-bottom: 8px; font-weight: bold; color: #555; }
+        .form-group input, .form-group textarea { 
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 3px; 
+            box-sizing: border-box; font-family: inherit; font-size: 14px;
+        }
+        .form-group textarea { height: 150px; resize: none; }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--office-red); outline: none; background: #fffcfc; }
+
+        .btn-row { display: flex; justify-content: flex-end; gap: 10px; }
+        .btn { padding: 10px 25px; border-radius: 3px; cursor: pointer; font-size: 14px; font-weight: bold; border: none; }
+        .btn-cancel { background: #eee; color: #666; }
+        .btn-submit { background: var(--office-red); color: #fff; }
+        .btn:hover { opacity: 0.9; }
+
+        .stamp { 
+            position: absolute; bottom: 80px; right: 60px; width: 110px; height: 110px; 
+            border: 2px solid rgba(192, 57, 43, 0.4); border-radius: 50%; color: rgba(192, 57, 43, 0.4);
+            display: flex; align-items: center; justify-content: center; transform: rotate(-10deg);
+            font-weight: bold; font-size: 13px; pointer-events: none; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 侧边栏 -->
+    <script src="sidebar.js"></script>
+
+    <div class="main-content">
+        <div class="document-container">
+            <!-- 头部公文信息 -->
+            <div class="doc-header">
+                <h1>千安公墓内部管理文件</h1>
+                <div class="doc-no">
+                    <span>千安综管发〔2026〕012号</span>
+                    <span>2026-05-01</span>
+                </div>
+            </div>
+
+            <div class="doc-title">关于开展“我为公司献一策”活动的通知</div>
+
+            <div class="doc-body">
+                <p>各岗位员工：</p>
+                <p>为营造积极向上的企业文化，提升公墓管理效能，综合管理部现向全体员工征集有关办公环境、流程优化及企业发展的建设性意见。请通过下方表单真实填写相关信息。</p>
+            </div>
+
+            <!-- 独立的提意见窗口 -->
+            <div class="form-window">
+                <div class="form-header">意见反馈登记表</div>
+                <div class="form-body">
+                    <div class="form-group">
+                        <label>姓名</label>
+                        <input type="text" id="userName" placeholder="请输入您的姓名">
+                    </div>
+                    <div class="form-group">
+                        <label>建议内容</label>
+                        <textarea id="userContent" placeholder="请详细描述您的建议或意见..."></textarea>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn btn-cancel" onclick="resetForm()">重置</button>
+                        <button class="btn btn-submit" onclick="submitSuggestion()">提交意见</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stamp">综合管理部<br>行政办公专用</div>
+        </div>
+    </div>
+
+    <script>
+        function submitSuggestion() {
+            const name = document.getElementById('userName').value.trim();
+            const content = document.getElementById('userContent').value.trim();
+
+            if (!name || !content) {
+                alert("请完整填写姓名和建议内容。");
+                return;
+            }
+
+            // 模拟正常提交逻辑
+            console.log("提交人:", name);
+            console.log("建议内容:", content);
+
+            alert("感谢您的反馈，" + name + "。您的建议已录入系统，管理部将尽快审核。");
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('userName').value = '';
+            document.getElementById('userContent').value = '';
+        }
+    </script>
+
+</body>
+</html>
