@@ -6,16 +6,10 @@
     <style>
         :root { --gold: #b8977e; --dark: #333; --nav-bg: #1d2731; --chat-bg: #f0f2f5; }
         
-        /* 基础布局整改 */
         body { margin: 0; font-family: "SimSun", serif; background-color: var(--chat-bg); display: flex; height: 100vh; overflow: hidden; }
-
-        /* 全局侧边栏容器 (需配合 sidebar.js 使用，或此处手动定义样式) */
         .app-container { display: flex; width: 100%; height: 100%; }
-        
-        /* 邮箱内容包装区 */
         .mail-wrapper { flex: 1; display: flex; background: #fff; position: relative; }
 
-        /* 联络人侧边栏 */
         .contact-sidebar { width: 240px; background: #f8f9fa; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
         .contact-sidebar .menu-label { padding: 25px 20px 10px; font-size: 12px; color: #888; letter-spacing: 2px; text-transform: uppercase; }
         
@@ -23,24 +17,22 @@
         .contact-item:hover { background: #eef1f4; }
         .contact-item.active-contact { background: #fff; border-left: 4px solid var(--nav-bg); color: var(--nav-bg); font-weight: bold; }
         
-        /* 聊天主区域 */
+        /* 新联系人闪烁特效 */
+        .active-new { animation: pulse 2s infinite; background: #fff9f9; }
+        @keyframes pulse { 0% {box-shadow: inset 0 0 0px rgba(192,57,43,0.5);} 50% {box-shadow: inset 0 0 10px rgba(192,57,43,0.2);} 100% {box-shadow: inset 0 0 0px rgba(192,57,43,0.5);} }
+
         .chat-area { flex: 1; display: flex; flex-direction: column; background: #fff; }
         .chat-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
         .message-container { flex: 1; padding: 30px; overflow-y: auto; background: #f4f7f9; display: flex; flex-direction: column; gap: 18px; }
         
-        /* 气泡样式 */
         .msg { max-width: 70%; padding: 14px 18px; border-radius: 8px; font-size: 14px; line-height: 1.6; position: relative; }
         .msg-left { align-self: flex-start; background: #fff; border: 1px solid #dee2e6; color: #333; }
         .msg-right { align-self: flex-end; background: #2c3e50; color: #fff; border: 1px solid #2c3e50; }
         .msg-time { font-size: 10px; color: #999; margin-top: 6px; display: block; text-align: right; }
-        .msg-right .msg-time { color: #bdc3c7; }
         
-        /* 输入区 */
         .input-area { padding: 25px 30px; border-top: 1px solid #eee; display: flex; gap: 12px; background: #fff; }
         #userInput { flex: 1; padding: 14px; border: 1px solid #ddd; border-radius: 4px; outline: none; font-family: inherit; }
-        #userInput:focus { border-color: var(--nav-bg); }
-        .send-btn { padding: 0 30px; background: var(--nav-bg); color: var(--gold); border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; }
-        .send-btn:hover { opacity: 0.9; }
+        .send-btn { padding: 0 30px; background: var(--nav-bg); color: var(--gold); border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
         #typingIndicator { position: absolute; bottom: 105px; left: 270px; font-size: 12px; color: #7f8c8d; font-style: italic; display: none; }
         .avatar { width: 34px; height: 34px; border-radius: 4px; margin-right: 12px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: bold; }
@@ -48,16 +40,13 @@
 </head>
 <body>
 
-    <!-- 侧边栏脚本引用 -->
     <script src="sidebar.js"></script>
 
     <div class="app-container">
-        <!-- 此处侧边栏内容由 sidebar.js 自动注入，或根据你的框架手动添加 -->
-        
         <div class="mail-wrapper">
-            <!-- 联络人列表 -->
-            <div class="contact-sidebar">
+            <div class="contact-sidebar" id="contactList">
                 <div class="menu-label">内部通讯录</div>
+                <!-- 卫先生将在此处动态生成 -->
                 <div class="contact-item active-contact" onclick="switchContact('杨先生', this)">
                     <div class="avatar" style="background:#7f8c8d;">杨</div>
                     <div>
@@ -74,7 +63,6 @@
                 </div>
             </div>
 
-            <!-- 聊天区 -->
             <div class="chat-area">
                 <div class="chat-header">
                     <div id="currentChatName" style="font-size: 16px;">当前对话：<b>杨先生</b></div>
@@ -84,10 +72,7 @@
                     </div>
                 </div>
                 
-                <div class="message-container" id="chatBox">
-                    <!-- 消息动态加载 -->
-                </div>
-
+                <div class="message-container" id="chatBox"></div>
                 <div id="typingIndicator">正在输入...</div>
 
                 <div class="input-area">
@@ -101,7 +86,42 @@
     <script>
         let currentContact = "杨先生";
         const keywords = ["红点", "保安", "实时", "墓位", "平面图"];
-        const standardReply = "是正在巡逻的保安，我们的系统比较先进，他们巡逻的位置和实时信息会更新在实时墓位平面图上，不过信息是根据保安的对讲机走的，有时候他们对讲机忘拿了就会原地不动。";
+        const standardReply = "是正在巡逻的保安，我们的系统比较先进，他们巡逻的位置和实时信息会更新在实时墓位平面图上。";
+
+        // --- 卫先生异步联动逻辑 ---
+        function checkAuditStatus() {
+            const startTime = localStorage.getItem('audit_submit_timestamp');
+            const state = localStorage.getItem('wei_contact_state');
+
+            if (state === 'waiting' && startTime) {
+                const elapsed = Date.now() - parseInt(startTime);
+                if (elapsed >= 60000) { // 1分钟判定
+                    createWeiContact();
+                }
+            } else if (state === 'received') {
+                createWeiContact(false); // 页面刷新后静默恢复
+            }
+        }
+
+        function createWeiContact(isNew = true) {
+            if (document.getElementById('wei-item')) return;
+
+            const sidebar = document.getElementById('contactList');
+            const weiDiv = document.createElement('div');
+            weiDiv.id = "wei-item";
+            weiDiv.className = isNew ? "contact-item active-new" : "contact-item";
+            weiDiv.onclick = function() { switchContact('卫先生 - 审计部', this); this.classList.remove('active-new'); };
+            weiDiv.innerHTML = `
+                <div class="avatar" style="background:#c0392b;">卫</div>
+                <div>
+                    <div style="font-weight:bold;">卫先生</div>
+                    <div style="font-size:11px; color:#999;">审计部</div>
+                </div>
+            `;
+            // 插入到通讯录第一个联系人之前
+            sidebar.insertBefore(weiDiv, sidebar.children[1]);
+            localStorage.setItem('wei_contact_state', 'received');
+        }
 
         function switchContact(name, element) {
             currentContact = name;
@@ -115,9 +135,9 @@
             if(name === '杨先生') {
                 appendMessage('msg-left', "你好，我是杨先生。欢迎入职千安公墓。有问题可以随时联系我。");
             } else if(name === '综合管理部 - 老张') {
-                appendMessage('msg-left', "你好，小伙子。公司最近在搞企业文化建设，这是管理部发起的活动，建议你参与一下：<br><br>" + 
-                              "<a href='activity.html' style='color:#2980b9; font-weight:bold; text-decoration:underline;'>【置顶】关于鼓励员工给公司提建议的通知</a>" + 
-                              "<br><br>多提意见，对公司发展有好处。");
+                appendMessage('msg-left', "你好，小伙子。公司最近在搞文化建设，建议你参与一下：<br><br><a href='activity.html' style='color:#2980b9; font-weight:bold;'>【置顶】关于鼓励员工给公司提建议的通知</a>");
+            } else if(name === '卫先生 - 审计部') {
+                appendMessage('msg-left', "顾叙，我已经收到你的反馈了。");
             }
         }
 
@@ -125,15 +145,12 @@
             const input = document.getElementById('userInput');
             const text = input.value.trim();
             if (!text) return;
-
             appendMessage('msg-right', text);
             input.value = '';
-
-            const indicator = document.getElementById('typingIndicator');
-            indicator.style.display = 'block';
+            document.getElementById('typingIndicator').style.display = 'block';
 
             setTimeout(() => {
-                indicator.style.display = 'none';
+                document.getElementById('typingIndicator').style.display = 'none';
                 if (currentContact === "杨先生") {
                     const hit = keywords.some(k => text.includes(k));
                     appendMessage('msg-left', hit ? standardReply : "请详细查阅岗位说明书。");
@@ -152,12 +169,12 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        document.getElementById('userInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
+        document.getElementById('userInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
         window.onload = () => {
             appendMessage('msg-left', "你好，我是杨先生。欢迎入职千安公墓。有问题可以随时联系我。");
+            checkAuditStatus();
+            setInterval(checkAuditStatus, 5000); // 每5秒轮询一次[cite: 1]
         };
     </script>
 </body>
