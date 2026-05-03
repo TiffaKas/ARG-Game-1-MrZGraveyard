@@ -5,49 +5,37 @@
     <title>千安公墓 - 内部行政邮箱</title>
     <style>
         :root { --gold: #b8977e; --dark: #333; --nav-bg: #1d2731; --chat-bg: #f0f2f5; }
-        
         body { margin: 0; font-family: "SimSun", serif; background-color: var(--chat-bg); display: flex; height: 100vh; overflow: hidden; }
         .app-container { display: flex; width: 100%; height: 100%; }
         .mail-wrapper { flex: 1; display: flex; background: #fff; position: relative; }
-
         .contact-sidebar { width: 240px; background: #f8f9fa; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
         .contact-sidebar .menu-label { padding: 25px 20px 10px; font-size: 12px; color: #888; letter-spacing: 2px; text-transform: uppercase; }
-        
         .contact-item { padding: 18px 20px; border-bottom: 1px solid #eee; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; font-size: 14px; color: #444; }
         .contact-item:hover { background: #eef1f4; }
         .contact-item.active-contact { background: #fff; border-left: 4px solid var(--nav-bg); color: var(--nav-bg); font-weight: bold; }
-        
-        /* 新联系人闪烁特效 */
         .active-new { animation: pulse 2s infinite; background: #fff9f9; }
         @keyframes pulse { 0% {box-shadow: inset 0 0 0px rgba(192,57,43,0.5);} 50% {box-shadow: inset 0 0 10px rgba(192,57,43,0.2);} 100% {box-shadow: inset 0 0 0px rgba(192,57,43,0.5);} }
-
         .chat-area { flex: 1; display: flex; flex-direction: column; background: #fff; }
         .chat-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
         .message-container { flex: 1; padding: 30px; overflow-y: auto; background: #f4f7f9; display: flex; flex-direction: column; gap: 18px; }
-        
         .msg { max-width: 70%; padding: 14px 18px; border-radius: 8px; font-size: 14px; line-height: 1.6; position: relative; }
         .msg-left { align-self: flex-start; background: #fff; border: 1px solid #dee2e6; color: #333; }
         .msg-right { align-self: flex-end; background: #2c3e50; color: #fff; border: 1px solid #2c3e50; }
         .msg-time { font-size: 10px; color: #999; margin-top: 6px; display: block; text-align: right; }
-        
         .input-area { padding: 25px 30px; border-top: 1px solid #eee; display: flex; gap: 12px; background: #fff; }
         #userInput { flex: 1; padding: 14px; border: 1px solid #ddd; border-radius: 4px; outline: none; font-family: inherit; }
         .send-btn { padding: 0 30px; background: var(--nav-bg); color: var(--gold); border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-
         #typingIndicator { position: absolute; bottom: 105px; left: 270px; font-size: 12px; color: #7f8c8d; font-style: italic; display: none; }
         .avatar { width: 34px; height: 34px; border-radius: 4px; margin-right: 12px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <script src="sidebar.js"></script>
-
     <div class="app-container">
         <div class="mail-wrapper">
             <div class="contact-sidebar" id="contactList">
                 <div class="menu-label">内部通讯录</div>
-                <!-- 初始联系人 -->
-                <div class="contact-item active-contact" onclick="switchContact('杨先生', this)">
+                <div id="item-yang" class="contact-item active-contact" onclick="switchContact('杨先生', this)">
                     <div class="avatar" style="background:#7f8c8d;">杨</div>
                     <div>
                         <div style="font-weight:bold;">杨先生</div>
@@ -71,10 +59,8 @@
                         系统连接正常
                     </div>
                 </div>
-                
                 <div class="message-container" id="chatBox"></div>
                 <div id="typingIndicator">正在输入...</div>
-
                 <div class="input-area">
                     <input type="text" id="userInput" placeholder="请简述您的问题..." autocomplete="off">
                     <button class="send-btn" onclick="sendMessage()">发送消息</button>
@@ -86,20 +72,17 @@
     <script>
         let currentContact = "杨先生";
         let isWeiTyping = false; 
-        
-        // --- 逻辑关键词配置 ---
         const keywords = ["红点", "保安", "实时", "墓位", "平面图"];
         const standardReply = "是正在巡逻的保安，我们的系统比较先进，他们巡逻的位置和实时信息会更新在实时墓位平面图上。";
 
         const weiDialogs = [
             "顾叙，审计部已经复核了你提交的关于 34 万定价及 14.3% 资产留存率的疑点。",
-            "从财务报表上看，公司将绝大部分营收划归到了‘高档园区维护成本’中。作为高档墓地，千安公墓确实配置了远超同行业的人力与物力支出。",
-            "比如，为了维持石材色泽的高频次化学养护，以及园区内景观植物的 24 小时专业维保。这些支出极其惊人，也是账面留存现金较低的‘职业解释’。",
-            "但问题在于，这些所谓‘必要’的人力物力支出，全部流向了几家特定的外包服务商。",
-            "我已经把部分权限下放了。现在去档案室，调取那份‘项目外包合同’。重点比对‘安保人力’和‘环境维保’这两项。"
+            "从财务报表上看，公司将绝大部分营收划归到了‘高档园区维护成本’中。",
+            "这些支出流向了几家特定的外包服务商。",
+            "我已经把部分权限下放了。现在去档案室，调取那份‘项目外包合同’。"
         ];
 
-        // --- 核心切换逻辑 ---
+        // 核心修复：确保切换时能正确渲染
         function switchContact(name, element) {
             currentContact = name;
             document.getElementById('currentChatName').innerHTML = `当前对话：<b>${name}</b>`;
@@ -112,27 +95,23 @@
             if(name === '杨先生') {
                 appendMessage('msg-left', "你好，我是杨先生。欢迎入职千安公墓。有问题可以随时联系我。");
             } else if(name === '综合管理部 - 老张') {
-                appendMessage('msg-left', "你好，小伙子。公司最近在搞文化建设，建议你参与一下：<br><br><a href='activity.html' style='color:#2980b9; font-weight:bold;'>【置顶】关于鼓励员工给公司提建议的通知</a>");
+                // 修复老张链接：使用内联样式确保可见性
+                const linkContent = "你好，小伙子。公司最近在搞文化建设，建议你参与一下：<br><br><a href='activity.html' target='_blank' style='color:#2980b9; font-weight:bold; text-decoration:underline;'>【置顶】关于鼓励员工给公司提建议的通知</a>";
+                appendMessage('msg-left', linkContent);
             } else if(name === '卫先生 - 审计部') {
-                if (!isWeiTyping) {
-                    playWeiSequence();
-                }
+                if (!isWeiTyping) playWeiSequence();
             }
         }
 
-        // --- 卫先生专用：异步逐条发送逻辑 ---
         function playWeiSequence() {
             isWeiTyping = true;
             let index = 0;
-            const chatBox = document.getElementById('chatBox');
-            
             function nextMsg() {
                 if (index < weiDialogs.length) {
                     appendMessage('msg-left', weiDialogs[index]);
                     index++;
                     setTimeout(nextMsg, 1200); 
                 } else {
-                    // 自动填充拟定回复
                     document.getElementById('userInput').value = "但是成本也没有那么高吧？";
                     isWeiTyping = false;
                 }
@@ -140,67 +119,25 @@
             nextMsg();
         }
 
-        // --- 动态生成卫先生联系人 ---
-        function checkAuditStatus() {
-            const startTime = localStorage.getItem('audit_submit_timestamp');
-            const state = localStorage.getItem('wei_contact_state');
-
-            if (state === 'waiting' && startTime) {
-                const elapsed = Date.now() - parseInt(startTime);
-                if (elapsed >= 60000) { 
-                    createWeiContact();
-                }
-            } else if (state === 'received') {
-                createWeiContact(false);
-            }
-        }
-
-        function createWeiContact(isNew = true) {
-            if (document.getElementById('wei-item')) return;
-            const sidebar = document.getElementById('contactList');
-            const weiDiv = document.createElement('div');
-            weiDiv.id = "wei-item";
-            weiDiv.className = isNew ? "contact-item active-new" : "contact-item";
-            weiDiv.onclick = function() { 
-                switchContact('卫先生 - 审计部', this); 
-                this.classList.remove('active-new'); 
-            };
-            weiDiv.innerHTML = `
-                <div class="avatar" style="background:#c0392b;">卫</div>
-                <div>
-                    <div style="font-weight:bold;">卫先生</div>
-                    <div style="font-size:11px; color:#999;">审计部</div>
-                </div>
-            `;
-            sidebar.insertBefore(weiDiv, sidebar.children[1]);
-            localStorage.setItem('wei_contact_state', 'received');
-        }
-
-        // --- 发送消息及自动回复逻辑 ---
         function sendMessage() {
             const input = document.getElementById('userInput');
             const text = input.value.trim();
             if (!text) return;
-            
             appendMessage('msg-right', text);
             input.value = '';
             document.getElementById('typingIndicator').style.display = 'block';
 
             setTimeout(() => {
                 document.getElementById('typingIndicator').style.display = 'none';
-                
                 if (currentContact === "杨先生") {
-                    // 旧代码核心：杨先生关键词匹配
                     const hit = keywords.some(k => text.includes(k));
                     appendMessage('msg-left', hit ? standardReply : "请详细查阅岗位说明书，或咨询综合管理部。");
-                } 
-                else if (currentContact === "卫先生 - 审计部") {
-                    appendMessage('msg-left', "审计的职责在于确保流程的闭环。有些支出的‘必要性’不在于值多少钱，而在于它必须存在。这件事到此为止，去档案室看你该看的就行。");
-                } 
-                else {
-                    appendMessage('msg-left', "收到了，我会反馈给领导的。你先看看那个文化建设活动。");
+                } else if (currentContact === "卫先生 - 审计部") {
+                    appendMessage('msg-left', "审计的职责在于确保流程的闭环。去档案室看你该看的就行。");
+                } else {
+                    appendMessage('msg-left', "收到了，我会反馈给领导的。");
                 }
-            }, 1500);
+            }, 1000);
         }
 
         function appendMessage(type, content) {
@@ -212,15 +149,38 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // 绑定回车键
-        document.getElementById('userInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+        // 审计状态轮询
+        function checkAuditStatus() {
+            const startTime = localStorage.getItem('audit_submit_timestamp');
+            const state = localStorage.getItem('wei_contact_state');
+            if (state === 'waiting' && startTime && (Date.now() - parseInt(startTime) >= 60000)) {
+                createWeiContact();
+            } else if (state === 'received') {
+                createWeiContact(false);
+            }
+        }
+
+        function createWeiContact(isNew = true) {
+            if (document.getElementById('wei-item')) return;
+            const sidebar = document.getElementById('contactList');
+            const weiDiv = document.createElement('div');
+            weiDiv.id = "wei-item";
+            weiDiv.className = isNew ? "contact-item active-new" : "contact-item";
+            weiDiv.onclick = function() { switchContact('卫先生 - 审计部', this); this.classList.remove('active-new'); };
+            weiDiv.innerHTML = `<div class="avatar" style="background:#c0392b;">卫</div><div><div style="font-weight:bold;">卫先生</div><div style="font-size:11px; color:#999;">审计部</div></div>`;
+            sidebar.insertBefore(weiDiv, sidebar.children[1]);
+            localStorage.setItem('wei_contact_state', 'received');
+        }
 
         window.onload = () => {
-            // 初始化杨先生的消息
+            // 初始化：强制加载第一句话
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML = ''; 
             appendMessage('msg-left', "你好，我是杨先生。欢迎入职千安公墓。有问题可以随时联系我。");
             checkAuditStatus();
-            setInterval(checkAuditStatus, 5000); //
+            setInterval(checkAuditStatus, 5000);
         };
+        document.getElementById('userInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
     </script>
 </body>
 </html>
