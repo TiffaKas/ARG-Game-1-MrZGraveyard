@@ -46,7 +46,6 @@
         <div class="mail-wrapper">
             <div class="contact-sidebar" id="contactList">
                 <div class="menu-label">内部通讯录</div>
-                <!-- 卫先生将在此处动态生成 -->
                 <div class="contact-item active-contact" onclick="switchContact('杨先生', this)">
                     <div class="avatar" style="background:#7f8c8d;">杨</div>
                     <div>
@@ -85,32 +84,42 @@
 
     <script>
         let currentContact = "杨先生";
+        let isWeiTyping = false; 
         const keywords = ["红点", "保安", "实时", "墓位", "平面图"];
         const standardReply = "是正在巡逻的保安，我们的系统比较先进，他们巡逻的位置和实时信息会更新在实时墓位平面图上。";
 
-        // --- 卫先生异步联动逻辑 ---
+        const weiDialogs = [
+            "顾叙，审计部已经复核了你提交的关于 34 万定价及 14.3% 资产留存率的疑点。",
+            "从财务报表上看，公司将绝大部分营收划归到了‘高档园区维护成本’中。作为高档墓地，千安公墓确实配置了远超同行业的人力与物力支出。",
+            "比如，为了维持石材色泽的高频次化学养护，以及园区内景观植物的 24 小时专业维保。",
+            "很多的维护是必要的，作为千安墓园本身来讲。",
+            “很多新人有时都会问类似的问题，你也不是第一个，这个建议公司会听进去。”
+        ];
+
         function checkAuditStatus() {
             const startTime = localStorage.getItem('audit_submit_timestamp');
             const state = localStorage.getItem('wei_contact_state');
 
             if (state === 'waiting' && startTime) {
                 const elapsed = Date.now() - parseInt(startTime);
-                if (elapsed >= 60000) { // 1分钟判定
+                if (elapsed >= 60000) { 
                     createWeiContact();
                 }
             } else if (state === 'received') {
-                createWeiContact(false); // 页面刷新后静默恢复
+                createWeiContact(false);
             }
         }
 
         function createWeiContact(isNew = true) {
             if (document.getElementById('wei-item')) return;
-
             const sidebar = document.getElementById('contactList');
             const weiDiv = document.createElement('div');
             weiDiv.id = "wei-item";
             weiDiv.className = isNew ? "contact-item active-new" : "contact-item";
-            weiDiv.onclick = function() { switchContact('卫先生 - 审计部', this); this.classList.remove('active-new'); };
+            weiDiv.onclick = function() { 
+                switchContact('卫先生 - 审计部', this); 
+                this.classList.remove('active-new'); 
+            };
             weiDiv.innerHTML = `
                 <div class="avatar" style="background:#c0392b;">卫</div>
                 <div>
@@ -118,7 +127,6 @@
                     <div style="font-size:11px; color:#999;">审计部</div>
                 </div>
             `;
-            // 插入到通讯录第一个联系人之前
             sidebar.insertBefore(weiDiv, sidebar.children[1]);
             localStorage.setItem('wei_contact_state', 'received');
         }
@@ -137,8 +145,28 @@
             } else if(name === '综合管理部 - 老张') {
                 appendMessage('msg-left', "你好，小伙子。公司最近在搞文化建设，建议你参与一下：<br><br><a href='activity.html' style='color:#2980b9; font-weight:bold;'>【置顶】关于鼓励员工给公司提建议的通知</a>");
             } else if(name === '卫先生 - 审计部') {
-                appendMessage('msg-left', "顾叙，我已经收到你的反馈了。");
+                if (!isWeiTyping) {
+                    playWeiSequence();
+                }
             }
+        }
+
+        function playWeiSequence() {
+            isWeiTyping = true;
+            let index = 0;
+            const chatBox = document.getElementById('chatBox');
+            
+            function nextMsg() {
+                if (index < weiDialogs.length) {
+                    appendMessage('msg-left', weiDialogs[index]);
+                    index++;
+                    setTimeout(nextMsg, 1000); 
+                } else {
+                    document.getElementById('userInput').value = "但是成本也没有那么高吧？";
+                    isWeiTyping = false;
+                }
+            }
+            nextMsg();
         }
 
         function sendMessage() {
@@ -154,6 +182,8 @@
                 if (currentContact === "杨先生") {
                     const hit = keywords.some(k => text.includes(k));
                     appendMessage('msg-left', hit ? standardReply : "请详细查阅岗位说明书。");
+                } else if (currentContact === "卫先生 - 审计部") {
+                    appendMessage('msg-left', "审计的职责在于确保流程的闭环，而不是拆解每一个零件。有些支出的‘必要性’不在于它值多少钱，而在于它必须存在。没事，这不重要，不用管什么东西，做好自己的工作就行。");
                 } else {
                     appendMessage('msg-left', "收到了，我会反馈给领导的。你先看看那个活动。");
                 }
@@ -174,7 +204,7 @@
         window.onload = () => {
             appendMessage('msg-left', "你好，我是杨先生。欢迎入职千安公墓。有问题可以随时联系我。");
             checkAuditStatus();
-            setInterval(checkAuditStatus, 5000); // 每5秒轮询一次[cite: 1]
+            setInterval(checkAuditStatus, 5000);
         };
     </script>
 </body>
