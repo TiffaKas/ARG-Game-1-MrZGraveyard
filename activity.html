@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <title>千安公墓 - 员工意见征集</title>
     <style>
-        :root { --gold: #b8977e; --dark: #333; --office-red: #c0392b; }
-        body { margin: 0; font-family: "SimSun", serif; background-color: #f2f2f2; display: flex; height: 100vh; overflow: hidden; }
+        :root { --office-red: #c0392b; --paper-bg: #f2f2f2; } 
         
+        body { margin: 0; font-family: "SimSun", serif; background-color: var(--paper-bg); display: flex; height: 100vh; overflow: hidden; transition: background 0.2s; }
+        
+        /* 错误闪烁动画 */
+        .flash-fail { animation: flash 0.3s ease-in-out; }
+        @keyframes flash { 0% {background: var(--paper-bg);} 50% {background:#d0d0d0;} 100% {background: var(--paper-bg);} }
+
         .main-content { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
         
         .document-container { 
@@ -16,38 +21,41 @@
 
         /* 公文头 */
         .doc-header { border-bottom: 2px solid var(--office-red); text-align: center; margin-bottom: 30px; padding-bottom: 10px; }
-        .doc-header h1 { color: var(--office-red); font-size: 32px; margin: 0; letter-spacing: 4px; }
-        .doc-no { display: flex; justify-content: space-between; font-size: 13px; color: #666; margin-top: 10px; }
+        .doc-header h1 { font-size: 32px; margin: 0; letter-spacing: 4px; }
+        .doc-no { display: flex; justify-content: space-between; font-size: 13px; margin-top: 10px; }
 
         .doc-title { text-align: center; font-size: 22px; font-weight: bold; margin: 30px 0; }
-        .doc-body { font-size: 15px; line-height: 1.8; color: #333; }
+        .doc-body { font-size: 15px; line-height: 1.8; }
 
         /* 独立意见表单窗口 */
         .form-window { 
             margin-top: 40px; border: 1px solid #ddd; border-radius: 4px; 
             background: #fff; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        .form-header { background: #f8f9fa; padding: 12px 20px; border-bottom: 1px solid #ddd; font-weight: bold; font-size: 14px; color: var(--dark); }
+        .form-header { background: #f8f9fa; padding: 12px 20px; border-bottom: 1px solid #ddd; font-weight: bold; font-size: 14px; }
         .form-body { padding: 25px; }
 
+        /* 提示文字样式 */
+        #hint-text { text-align: center; height: 20px; margin-bottom: 10px; font-size: 13px; font-weight: bold; visibility: hidden; }
+
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 14px; margin-bottom: 8px; font-weight: bold; color: #555; }
+        .form-group label { display: block; font-size: 14px; margin-bottom: 8px; font-weight: bold; }
         .form-group input, .form-group textarea { 
             width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 3px; 
-            box-sizing: border-box; font-family: inherit; font-size: 14px;
+            box-sizing: border-box; font-family: inherit; font-size: 14px; outline: none;
         }
-        .form-group textarea { height: 150px; resize: none; }
-        .form-group input:focus, .form-group textarea:focus { border-color: var(--office-red); outline: none; background: #fffcfc; }
+        .form-group textarea { height: 120px; resize: none; }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--office-red); background: #fffcfc; }
 
         .btn-row { display: flex; justify-content: flex-end; gap: 10px; }
         .btn { padding: 10px 25px; border-radius: 3px; cursor: pointer; font-size: 14px; font-weight: bold; border: none; }
-        .btn-cancel { background: #eee; color: #666; }
+        .btn-cancel { background: #eee; }
         .btn-submit { background: var(--office-red); color: #fff; }
         .btn:hover { opacity: 0.9; }
 
         .stamp { 
             position: absolute; bottom: 80px; right: 60px; width: 110px; height: 110px; 
-            border: 2px solid rgba(192, 57, 43, 0.4); border-radius: 50%; color: rgba(192, 57, 43, 0.4);
+            border: 2px solid rgba(192, 57, 43, 0.4); border-radius: 50%;
             display: flex; align-items: center; justify-content: center; transform: rotate(-10deg);
             font-weight: bold; font-size: 13px; pointer-events: none; text-align: center;
         }
@@ -55,12 +63,11 @@
 </head>
 <body>
 
-    <!-- 侧边栏 -->
+    <!-- 侧边栏脚本 -->
     <script src="sidebar.js"></script>
 
     <div class="main-content">
         <div class="document-container">
-            <!-- 头部公文信息 -->
             <div class="doc-header">
                 <h1>千安公墓内部管理文件</h1>
                 <div class="doc-no">
@@ -73,24 +80,24 @@
 
             <div class="doc-body">
                 <p>各岗位员工：</p>
-                <p>为营造积极向上的企业文化，提升公墓管理效能，综合管理部现向全体员工征集有关办公环境、流程优化及企业发展的建设性意见。请通过下方表单真实填写相关信息。</p>
+                <p>为营造积极向上的企业文化，提升公墓管理效能，综合管理部现向全体员工征集有关办公环境、财务流程优化及企业发展的建设性意见。请通过下方表单填写反馈。</p>
             </div>
 
-            <!-- 独立的提意见窗口 -->
             <div class="form-window">
                 <div class="form-header">意见反馈登记表</div>
                 <div class="form-body">
+                    <div id="hint-text">错误提示</div>
                     <div class="form-group">
                         <label>姓名</label>
-                        <input type="text" id="userName" placeholder="请输入您的姓名">
+                        <input type="text" id="userName" placeholder="请输入您的真实姓名">
                     </div>
                     <div class="form-group">
                         <label>建议内容</label>
-                        <textarea id="userContent" placeholder="请详细描述您的建议或意见..."></textarea>
+                        <textarea id="userContent" placeholder="请详细描述您的建议，例如对公司定价策略或审计合规的看法..."></textarea>
                     </div>
                     <div class="btn-row">
                         <button class="btn btn-cancel" onclick="resetForm()">重置</button>
-                        <button class="btn btn-submit" onclick="submitSuggestion()">提交意见</button>
+                        <button class="btn btn-submit" onclick="validateSuggestion()">提交意见</button>
                     </div>
                 </div>
             </div>
@@ -100,21 +107,54 @@
     </div>
 
     <script>
-        function submitSuggestion() {
+        // 判定关键词库[cite: 1, 2, 3]
+        const CORE_KEYS = ["34万", "340000", "定价", "溢价", "虚高", "暴利", "红线"];
+        const EVIDENCE_KEYS = ["合同负债", "计提", "40%", "14.3%", "资产留存率", "利润", "隐匿", "蓄水池", "合规"];
+
+        function triggerFlash(msg) {
+            document.body.classList.remove('flash-fail');
+            void document.body.offsetWidth; // 触发回流以重新执行动画
+            document.body.classList.add('flash-fail');
+            
+            const h = document.getElementById('hint-text');
+            h.innerText = msg;
+            h.style.visibility = 'visible';
+            setTimeout(() => h.style.visibility = 'hidden', 2500);
+        }
+
+        function validateSuggestion() {
             const name = document.getElementById('userName').value.trim();
             const content = document.getElementById('userContent').value.trim();
 
             if (!name || !content) {
-                alert("请完整填写姓名和建议内容。");
+                triggerFlash("基本项未填写完整");
                 return;
             }
 
-            // 模拟正常提交逻辑
-            console.log("提交人:", name);
-            console.log("建议内容:", content);
+            // 1. 检查是否存在核心定价质疑
+            const hasCore = CORE_KEYS.some(k => content.includes(k));
+            if (!hasCore) {
+                triggerFlash("确定这个是对的？");
+                return;
+            }
 
-            alert("感谢您的反馈，" + name + "。您的建议已录入系统，管理部将尽快审核。");
-            resetForm();
+            // 2. 检查是否提供了财务证据
+            const hasEvidence = EVIDENCE_KEYS.some(k => content.includes(k));
+            if (!hasEvidence) {
+                triggerFlash("好像不够可信");
+                return;
+            }
+
+            // 3. 验证成功
+            alert("提交成功！感谢您的反馈，" + name + "。\n系统已识别敏感内容，已将该件抄送至独立审计小组。");
+            
+            // 存档本地存储
+            let logs = JSON.parse(localStorage.getItem('audit_feedback') || '[]');
+            logs.push({ name, content, time: new Date().toLocaleString() });
+            localStorage.setItem('audit_feedback', JSON.stringify(logs));
+            
+            // 剧情推进跳转
+            setTimeout(() => { window.location.href = 'system.html'; }, 1000);
         }
 
         function resetForm() {
@@ -122,6 +162,5 @@
             document.getElementById('userContent').value = '';
         }
     </script>
-
 </body>
 </html>
