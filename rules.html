@@ -195,33 +195,37 @@
 
                 setTimeout(() => {
                     const rect = doc.getBoundingClientRect();
-                    const splitY = zone.getBoundingClientRect().top + 20;
+                    const splitY = zone.getBoundingClientRect().top + (zone.offsetHeight / 2);
                     const contentHtml = doc.innerHTML;
 
                     // 隐藏原文档
                     doc.classList.add('is-torn-hidden');
 
-                    // 第二步：创建上下滑动门
+                    // 第二步：创建上下滑动门（修正后的垂直分离逻辑）
                     const topGate = document.createElement('div');
                     topGate.className = 'tear-fragment';
                     topGate.style.top = '0';
                     topGate.style.height = splitY + 'px';
-                    topGate.innerHTML = `<div style="width:100vw; padding:60px calc(50vw - 375px); background:white; position:absolute; bottom:0; box-sizing:border-box; border:1px solid #ccc; border-bottom:none;">${contentHtml}</div>`;
+                    // 上门：内容贴到底部
+                    topGate.innerHTML = `<div style="width:100vw; padding:60px calc(50vw - 375px); background:white; position:absolute; top:0; box-sizing:border-box;">${contentHtml}</div>`;
                     
                     const bottomGate = document.createElement('div');
                     bottomGate.className = 'tear-fragment';
                     bottomGate.style.top = splitY + 'px';
                     bottomGate.style.height = (window.innerHeight - splitY) + 'px';
-                    bottomGate.innerHTML = `<div style="width:100vw; padding:60px calc(50vw - 375px); background:white; position:absolute; top:0; box-sizing:border-box; border:1px solid #ccc; border-top:none;">${contentHtml}</div>`;
-                    bottomGate.firstChild.style.marginTop = `-${splitY - rect.top}px`;
+                    // 下门：内容通过负 margin 向上偏移，使切口衔接
+                    bottomGate.innerHTML = `<div style="width:100vw; padding:60px calc(50vw - 375px); background:white; position:absolute; top:0; box-sizing:border-box;">${contentHtml}</div>`;
+                    bottomGate.firstChild.style.marginTop = `-${splitY}px`;
 
                     document.body.appendChild(topGate);
                     document.body.appendChild(bottomGate);
 
-                    // 第三步：垂直轴向分离动画
+                    // 第三步：垂直轴向分离动画（修正位移方向）
                     requestAnimationFrame(() => {
-                        topGate.style.transform = `translateY(-${splitY}px)`;
-                        bottomGate.style.transform = `translateY(${window.innerHeight - splitY}px)`;
+                        // 上门向上移出屏幕
+                        topGate.style.transform = `translateY(-100%)`;
+                        // 下门向下移出屏幕
+                        bottomGate.style.transform = `translateY(100%)`;
                     });
 
                     // 第四步：跳转
