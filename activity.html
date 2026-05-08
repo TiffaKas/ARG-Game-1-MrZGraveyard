@@ -5,134 +5,57 @@
     <title>千安公墓 - 员工意见征集</title>
     <style>
         :root { --office-red: #c0392b; --paper-bg: #f2f2f2; } 
-        body { margin: 0; font-family: "SimSun", serif; background-color: var(--paper-bg); display: flex; height: 100vh; overflow: hidden; transition: background 0.2s; }
+        body { margin: 0; font-family: "SimSun", serif; background-color: var(--paper-bg); display: flex; height: 100vh; overflow: hidden; }
         .flash-fail { animation: flash 0.3s ease-in-out; }
         @keyframes flash { 0% {background: var(--paper-bg);} 50% {background:#d0d0d0;} 100% {background: var(--paper-bg);} }
         .main-content { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-        .document-container { background: #fff; width: 100%; max-width: 800px; padding: 60px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; border-radius: 2px; }
-        .doc-header { border-bottom: 2px solid var(--office-red); text-align: center; margin-bottom: 30px; padding-bottom: 10px; }
-        .doc-header h1 { font-size: 32px; margin: 0; letter-spacing: 4px; }
-        .doc-no { display: flex; justify-content: space-between; font-size: 13px; margin-top: 10px; }
-        .doc-title { text-align: center; font-size: 22px; font-weight: bold; margin: 30px 0; }
-        .doc-body { font-size: 15px; line-height: 1.8; }
-        .form-window { margin-top: 40px; border: 1px solid #ddd; border-radius: 4px; background: #fff; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .form-header { background: #f8f9fa; padding: 12px 20px; border-bottom: 1px solid #ddd; font-weight: bold; font-size: 14px; }
-        .form-body { padding: 25px; }
-        #hint-text { text-align: center; height: 20px; margin-bottom: 10px; font-size: 13px; font-weight: bold; visibility: hidden; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 14px; margin-bottom: 8px; font-weight: bold; }
-        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 3px; box-sizing: border-box; font-family: inherit; font-size: 14px; outline: none; }
-        .form-group textarea { height: 120px; resize: none; }
-        .form-group input:focus, .form-group textarea:focus { border-color: var(--office-red); background: #fffcfc; }
-        .btn-row { display: flex; justify-content: flex-end; gap: 10px; }
-        .btn { padding: 10px 25px; border-radius: 3px; cursor: pointer; font-size: 14px; font-weight: bold; border: none; }
-        .btn-cancel { background: #eee; }
-        .btn-submit { background: var(--office-red); color: #fff; }
-
-        /* 全屏放大弹窗 */
-        #result-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; }
-        #result-card { background: #fff; padding: 50px; width: 70%; max-width: 600px; border-radius: 4px; text-align: left; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-        #result-card h2 { border-bottom: 1px solid #eee; padding-bottom: 15px; margin-top: 0; font-size: 18px; }
-        #result-text-display { font-size: 20px; line-height: 1.6; font-style: italic; margin-top: 20px; }
-
-        .help-btn { position: fixed; bottom: 20px; right: 20px; padding: 8px 15px; background: #444; color: #fff; font-size: 12px; border-radius: 20px; cursor: pointer; opacity: 0.7; }
-        .help-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 420px; background: #fff; border: 1px solid #000; box-shadow: 0 0 30px rgba(0,0,0,0.3); z-index: 1000; padding: 20px; }
-        .example-box { background: #f9f9f9; padding: 15px; border-left: 3px solid #666; font-style: italic; margin: 10px 0; font-size: 13px; }
+        .document-container { background: #fff; width: 100%; max-width: 800px; padding: 60px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-radius: 2px; }
+        .doc-header { border-bottom: 2px solid var(--office-red); text-align: center; margin-bottom: 30px; }
+        .form-window { margin-top: 40px; border: 1px solid #ddd; background: #fff; padding: 25px; }
+        .help-btn { display: none; position: fixed; bottom: 20px; right: 20px; padding: 8px 15px; background: #444; color: #fff; border-radius: 20px; cursor: pointer; z-index: 1500; }
+        .help-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 420px; background: #fff; border: 1px solid #000; padding: 20px; z-index: 2000; }
+        #result-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 3000; align-items: center; justify-content: center; color: #fff; }
     </style>
 </head>
 <body>
-    <script src="sidebar.js"></script>
     <div class="main-content">
         <div class="document-container">
-            <div class="doc-header">
-                <h1>千安公墓内部管理文件</h1>
-                <div class="doc-no"><span>千安综管发〔2026〕012号</span><span>2026-05-01</span></div>
-            </div>
-            <div class="doc-title">关于开展“我为公司献一策”活动的通知</div>
-            <div class="doc-body">
-                <p>各岗位员工：</p>
-                <p>为提升管理效能，现向全体员工征集有关运营现状及财务流程优化的意见。</p>
-            </div>
+            <div class="doc-header"><h1>千安公墓内部管理文件</h1></div>
             <div class="form-window">
-                <div class="form-header">意见反馈登记表</div>
-                <div class="form-body">
-                    <div id="hint-text">错误提示</div>
-                    <div class="form-group">
-                        <label>姓名</label>
-                        <input type="text" id="userName" placeholder="请输入您的真实姓名">
-                    </div>
-                    <div class="form-group">
-                        <label>建议内容</label>
-                        <textarea id="userContent" placeholder="请结合公司运营现状填写您的建设性意见..."></textarea>
-                    </div>
-                    <div class="btn-row">
-                        <button class="btn btn-cancel" onclick="resetForm()">重置</button>
-                        <button class="btn btn-submit" onclick="validateSuggestion()">提交意见</button>
-                    </div>
-                </div>
+                <div id="hint-text" style="color:red; visibility:hidden;">错误提示</div>
+                <input type="text" id="userName" placeholder="请输入姓名（顾叙）" style="width:100%; margin-bottom:10px; padding:10px;">
+                <textarea id="userContent" placeholder="请输入建议..." style="width:100%; height:120px; padding:10px;"></textarea>
+                <button onclick="validateSuggestion()" style="background:var(--office-red); color:#fff; padding:10px 20px; border:none; cursor:pointer;">提交意见</button>
             </div>
         </div>
     </div>
-
-    <div id="result-overlay">
-        <div id="result-card">
-            <h2>已录入建议库：</h2>
-            <div id="result-text-display"></div>
-            <p style="margin-top: 30px; font-size: 12px; opacity: 0.6; text-align: right;">正在同步至独立审计终端...</p>
-        </div>
-    </div>
-
     <div class="help-btn" onclick="toggleHelp(true)">遇到困难？</div>
     <div id="helpModal" class="help-modal">
-        <span style="float:right; cursor:pointer" onclick="toggleHelp(false)">×</span>
-        <h3>反馈填写指南</h3>
-        <p>有效建议需包含<b>“异常定价”</b>与<b>“成本合规性”</b>：</p>
-        <div class="example-box">
-            “关于公司定价策略，我认为目前<b>34万</b>的单价存在严重<b>溢价</b>。然而审计数据显示利润极低，我怀疑存在<b>不合理的过多成本</b>支出。这种异常的<b>成本膨胀</b>导致账面<b>资产留存率</b>仅为<b>14.3%</b>，建议重新核算<b>成本合规性</b>。数据来源于《行业观察：殡葬服务溢价率分析报告》及《企业财务报告编制规范与常见偏离分析》”
-        </div>
+        <span onclick="toggleHelp(false)" style="float:right; cursor:pointer;">×</span>
+        <h3>提示：34万定价、成本膨胀、14.3%资产留存率。</h3>
     </div>
+    <div id="result-overlay"><div style="background:#fff; color:#000; padding:40px;">已录入建议库，正在同步审计终端...</div></div>
 
     <script>
-        const CORE_KEYS = ["34万", "340000", "定价", "溢价", "收费"];
-        const EVIDENCE_KEYS = ["成本", "支出", "14.3%", "资产留存率", "合规", "核算"];
-
-        function toggleHelp(show) { document.getElementById('helpModal').style.display = show ? 'block' : 'none'; }
-
-        function triggerFlash(msg) {
-            document.body.classList.remove('flash-fail');
-            void document.body.offsetWidth; 
-            document.body.classList.add('flash-fail');
-            const h = document.getElementById('hint-text');
-            h.innerText = msg; h.style.visibility = 'visible';
-            setTimeout(() => h.style.visibility = 'hidden', 2500);
+        function checkHelpAvailability() {
+            const totalTime = parseInt(localStorage.getItem('total_reading_time') || "0");
+            if (totalTime >= 30000) document.querySelector('.help-btn').style.display = 'block';
         }
-
+        function toggleHelp(show) { document.getElementById('helpModal').style.display = show ? 'block' : 'none'; }
         function validateSuggestion() {
-            const name = document.getElementById('userName').value.trim();
-            const content = document.getElementById('userContent').value.trim();
-            if (!name || !content) { triggerFlash("基本项未填写完整"); return; }
-            if (name !== "顾叙") { triggerFlash("这不是我的名字"); return; }
-            const hasCore = CORE_KEYS.some(k => content.includes(k));
-            if (!hasCore) { triggerFlash("确定这个是对的？"); return; }
-            const hasEvidence = EVIDENCE_KEYS.some(k => content.includes(k));
-            if (!hasEvidence) { triggerFlash("好像不够可信"); return; }
-
-            // 存入计时器种子
-            if (!localStorage.getItem('audit_submit_timestamp')) {
+            const name = document.getElementById('userName').value;
+            const content = document.getElementById('userContent').value;
+            if (name === "顾叙" && content.includes("34万") && content.includes("14.3%")) {
                 localStorage.setItem('audit_submit_timestamp', Date.now());
                 localStorage.setItem('wei_contact_state', 'waiting');
+                document.getElementById('result-overlay').style.display = 'flex';
+                setTimeout(() => window.location.href = 'system.html', 3000);
+            } else {
+                document.body.classList.add('flash-fail');
+                setTimeout(() => document.body.classList.remove('flash-fail'), 300);
             }
-            showSuccessAnimation(content);
         }
-
-        function showSuccessAnimation(content) {
-            const overlay = document.getElementById('result-overlay');
-            document.getElementById('result-text-display').innerText = content;
-            overlay.style.display = 'flex';
-            setTimeout(() => { window.location.href = 'system.html'; }, 5000);
-        }
-
-        function resetForm() { document.getElementById('userName').value = ''; document.getElementById('userContent').value = ''; }
+        window.onload = () => { checkHelpAvailability(); setInterval(checkHelpAvailability, 1000); };
     </script>
 </body>
 </html>
