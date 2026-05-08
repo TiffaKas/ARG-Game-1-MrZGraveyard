@@ -7,15 +7,13 @@
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; --paper: #ffffff; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
 
-        /* 主区域样式 - 适配 sidebar.js 后的布局 */
         .main { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; background: #e0e0e0; }
         
-        /* 文档模拟样式 */
         .manual-page {
             width: 100%; max-width: 750px; background: var(--paper);
             padding: 60px 80px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             border: 1px solid #ccc; position: relative; margin-bottom: 40px;
-            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* 用于放大动画 */
+            transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         h1 { text-align: center; font-size: 24px; margin-bottom: 20px; text-decoration: underline; color: #000; letter-spacing: 2px; }
@@ -26,9 +24,6 @@
         .rule-title { font-weight: bold; color: #000; margin-bottom: 4px; display: block; font-size: 15px; }
         .rule-content { line-height: 1.8; color: #1a1a1a; font-size: 14px; text-align: justify; display: block; padding-left: 1.5em; }
         
-        .warning-text { color: #900; font-weight: bold; }
-
-        /* 中间虚线区域交互增强 */
         .perforated-container {
             width: 100%; margin: 45px 0; text-align: center; position: relative;
             height: 40px; cursor: ew-resize; user-select: none; z-index: 10;
@@ -38,7 +33,6 @@
             position: absolute; top: 50%; left: 0; z-index: 1;
         }
 
-        /* 撕裂视觉覆盖层 */
         #tear-overlay {
             position: absolute; top: 50%; right: -80px;
             width: 0; height: 12px; background: var(--paper); 
@@ -46,7 +40,6 @@
             pointer-events: none;
         }
 
-        /* 撕裂手柄 */
         #tear-handle {
             position: absolute; top: 50%; right: -80px;
             width: 60px; height: 34px; background: #f8f8f8;
@@ -55,33 +48,35 @@
             cursor: grab; display: flex; align-items: center; justify-content: center;
             font-size: 11px; color: #666; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
-        #tear-handle:active { cursor: grabbing; }
 
-        .sensor-tag {
-            font-size: 10px; color: #aaa; letter-spacing: 2px; margin-top: 10px; text-transform: uppercase;
-        }
-
+        .sensor-tag { font-size: 10px; color: #aaa; letter-spacing: 2px; margin-top: 10px; text-transform: uppercase; }
         .footer-note { margin-top: 80px; font-size: 12px; text-align: center; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
 
-        /* 动画类 */
-        .page-focus-zoom { transform: scale(1.08); z-index: 100; box-shadow: 0 30px 60px rgba(0,0,0,0.4); }
-
+        /* 滑动门残片样式：修正为覆盖全屏 */
         .tear-fragment {
-            position: fixed; left: 50%; width: 750px; 
-            background: var(--paper); border: 1px solid #ccc;
-            margin-left: -375px; z-index: 500; pointer-events: none;
+            position: fixed; left: 0; width: 100vw; 
+            background: var(--paper); z-index: 999;
             overflow: hidden;
-            transition: transform 1.5s cubic-bezier(0.15, 0.85, 0.35, 1);
+            transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1);
+            display: flex; justify-content: center;
         }
 
-        /* 撕开后的静止状态 */
-        .is-torn #tear-overlay { width: calc(100% + 160px) !important; }
-        .is-torn #tear-handle { display: none; }
+        /* 隐藏原文档 */
+        .is-torn-hidden { visibility: hidden !important; pointer-events: none; }
+
+        /* 背景底层的最终页面预热 */
+        #ending-loader {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 1; display: none;
+            justify-content: center; align-items: center; color: white;
+        }
     </style>
 </head>
 <body>
 
     <script src="sidebar.js"></script>
+
+    <div id="ending-loader">LOADING TERMINATION...</div>
 
     <div class="main" id="viewport">
         <div class="manual-page" id="mainDoc">
@@ -159,15 +154,11 @@
             const overlay = document.getElementById('tear-overlay');
             const zone = document.getElementById('tearZone');
             const doc = document.getElementById('mainDoc');
+            const loader = document.getElementById('ending-loader');
             const maxDrag = zone.offsetWidth + 160; 
             
             let isDragging = false;
             let startMouseX = 0;
-
-            // 检查历史状态
-            if (localStorage.getItem('document_torn') === 'true') {
-                document.body.classList.add('is-torn');
-            }
 
             handle.addEventListener('mousedown', (e) => {
                 if (localStorage.getItem('document_torn') === 'true') return;
@@ -179,24 +170,21 @@
 
             window.addEventListener('mousemove', (e) => {
                 if (!isDragging) return;
-                
-                let delta = startMouseX - e.clientX; // 右向左
+                let delta = startMouseX - e.clientX; 
                 if (delta < 0) delta = 0;
                 if (delta > maxDrag) delta = maxDrag;
 
                 handle.style.right = (delta - 80) + 'px';
                 overlay.style.width = delta + 'px';
 
-                // 撕开临界点
                 if (delta >= maxDrag * 0.99) {
                     triggerFinalSequence();
                 }
             });
 
             window.addEventListener('mouseup', () => {
-                if (!isDragging || localStorage.getItem('document_torn') === 'true') return;
+                if (!isDragging) return;
                 isDragging = false;
-                // 未撕到底，回弹
                 handle.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
                 overlay.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
                 handle.style.right = '-80px';
@@ -206,54 +194,52 @@
             function triggerFinalSequence() {
                 isDragging = false;
                 localStorage.setItem('document_torn', 'true');
-                document.body.classList.add('is-torn');
+                
+                // 1. 冲击感：文档全屏化并稍微放大
+                doc.style.transform = "scale(1.1) translateY(-20px)";
+                loader.style.display = "flex"; // 底层显示黑色背景预热
 
-                // 1. 放大冲击动画
-                doc.classList.add('page-focus-zoom');
-
-                // 停留1秒
                 setTimeout(() => {
                     const rect = doc.getBoundingClientRect();
                     const splitY = zone.getBoundingClientRect().top + 20;
+                    const contentHtml = doc.innerHTML;
+                    const originalWidth = doc.offsetWidth;
 
                     // 隐藏原文档
-                    doc.style.visibility = 'hidden';
+                    doc.classList.add('is-torn-hidden');
 
-                    // 2. 创建上下残片
-                    // 上半部
-                    const topFragment = document.createElement('div');
-                    topFragment.className = 'tear-fragment';
-                    topFragment.style.top = rect.top + 'px';
-                    topFragment.style.height = (splitY - rect.top) + 'px';
-                    topFragment.innerHTML = `<div style="padding: 60px 80px; width:590px;">${doc.innerHTML}</div>`;
+                    // 2. 创建上下滑动门
+                    // 上半部分
+                    const topGate = document.createElement('div');
+                    topGate.className = 'tear-fragment';
+                    topGate.style.top = '0';
+                    topGate.style.height = splitY + 'px';
+                    topGate.innerHTML = `<div style="width:${originalWidth}px; padding:60px 80px; background:white; position:absolute; bottom:0; left:50%; transform:translateX(-50%); border:1px solid #ccc; border-bottom:none;">${contentHtml}</div>`;
                     
-                    // 下半部
-                    const bottomFragment = document.createElement('div');
-                    bottomFragment.className = 'tear-fragment';
-                    bottomFragment.style.top = splitY + 'px';
-                    bottomFragment.style.height = (rect.bottom - splitY) + 'px';
-                    const bottomInner = document.createElement('div');
-                    bottomInner.style.padding = '60px 80px';
-                    bottomInner.style.width = '590px';
-                    bottomInner.style.marginTop = -(splitY - rect.top) + 'px';
-                    bottomInner.innerHTML = doc.innerHTML;
-                    bottomFragment.appendChild(bottomInner);
+                    // 下半部分
+                    const bottomGate = document.createElement('div');
+                    bottomGate.className = 'tear-fragment';
+                    bottomGate.style.top = splitY + 'px';
+                    bottomGate.style.height = (window.innerHeight - splitY) + 'px';
+                    bottomGate.innerHTML = `<div style="width:${originalWidth}px; padding:60px 80px; background:white; position:absolute; top:0; left:50%; transform:translateX(-50%); border:1px solid #ccc; border-top:none;">${contentHtml}</div>`;
+                    // 修正下半部分的内容偏移
+                    bottomGate.firstChild.style.marginTop = `-${splitY - rect.top}px`;
 
-                    document.body.appendChild(topFragment);
-                    document.body.appendChild(bottomFragment);
+                    document.body.appendChild(topGate);
+                    document.body.appendChild(bottomGate);
 
-                    // 3. 执行分裂移出动画
+                    // 3. 执行“滑动门”开启效果
                     requestAnimationFrame(() => {
-                        topFragment.style.transform = `translateY(-${window.innerHeight}px) rotate(-8deg)`;
-                        bottomFragment.style.transform = `translateY(${window.innerHeight}px) rotate(8deg)`;
+                        topGate.style.transform = `translateY(-100vh)`;
+                        bottomGate.style.transform = `translateY(100vh)`;
                     });
 
-                    // 4. 跳转
+                    // 4. 彻底进入终章
                     setTimeout(() => {
                         window.location.href = 'stupidending.html';
-                    }, 1400);
+                    }, 1100);
 
-                }, 1000);
+                }, 400); // 冲击缩放后的停顿感
             }
         })();
     </script>
