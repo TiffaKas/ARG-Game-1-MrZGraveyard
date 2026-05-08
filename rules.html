@@ -7,15 +7,24 @@
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; --paper: #ffffff; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
 
-        /* 主区域样式 - 适配 sidebar.js 后的布局 */
         .main { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; background: #e0e0e0; }
         
-        /* 文档模拟样式 - 核心内容区保持不变 */
         .manual-page {
             width: 100%; max-width: 750px; background: var(--paper);
             padding: 60px 80px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             border: 1px solid #ccc; position: relative; margin-bottom: 40px;
-            transition: transform 0.5s ease; /* 撕开后的微调动画 */
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); /* 用于放大动画 */
+        }
+
+        /* 分裂动画相关的特殊类 */
+        .page-zoomed { transform: scale(1.05); z-index: 100; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        
+        /* 模拟撕裂后的半截纸张 */
+        .tear-part {
+            position: fixed; left: 50%; width: 750px; height: 50vh;
+            background: var(--paper); border: 1px solid #ccc;
+            margin-left: -375px; z-index: 200; pointer-events: none;
+            transition: transform 1.2s cubic-bezier(0.6, -0.28, 0.735, 0.045);
         }
 
         h1 { text-align: center; font-size: 24px; margin-bottom: 20px; text-decoration: underline; color: #000; letter-spacing: 2px; }
@@ -26,9 +35,6 @@
         .rule-title { font-weight: bold; color: #000; margin-bottom: 4px; display: block; font-size: 15px; }
         .rule-content { line-height: 1.8; color: #1a1a1a; font-size: 14px; text-align: justify; display: block; padding-left: 1.5em; }
         
-        .warning-text { color: #900; font-weight: bold; }
-
-        /* 中间虚线区域 - 新增交互支持 */
         .perforated-container {
             width: 100%; margin: 45px 0; text-align: center; position: relative;
             height: 40px; cursor: ew-resize; user-select: none;
@@ -38,16 +44,13 @@
             position: absolute; top: 50%; left: 0; z-index: 1;
         }
         
-        /* 撕裂效果覆盖层 */
         #tear-overlay {
             position: absolute; top: 50%; right: -80px;
             width: 0; height: 10px; background: var(--paper); 
             transform: translateY(-50%); z-index: 5;
-            box-shadow: -2px 0 5px rgba(0,0,0,0.05);
             pointer-events: none;
         }
 
-        /* 拖拽手柄 */
         #tear-handle {
             position: absolute; top: 50%; right: -80px;
             width: 50px; height: 30px; background: #eee;
@@ -56,26 +59,20 @@
             cursor: grab; display: flex; align-items: center; justify-content: center;
             font-size: 10px; color: #666; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        #tear-handle:active { cursor: grabbing; }
 
-        .sensor-tag {
-            font-size: 10px; color: #aaa; letter-spacing: 2px; margin-top: 10px; text-transform: uppercase;
-        }
-
+        .sensor-tag { font-size: 10px; color: #aaa; letter-spacing: 2px; margin-top: 10px; text-transform: uppercase; }
         .footer-note { margin-top: 80px; font-size: 12px; text-align: center; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
 
-        /* 撕开后的状态控制 */
-        .is-torn .manual-page { filter: sepia(0.2); transform: translateY(5px); }
-        .is-torn #tear-overlay { width: calc(100% + 160px) !important; border-left: 2px solid #f0f2f5; }
+        .is-torn #tear-overlay { width: calc(100% + 160px) !important; }
         .is-torn #tear-handle { display: none; }
     </style>
 </head>
-<body class="rule-body">
+<body>
 
     <script src="sidebar.js"></script>
 
-    <div class="main">
-        <div class="manual-page">
+    <div class="main" id="mainContainer">
+        <div class="manual-page" id="manualDoc">
             <h1>工作守则</h1>
             <p class="manual-subtitle">本守则和实体手册相同，但推荐在数字化终端保存备份。</p>
 
@@ -86,11 +83,7 @@
             </div>
             <div class="rule-block">
                 <span class="rule-title">1.2 敬业与禁忌</span>
-                <span class="rule-content">遵循“尊严、尊重”原则。保持环境整洁肃穆。<span class="rule-content">以任何方式直接提及死者的大名是对死者的不尊重，你不是死者的亲属。</span></span>
-            </div>
-            <div class="rule-block">
-                <span class="rule-title">1.3 保密义务</span>
-                <span class="rule-content">对用户资料、墓位信息、联系方式等负有绝对保密义务。</span>
+                <span class="rule-content">遵循“尊严、尊重”原则。保持环境整洁肃穆。</span>
             </div>
 
             <div class="perforated-container" id="tearZone">
@@ -103,38 +96,12 @@
             <h2>第二章：工作职责与管理流程</h2>
             <div class="rule-block">
                 <span class="rule-title">2.1 墓基管理</span>
-                <span class="rule-content">负责巡查、准确测量墓基，确保施工单位按规定营葬，杜绝违法违规行为。</span>
+                <span class="rule-content">负责巡查、准确测量墓基，确保施工单位按规定营葬。</span>
             </div>
-            <div class="rule-block">
-                <span class="rule-title">2.2 环境维护</span>
-                <span class="rule-content">负责巡查查报、墓区清理、废弃物处理。<span class="rule-content">注：严禁处理死者的遗物。</span></span>
-            </div>
-            <div class="rule-block">
-                <span class="rule-title">2.3 档案数字化</span>
-                <span class="rule-content">定期核查档案，确保每一份墓位记录包含死者的清晰黑白照片、姓氏、生平简述及生理资料。</span>
-            </div>
-
-            <h2>第三章：服务规范与紧急预案</h2>
-            <div class="rule-block">
-                <span class="rule-title">3.1 业务指导</span>
-                <span class="rule-content">礼貌解答咨询。指导使用人合法依规申请、使用墓位。</span>
-            </div>
+            
             <div class="rule-block">
                 <span class="rule-title">3.2 紧急联动报警</span>
-                <span class="rule-content">
-                    如遇墓园突发事件或无法解决的异常状况，请立即将实体手册沿着<span style="text-decoration: underline;">中间虚线</span>撕开（防止撕坏内部传感器）。
-                    传感器将自动向数字化行政中心发送高频信号请求。
-                </span>
-            </div>
-
-            <h2>第四章：日常考勤与安全</h2>
-            <div class="rule-block">
-                <span class="rule-title">4.1 轮班制度</span>
-                <span class="rule-content">遵循 24 小时轮班制，确保管理服务不断档。</span>
-            </div>
-            <div class="rule-block">
-                <span class="rule-title">4.2 安全禁火</span>
-                <span class="rule-content">严禁将火种带入墓区（指定地点除掉），确保墓园绝对安全。</span>
+                <span class="rule-content">如遇无法解决的异常状况，请立即将实体手册沿着虚线撕开。</span>
             </div>
 
             <div class="footer-note">
@@ -149,12 +116,12 @@
             const handle = document.getElementById('tear-handle');
             const overlay = document.getElementById('tear-overlay');
             const zone = document.getElementById('tearZone');
+            const doc = document.getElementById('manualDoc');
             const maxPull = zone.offsetWidth + 160; 
             
             let dragging = false;
             let startX = 0;
 
-            // 初始状态检查
             if (localStorage.getItem('document_torn') === 'true') {
                 document.body.classList.add('is-torn');
             }
@@ -169,43 +136,72 @@
 
             window.addEventListener('mousemove', (e) => {
                 if (!dragging) return;
-                
-                // 计算向左拖动的距离
                 let moveX = startX - e.clientX;
                 if (moveX < 0) moveX = 0;
                 if (moveX > maxPull) moveX = maxPull;
-
                 handle.style.right = (moveX - 80) + 'px';
                 overlay.style.width = moveX + 'px';
-
-                // 撕开进度超过 98% 触发结局
-                if (moveX >= maxPull * 0.98) {
-                    completeTear();
-                }
+                if (moveX >= maxPull * 0.98) completeTear();
             });
 
             window.addEventListener('mouseup', () => {
-                if (!dragging) return;
+                if (!dragging || localStorage.getItem('document_torn') === 'true') return;
                 dragging = false;
-                
-                // 如果没撕到底，平滑弹回
-                if (localStorage.getItem('document_torn') !== 'true') {
-                    handle.style.transition = "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-                    overlay.style.transition = "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-                    handle.style.right = '-80px';
-                    overlay.style.width = '0';
-                }
+                handle.style.transition = "all 0.4s ease";
+                overlay.style.transition = "all 0.4s ease";
+                handle.style.right = '-80px';
+                overlay.style.width = '0';
             });
 
             function completeTear() {
                 dragging = false;
                 localStorage.setItem('document_torn', 'true');
                 document.body.classList.add('is-torn');
-                
-                // 模拟信号发送的视觉延迟
+
+                // 1. 放大动画
+                doc.classList.add('page-zoomed');
+
+                // 停留 1 秒后开始分裂
                 setTimeout(() => {
-                    window.location.href = 'ending.html';
-                }, 1200);
+                    const rect = doc.getBoundingClientRect();
+                    const splitY = zone.getBoundingClientRect().top + 20;
+
+                    // 2. 隐藏原文档，显示分裂层
+                    doc.style.visibility = 'hidden';
+
+                    const topPart = document.createElement('div');
+                    topPart.className = 'tear-part';
+                    topPart.style.top = rect.top + 'px';
+                    topPart.style.height = (splitY - rect.top) + 'px';
+                    topPart.style.clipPath = 'inset(0 0 0 0)';
+                    topPart.innerHTML = doc.innerHTML;
+                    
+                    const bottomPart = document.createElement('div');
+                    bottomPart.className = 'tear-part';
+                    bottomPart.style.top = splitY + 'px';
+                    bottomPart.style.height = (rect.bottom - splitY) + 'px';
+                    // 修正下半部分的内容偏移
+                    bottomPart.style.overflow = 'hidden';
+                    const inner = document.createElement('div');
+                    inner.innerHTML = doc.innerHTML;
+                    inner.style.marginTop = -(splitY - rect.top) + 'px';
+                    bottomPart.appendChild(inner);
+
+                    document.body.appendChild(topPart);
+                    document.body.appendChild(bottomPart);
+
+                    // 3. 执行移出屏幕动画
+                    requestAnimationFrame(() => {
+                        topPart.style.transform = `translateY(-${window.innerHeight}px) rotate(-5deg)`;
+                        bottomPart.style.transform = `translateY(${window.innerHeight}px) rotate(5deg)`;
+                    });
+
+                    // 最后跳转
+                    setTimeout(() => {
+                        window.location.href = 'ending.html';
+                    }, 1200);
+
+                }, 1000);
             }
         })();
     </script>
