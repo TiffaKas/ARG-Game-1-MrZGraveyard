@@ -7,24 +7,15 @@
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; --paper: #ffffff; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
 
+        /* 主区域样式 - 适配 sidebar.js 后的布局 */
         .main { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; background: #e0e0e0; }
         
+        /* 文档模拟样式 */
         .manual-page {
             width: 100%; max-width: 750px; background: var(--paper);
             padding: 60px 80px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             border: 1px solid #ccc; position: relative; margin-bottom: 40px;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); /* 用于放大动画 */
-        }
-
-        /* 分裂动画相关的特殊类 */
-        .page-zoomed { transform: scale(1.05); z-index: 100; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
-        
-        /* 模拟撕裂后的半截纸张 */
-        .tear-part {
-            position: fixed; left: 50%; width: 750px; height: 50vh;
-            background: var(--paper); border: 1px solid #ccc;
-            margin-left: -375px; z-index: 200; pointer-events: none;
-            transition: transform 1.2s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* 用于放大动画 */
         }
 
         h1 { text-align: center; font-size: 24px; margin-bottom: 20px; text-decoration: underline; color: #000; letter-spacing: 2px; }
@@ -35,34 +26,55 @@
         .rule-title { font-weight: bold; color: #000; margin-bottom: 4px; display: block; font-size: 15px; }
         .rule-content { line-height: 1.8; color: #1a1a1a; font-size: 14px; text-align: justify; display: block; padding-left: 1.5em; }
         
+        .warning-text { color: #900; font-weight: bold; }
+
+        /* 中间虚线区域交互增强 */
         .perforated-container {
             width: 100%; margin: 45px 0; text-align: center; position: relative;
-            height: 40px; cursor: ew-resize; user-select: none;
+            height: 40px; cursor: ew-resize; user-select: none; z-index: 10;
         }
         .perforated-line {
             border-top: 2px dashed #bbb; width: calc(100% + 160px); margin-left: -80px;
             position: absolute; top: 50%; left: 0; z-index: 1;
         }
-        
+
+        /* 撕裂视觉覆盖层 */
         #tear-overlay {
             position: absolute; top: 50%; right: -80px;
-            width: 0; height: 10px; background: var(--paper); 
+            width: 0; height: 12px; background: var(--paper); 
             transform: translateY(-50%); z-index: 5;
             pointer-events: none;
         }
 
+        /* 撕裂手柄 */
         #tear-handle {
             position: absolute; top: 50%; right: -80px;
-            width: 50px; height: 30px; background: #eee;
-            border: 1px solid #ccc; border-radius: 3px;
-            transform: translateY(-50%); z-index: 10;
+            width: 60px; height: 34px; background: #f8f8f8;
+            border: 1px solid #ccc; border-radius: 4px;
+            transform: translateY(-50%); z-index: 15;
             cursor: grab; display: flex; align-items: center; justify-content: center;
-            font-size: 10px; color: #666; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 11px; color: #666; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        #tear-handle:active { cursor: grabbing; }
+
+        .sensor-tag {
+            font-size: 10px; color: #aaa; letter-spacing: 2px; margin-top: 10px; text-transform: uppercase;
         }
 
-        .sensor-tag { font-size: 10px; color: #aaa; letter-spacing: 2px; margin-top: 10px; text-transform: uppercase; }
         .footer-note { margin-top: 80px; font-size: 12px; text-align: center; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
 
+        /* 动画类 */
+        .page-focus-zoom { transform: scale(1.08); z-index: 100; box-shadow: 0 30px 60px rgba(0,0,0,0.4); }
+
+        .tear-fragment {
+            position: fixed; left: 50%; width: 750px; 
+            background: var(--paper); border: 1px solid #ccc;
+            margin-left: -375px; z-index: 500; pointer-events: none;
+            overflow: hidden;
+            transition: transform 1.5s cubic-bezier(0.15, 0.85, 0.35, 1);
+        }
+
+        /* 撕开后的静止状态 */
         .is-torn #tear-overlay { width: calc(100% + 160px) !important; }
         .is-torn #tear-handle { display: none; }
     </style>
@@ -71,8 +83,8 @@
 
     <script src="sidebar.js"></script>
 
-    <div class="main" id="mainContainer">
-        <div class="manual-page" id="manualDoc">
+    <div class="main" id="viewport">
+        <div class="manual-page" id="mainDoc">
             <h1>工作守则</h1>
             <p class="manual-subtitle">本守则和实体手册相同，但推荐在数字化终端保存备份。</p>
 
@@ -83,7 +95,11 @@
             </div>
             <div class="rule-block">
                 <span class="rule-title">1.2 敬业与禁忌</span>
-                <span class="rule-content">遵循“尊严、尊重”原则。保持环境整洁肃穆。</span>
+                <span class="rule-content">遵循“尊严、尊重”原则。保持环境整洁肃穆。<span class="rule-content">以任何方式直接提及死者的大名是对死者的不尊重，你不是死者的亲属。</span></span>
+            </div>
+            <div class="rule-block">
+                <span class="rule-title">1.3 保密义务</span>
+                <span class="rule-content">对用户资料、墓位信息、联系方式等负有绝对保密义务。</span>
             </div>
 
             <div class="perforated-container" id="tearZone">
@@ -96,12 +112,38 @@
             <h2>第二章：工作职责与管理流程</h2>
             <div class="rule-block">
                 <span class="rule-title">2.1 墓基管理</span>
-                <span class="rule-content">负责巡查、准确测量墓基，确保施工单位按规定营葬。</span>
+                <span class="rule-content">负责巡查、准确测量墓基，确保施工单位按规定营葬，杜绝违法违规行为。</span>
             </div>
-            
+            <div class="rule-block">
+                <span class="rule-title">2.2 环境维护</span>
+                <span class="rule-content">负责巡查查报、墓区清理、废弃物处理。<span class="rule-content">注：严禁处理死者的遗物。</span></span>
+            </div>
+            <div class="rule-block">
+                <span class="rule-title">2.3 档案数字化</span>
+                <span class="rule-content">定期核查档案，确保每一份墓位记录包含死者的清晰黑白照片、姓氏、生平简述及生理资料。</span>
+            </div>
+
+            <h2>第三章：服务规范与紧急预案</h2>
+            <div class="rule-block">
+                <span class="rule-title">3.1 业务指导</span>
+                <span class="rule-content">礼貌解答咨询。指导使用人合法依规申请、使用墓位。</span>
+            </div>
             <div class="rule-block">
                 <span class="rule-title">3.2 紧急联动报警</span>
-                <span class="rule-content">如遇无法解决的异常状况，请立即将实体手册沿着虚线撕开。</span>
+                <span class="rule-content">
+                    如遇墓园突发事件或无法解决的异常状况，请立即将实体手册沿着<span style="text-decoration: underline;">中间虚线</span>撕开（防止撕坏内部传感器）。
+                    传感器将自动向数字化行政中心发送高频信号请求。
+                </span>
+            </div>
+
+            <h2>第四章：日常考勤与安全</h2>
+            <div class="rule-block">
+                <span class="rule-title">4.1 轮班制度</span>
+                <span class="rule-content">遵循 24 小时轮班制，确保管理服务不断档。</span>
+            </div>
+            <div class="rule-block">
+                <span class="rule-title">4.2 安全禁火</span>
+                <span class="rule-content">严禁将火种带入墓区（指定地点除掉），确保墓园绝对安全。</span>
             </div>
 
             <div class="footer-note">
@@ -116,90 +158,100 @@
             const handle = document.getElementById('tear-handle');
             const overlay = document.getElementById('tear-overlay');
             const zone = document.getElementById('tearZone');
-            const doc = document.getElementById('manualDoc');
-            const maxPull = zone.offsetWidth + 160; 
+            const doc = document.getElementById('mainDoc');
+            const maxDrag = zone.offsetWidth + 160; 
             
-            let dragging = false;
-            let startX = 0;
+            let isDragging = false;
+            let startMouseX = 0;
 
+            // 检查历史状态
             if (localStorage.getItem('document_torn') === 'true') {
                 document.body.classList.add('is-torn');
             }
 
             handle.addEventListener('mousedown', (e) => {
                 if (localStorage.getItem('document_torn') === 'true') return;
-                dragging = true;
-                startX = e.clientX;
+                isDragging = true;
+                startMouseX = e.clientX;
                 handle.style.transition = "none";
                 overlay.style.transition = "none";
             });
 
             window.addEventListener('mousemove', (e) => {
-                if (!dragging) return;
-                let moveX = startX - e.clientX;
-                if (moveX < 0) moveX = 0;
-                if (moveX > maxPull) moveX = maxPull;
-                handle.style.right = (moveX - 80) + 'px';
-                overlay.style.width = moveX + 'px';
-                if (moveX >= maxPull * 0.98) completeTear();
+                if (!isDragging) return;
+                
+                let delta = startMouseX - e.clientX; // 右向左
+                if (delta < 0) delta = 0;
+                if (delta > maxDrag) delta = maxDrag;
+
+                handle.style.right = (delta - 80) + 'px';
+                overlay.style.width = delta + 'px';
+
+                // 撕开临界点
+                if (delta >= maxDrag * 0.99) {
+                    triggerFinalSequence();
+                }
             });
 
             window.addEventListener('mouseup', () => {
-                if (!dragging || localStorage.getItem('document_torn') === 'true') return;
-                dragging = false;
-                handle.style.transition = "all 0.4s ease";
-                overlay.style.transition = "all 0.4s ease";
+                if (!isDragging || localStorage.getItem('document_torn') === 'true') return;
+                isDragging = false;
+                // 未撕到底，回弹
+                handle.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+                overlay.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
                 handle.style.right = '-80px';
                 overlay.style.width = '0';
             });
 
-            function completeTear() {
-                dragging = false;
+            function triggerFinalSequence() {
+                isDragging = false;
                 localStorage.setItem('document_torn', 'true');
                 document.body.classList.add('is-torn');
 
-                // 1. 放大动画
-                doc.classList.add('page-zoomed');
+                // 1. 放大冲击动画
+                doc.classList.add('page-focus-zoom');
 
-                // 停留 1 秒后开始分裂
+                // 停留1秒
                 setTimeout(() => {
                     const rect = doc.getBoundingClientRect();
                     const splitY = zone.getBoundingClientRect().top + 20;
 
-                    // 2. 隐藏原文档，显示分裂层
+                    // 隐藏原文档
                     doc.style.visibility = 'hidden';
 
-                    const topPart = document.createElement('div');
-                    topPart.className = 'tear-part';
-                    topPart.style.top = rect.top + 'px';
-                    topPart.style.height = (splitY - rect.top) + 'px';
-                    topPart.style.clipPath = 'inset(0 0 0 0)';
-                    topPart.innerHTML = doc.innerHTML;
+                    // 2. 创建上下残片
+                    // 上半部
+                    const topFragment = document.createElement('div');
+                    topFragment.className = 'tear-fragment';
+                    topFragment.style.top = rect.top + 'px';
+                    topFragment.style.height = (splitY - rect.top) + 'px';
+                    topFragment.innerHTML = `<div style="padding: 60px 80px; width:590px;">${doc.innerHTML}</div>`;
                     
-                    const bottomPart = document.createElement('div');
-                    bottomPart.className = 'tear-part';
-                    bottomPart.style.top = splitY + 'px';
-                    bottomPart.style.height = (rect.bottom - splitY) + 'px';
-                    // 修正下半部分的内容偏移
-                    bottomPart.style.overflow = 'hidden';
-                    const inner = document.createElement('div');
-                    inner.innerHTML = doc.innerHTML;
-                    inner.style.marginTop = -(splitY - rect.top) + 'px';
-                    bottomPart.appendChild(inner);
+                    // 下半部
+                    const bottomFragment = document.createElement('div');
+                    bottomFragment.className = 'tear-fragment';
+                    bottomFragment.style.top = splitY + 'px';
+                    bottomFragment.style.height = (rect.bottom - splitY) + 'px';
+                    const bottomInner = document.createElement('div');
+                    bottomInner.style.padding = '60px 80px';
+                    bottomInner.style.width = '590px';
+                    bottomInner.style.marginTop = -(splitY - rect.top) + 'px';
+                    bottomInner.innerHTML = doc.innerHTML;
+                    bottomFragment.appendChild(bottomInner);
 
-                    document.body.appendChild(topPart);
-                    document.body.appendChild(bottomPart);
+                    document.body.appendChild(topFragment);
+                    document.body.appendChild(bottomFragment);
 
-                    // 3. 执行移出屏幕动画
+                    // 3. 执行分裂移出动画
                     requestAnimationFrame(() => {
-                        topPart.style.transform = `translateY(-${window.innerHeight}px) rotate(-5deg)`;
-                        bottomPart.style.transform = `translateY(${window.innerHeight}px) rotate(5deg)`;
+                        topFragment.style.transform = `translateY(-${window.innerHeight}px) rotate(-8deg)`;
+                        bottomFragment.style.transform = `translateY(${window.innerHeight}px) rotate(8deg)`;
                     });
 
-                    // 最后跳转
+                    // 4. 跳转
                     setTimeout(() => {
                         window.location.href = 'ending.html';
-                    }, 1200);
+                    }, 1400);
 
                 }, 1000);
             }
