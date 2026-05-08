@@ -64,6 +64,7 @@
     </style>
 </head>
 <body>
+    <audio id="tearAudio" src="tearing.ogg" preload="auto"></audio>
 
     <script src="sidebar.js"></script>
 
@@ -144,6 +145,7 @@
             const zone = document.getElementById('tearZone');
             const doc = document.getElementById('mainDoc');
             const viewport = document.getElementById('viewport');
+            const tearAudio = document.getElementById('tearAudio'); // 获取音频元素
             const maxDrag = zone.offsetWidth + 160; 
             
             let isDragging = false;
@@ -181,6 +183,11 @@
             });
 
             function triggerFinalSequence() {
+                // 播放撕裂音效
+                if (tearAudio) {
+                    tearAudio.play().catch(e => console.log("Audio play failed:", e));
+                }
+
                 isDragging = false;
                 localStorage.setItem('document_torn', 'true');
                 
