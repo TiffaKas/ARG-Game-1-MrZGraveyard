@@ -25,12 +25,12 @@
             text-transform: uppercase;
         }
 
-        /* 动态背景：数据流效果 */
+        /* 动态背景：数据流效果 - 提高可见度 */
         #data-stream {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
-            opacity: 0.1;
+            opacity: 0.25; /* 增加不透明度让流动感更清晰 */
             z-index: 1;
         }
 
@@ -138,12 +138,32 @@
             z-index: 2;
             pointer-events: none;
         }
+
+        /* 新增：1秒一次的全屏花屏闪烁层 */
+        #screen-glitch-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            animation: screen-flash 1s infinite;
+        }
+
+        @keyframes screen-flash {
+            0% { opacity: 0; }
+            95% { opacity: 0; transform: scale(1); }
+            96% { opacity: 0.1; transform: scale(1.02) skewX(5deg); }
+            97% { opacity: 0; }
+            98% { opacity: 0.05; transform: scale(0.98) skewX(-5deg); }
+            100% { opacity: 0; }
+        }
     </style>
 </head>
 <body>
 
     <div id="noise"></div>
-    <canvas id="data-stream"></canvas>
+    <div id="screen-glitch-overlay"></div> <canvas id="data-stream"></canvas>
 
     <div class="container">
         <div class="glitch" data-text="ACCESS DENIED">ACCESS DENIED</div>
@@ -164,28 +184,56 @@
         // 背景数据流效果
         const canvas = document.getElementById('data-stream');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.onresize = resize;
+        resize();
 
-        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+";
-        const fontSize = 10;
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ";
+        const fontSize = 16; // 稍微调大字体，增强清晰度
         const columns = canvas.width / fontSize;
         const drops = Array(Math.floor(columns)).fill(1);
 
         function drawMatrix() {
-            ctx.fillStyle = "rgba(5, 5, 5, 0.05)";
+            // 通过调整 alpha 值（0.1 -> 0.08）让拖尾更长更清晰
+            ctx.fillStyle = "rgba(5, 5, 5, 0.08)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
             ctx.fillStyle = "#0F0"; 
             ctx.font = fontSize + "px Courier New";
 
             for (let i = 0; i < drops.length; i++) {
                 const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                // 偶尔绘制白色字符增加“高亮”流动感
+                if(Math.random() > 0.98) ctx.fillStyle = "#fff";
+                else ctx.fillStyle = "#0F0";
+
                 ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
                 if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
             }
         }
-        setInterval(drawMatrix, 33);
+        setInterval(drawMatrix, 40); // 稍微放慢帧率，让字符下落更具“阅读感”
+
+        // 重置游戏逻辑
+        function resetGame() {
+            localStorage.clear();
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i];
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            }
+            document.body.style.backgroundColor = "#fff";
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 100);
+        }
 
         // 模拟系统自动清除提示
         console.log("HSD Admin: Evidence suppressed. Subject disconnected.");
