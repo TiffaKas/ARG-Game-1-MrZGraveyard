@@ -15,6 +15,7 @@
             width: 100%; max-width: 750px; background: var(--paper);
             padding: 60px 80px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             border: 1px solid #ccc; position: relative; margin-bottom: 40px;
+            transition: transform 0.5s ease; /* 撕开后的微调动画 */
         }
 
         h1 { text-align: center; font-size: 24px; margin-bottom: 20px; text-decoration: underline; color: #000; letter-spacing: 2px; }
@@ -27,23 +28,50 @@
         
         .warning-text { color: #900; font-weight: bold; }
 
-        /* 中间虚线区域 */
+        /* 中间虚线区域 - 新增交互支持 */
         .perforated-container {
             width: 100%; margin: 45px 0; text-align: center; position: relative;
+            height: 40px; cursor: ew-resize; user-select: none;
         }
         .perforated-line {
             border-top: 2px dashed #bbb; width: calc(100% + 160px); margin-left: -80px;
+            position: absolute; top: 50%; left: 0; z-index: 1;
         }
+        
+        /* 撕裂效果覆盖层 */
+        #tear-overlay {
+            position: absolute; top: 50%; right: -80px;
+            width: 0; height: 10px; background: var(--paper); 
+            transform: translateY(-50%); z-index: 5;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+            pointer-events: none;
+        }
+
+        /* 拖拽手柄 */
+        #tear-handle {
+            position: absolute; top: 50%; right: -80px;
+            width: 50px; height: 30px; background: #eee;
+            border: 1px solid #ccc; border-radius: 3px;
+            transform: translateY(-50%); z-index: 10;
+            cursor: grab; display: flex; align-items: center; justify-content: center;
+            font-size: 10px; color: #666; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #tear-handle:active { cursor: grabbing; }
+
         .sensor-tag {
             font-size: 10px; color: #aaa; letter-spacing: 2px; margin-top: 10px; text-transform: uppercase;
         }
 
         .footer-note { margin-top: 80px; font-size: 12px; text-align: center; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
+
+        /* 撕开后的状态控制 */
+        .is-torn .manual-page { filter: sepia(0.2); transform: translateY(5px); }
+        .is-torn #tear-overlay { width: calc(100% + 160px) !important; border-left: 2px solid #f0f2f5; }
+        .is-torn #tear-handle { display: none; }
     </style>
 </head>
-<body>
+<body class="rule-body">
 
-    <!-- 引用统一侧边栏脚本 -->
     <script src="sidebar.js"></script>
 
     <div class="main">
@@ -65,8 +93,11 @@
                 <span class="rule-content">对用户资料、墓位信息、联系方式等负有绝对保密义务。</span>
             </div>
 
-            <div class="perforated-container">
+            <div class="perforated-container" id="tearZone">
                 <div class="perforated-line"></div>
+                <div id="tear-overlay"></div>
+                <div id="tear-handle">◀ 撕开</div>
+                <div class="sensor-tag">HSD-INTERNAL-SENSOR-V7</div>
             </div>
 
             <h2>第二章：工作职责与管理流程</h2>
@@ -113,5 +144,70 @@
         </div>
     </div>
 
+    <script>
+        (function() {
+            const handle = document.getElementById('tear-handle');
+            const overlay = document.getElementById('tear-overlay');
+            const zone = document.getElementById('tearZone');
+            const maxPull = zone.offsetWidth + 160; 
+            
+            let dragging = false;
+            let startX = 0;
+
+            // 初始状态检查
+            if (localStorage.getItem('document_torn') === 'true') {
+                document.body.classList.add('is-torn');
+            }
+
+            handle.addEventListener('mousedown', (e) => {
+                if (localStorage.getItem('document_torn') === 'true') return;
+                dragging = true;
+                startX = e.clientX;
+                handle.style.transition = "none";
+                overlay.style.transition = "none";
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                
+                // 计算向左拖动的距离
+                let moveX = startX - e.clientX;
+                if (moveX < 0) moveX = 0;
+                if (moveX > maxPull) moveX = maxPull;
+
+                handle.style.right = (moveX - 80) + 'px';
+                overlay.style.width = moveX + 'px';
+
+                // 撕开进度超过 98% 触发结局
+                if (moveX >= maxPull * 0.98) {
+                    completeTear();
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (!dragging) return;
+                dragging = false;
+                
+                // 如果没撕到底，平滑弹回
+                if (localStorage.getItem('document_torn') !== 'true') {
+                    handle.style.transition = "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+                    overlay.style.transition = "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+                    handle.style.right = '-80px';
+                    overlay.style.width = '0';
+                }
+            });
+
+            function completeTear() {
+                dragging = false;
+                localStorage.setItem('document_torn', 'true');
+                document.body.classList.add('is-torn');
+                
+                // 模拟信号发送的视觉延迟
+                setTimeout(() => {
+                    window.location.href = 'ending.html';
+                }, 1200);
+            }
+        })();
+    </script>
 </body>
 </html>
