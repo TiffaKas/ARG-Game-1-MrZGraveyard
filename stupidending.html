@@ -187,27 +187,6 @@
         }
         setInterval(drawMatrix, 33);
 
-        // 重置游戏逻辑
-        function resetGame() {
-            // 清除所有的 localStorage
-            localStorage.clear();
-            
-            // 清除 cookie
-            const cookies = document.cookie.split(";");
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i];
-                const eqPos = cookie.indexOf("=");
-                const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-            }
-
-            // 增加一个花屏闪烁后跳转
-            document.body.style.backgroundColor = "#fff";
-            setTimeout(() => {
-                window.location.href = 'index.html'; // 假设你的主页是 index.html
-            }, 100);
-        }
-
         // 模拟系统自动清除提示
         console.log("HSD Admin: Evidence suppressed. Subject disconnected.");
     </script>
