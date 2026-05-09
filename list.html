@@ -90,7 +90,7 @@
                     
                     // 逻辑点：只有 isUser 为 true 时，才赋予 active-link 类和 detail.html 跳转链接
                     const linkClass = isUser ? 'name-link active-link' : 'name-link';
-                    const linkHref = isUser ? 'href="detail.html"' : 'href="javascript:void(0)"';
+                    const linkHref = isUser ? `href="detail.html?name=${encodeURIComponent(item.name)}"` : 'href="javascript:void(0)"';
                     
                     row.innerHTML = `
                         <td>#${serial}</td>
