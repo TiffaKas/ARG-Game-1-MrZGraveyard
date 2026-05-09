@@ -4,37 +4,25 @@
     <meta charset="UTF-8">
     <title>档案详情 - 千安公墓管理平台</title>
     <style>
-        /* 仅保留档案详情卡片的核心样式 */
+        /* 保持你原有的样式不变 */
         :root { --gold: #b8977e; --border: #dcdfe6; --dark: #333; --p-bg: #1d2731; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
-
-        /* 右侧主显示区域 - 适配侧栏组件 */
         .main { flex: 1; overflow-y: auto; display: flex; align-items: flex-start; justify-content: center; padding: 40px; }
-
-        /* 档案卡片样式 */
         .record-card { width: 100%; max-width: 850px; background: #fff; border: 1px solid var(--border); padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
         .section-header { border-left: 4px solid var(--gold); padding-left: 15px; font-size: 20px; font-weight: normal; margin-bottom: 40px; color: var(--dark); letter-spacing: 1px; }
-        
         .main-info { display: flex; gap: 40px; margin-bottom: 30px; border-bottom: 1px solid #f0f0f0; padding-bottom: 30px; }
-        
         .photo-box { width: 160px; text-align: center; }
         .photo-box img { width: 160px; height: 210px; object-fit: cover; border: 1px solid #ddd; filter: grayscale(100%) contrast(1.1); transition: filter 0.3s; }
         .photo-box img:hover { filter: grayscale(0%); }
-        
         .info-table { flex: 1; display: grid; grid-template-columns: 100px 1fr 100px 1fr; border-top: 1px solid #ebeef5; border-left: 1px solid #ebeef5; align-content: start; }
         .info-table div { padding: 15px; border-right: 1px solid #ebeef5; border-bottom: 1px solid #ebeef5; font-size: 14px; }
         .t-label { background: #fafafa; color: #606266; font-weight: bold; }
-        
         .content-title { font-weight: bold; margin-bottom: 15px; font-size: 14px; color: var(--p-bg); display: flex; align-items: center; }
         .content-title::before { content: ""; width: 8px; height: 8px; background: var(--gold); margin-right: 10px; }
-
         .content-box { background: #fcfcfc; border: 1px solid #eee; padding: 20px; font-size: 14px; line-height: 2; color: #444; min-height: 80px; margin-bottom: 30px; white-space: pre-wrap; text-align: justify; }
     </style>
 </head>
-<script src="task.js"></script>
 <body>
-
-    <!-- 引用统一侧边栏脚本 -->
     <script src="sidebar.js"></script>
     <script src="task.js"></script>
     <div class="main">
@@ -48,7 +36,7 @@
                 </div>
                 <div class="info-table">
                     <div class="t-label">姓名</div><div id="v-name">-</div>
-                    <div class="t-label">状态</div><div style="color: green; font-weight: bold;">正常存档</div>
+                    <div class="t-label">档案编号</div><div id="v-id" style="font-family: monospace; color: var(--gold); font-weight: bold;">-</div>
                     <div class="t-label">录入时间</div><div id="v-time">-</div>
                     <div class="t-label">数据分类</div><div>数字化核心墓区</div>
                 </div>
@@ -64,12 +52,26 @@
 
     <script>
         window.onload = () => {
-            const name = new URLSearchParams(window.location.search).get('name');
-            const archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-            const data = archives.find(a => a.name === name);
+            const params = new URLSearchParams(window.location.search);
+            const name = params.get('name');
+            let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
+            
+            // 找到对应姓名的数据索引
+            const dataIndex = archives.findIndex(a => a.name === name);
+            const data = archives[dataIndex];
             
             if (data) {
+                // --- 随机档案号生成与存入逻辑 ---
+                if (!data.indexID) {
+                    const randomNum = Math.floor(1000 + Math.random() * 9000);
+                    data.indexID = `QA-2026-${randomNum}`;
+                    // 更新原始数组并写回 Local Storage
+                    archives[dataIndex] = data;
+                    localStorage.setItem('cemetery_files', JSON.stringify(archives));
+                }
+                // --- 渲染数据 ---
                 document.getElementById('v-name').innerText = data.name;
+                document.getElementById('v-id').innerText = data.indexID;
                 document.getElementById('v-time').innerText = data.time;
                 document.getElementById('v-bio').innerText = data.bio;
                 document.getElementById('v-desc').innerText = data.desc || "无进一步行政描述信息。";
@@ -90,7 +92,7 @@
                     <div class="section-header" style="color: #cc0000;">档案读取异常</div>
                     <div class="content-box" style="text-align: center; color: #666;">
                         未在本地数据库中发现名为 "${name || '未知'}" 的档案条目。<br>
-                        可能是由于网络原因或数据已被删除。
+                        可能是由于数据未初始化或已被删除。
                     </div>
                 `;
             }
