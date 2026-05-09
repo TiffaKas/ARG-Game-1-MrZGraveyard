@@ -101,7 +101,21 @@
 
         function find() {
             let v = document.getElementById('pass').value.trim();
-            if(v) window.location.href = encodeURIComponent(v) + ".html";
+            if(!v) return;
+
+            // 获取本地存储的档案库
+            let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
+            
+            // 搜索逻辑：匹配 indexID（档案号）或 name（姓名）
+            let target = archives.find(a => a.indexID === v || a.name === v);
+
+            if (target) {
+                // 命中数据库，跳转至详情页并携带姓名参数
+                window.location.href = "detail.html?name=" + encodeURIComponent(target.name);
+            } else {
+                // 未命中数据库，按原逻辑尝试访问静态页面
+                window.location.href = encodeURIComponent(v) + ".html";
+            }
         }
 
         function checkNewTask() {
