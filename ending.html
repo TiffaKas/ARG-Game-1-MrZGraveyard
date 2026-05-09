@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>FATAL: REFLECTION_LEAK</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: "SimSun", serif; }
+        
+        /* 噪声背景层 */
+        #glitch-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0.15; pointer-events: none; z-index: 1;
+        }
+
+        /* 心理压迫文字 */
+        .whisper {
+            position: absolute; width: 100%; text-align: center;
+            color: #1a1a1a; font-size: 14px; letter-spacing: 20px;
+            animation: breathe 4s ease-in-out infinite; z-index: 2;
+        }
+
+        @keyframes breathe {
+            0%, 100% { opacity: 0; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); color: #400; }
+        }
+
+        /* 核心弹窗 - 伪造系统底层 */
+        .terminal {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 450px; background: #000; border: 1px solid #333;
+            padding: 20px; box-shadow: 0 0 50px rgba(255,0,0,0.2);
+            z-index: 10; display: flex; flex-direction: column;
+        }
+
+        .line { font-family: monospace; font-size: 12px; line-height: 1.5; margin-bottom: 5px; }
+        .red { color: #ff0000; text-shadow: 0 0 5px #f00; }
+        .gray { color: #444; }
+
+        /* 眼睛 - 瞬间闪现 */
+        #watcher {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 300px; opacity: 0; color: #fff; z-index: 100;
+            pointer-events: none; transition: opacity 0.1s;
+        }
+
+        /* 画面剧烈抖动 */
+        .shake { animation: shake-anim 0.05s infinite; }
+        @keyframes shake-anim {
+            0% { transform: translate(0,0); }
+            50% { transform: translate(5px, -5px); }
+            100% { transform: translate(-5px, 5px); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="glitch-canvas"></canvas>
+    <div id="watcher">👁</div>
+    
+    <div class="whisper" style="top: 20%;">你在看哪里？</div>
+    <div class="whisper" style="bottom: 20%;">它也看见你了。</div>
+
+    <div class="terminal" id="term">
+        <div class="line red">[ 系统性溃决：检测到逻辑旁路 ]</div>
+        <div class="line gray">Source: User_Manual_Bypass</div>
+        <div class="line">正在尝试封闭 HSD-Reflections 端口... <span class="red">失败</span></div>
+        <div class="line">正在尝试定位物理观测者位置... <span class="red">已锁定</span></div>
+        <div class="line" id="typing-log">> 正在上传观测者视网膜数据...</div>
+        <div class="line gray" style="margin-top:20px;">[ 警告 ]：跳过过程的人，将永远留在终点。</div>
+    </div>
+
+    <script>
+        // 动态噪声背景
+        const canvas = document.getElementById('glitch-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function noise() {
+            const idata = ctx.createImageData(canvas.width, canvas.height);
+            const buffer32 = new Uint32Array(idata.data.buffer);
+            for (let i = 0; i < buffer32.length; i++) {
+                if (Math.random() < 0.1) buffer32[i] = 0xff000000 + (Math.random() * 0xffffff);
+            }
+            ctx.putImageData(idata, 0, 0);
+            requestAnimationFrame(noise);
+        }
+        noise();
+
+        // 恐怖序列
+        const watcher = document.getElementById('watcher');
+        const term = document.getElementById('term');
+
+        window.onload = () => {
+            // 3秒后开始抖动
+            setTimeout(() => {
+                document.body.classList.add('shake');
+            }, 3000);
+
+            // 4.5秒后 - 瞬间惊吓 (Jump Scare)
+            setTimeout(() => {
+                watcher.style.opacity = "0.8";
+                document.body.style.background = "#fff";
+                term.style.display = "none";
+            }, 4500);
+
+            // 4.6秒后 - 恢复黑暗并清除数据
+            setTimeout(() => {
+                watcher.style.opacity = "0";
+                document.body.style.background = "#000";
+                document.body.classList.remove('shake');
+                localStorage.clear(); // 物理清除所有进度
+            }, 4650);
+
+            // 6秒后 - 最后的冷酷文字
+            setTimeout(() => {
+                document.body.innerHTML = `
+                    <div style="color:#222; font-size:12px; display:flex; align-items:center; justify-content:center; height:100vh; flex-direction:column;">
+                        <p>数据已擦除。</p>
+                        <p>请通过正当途径履行管理员职责。</p>
+                    </div>
+                `;
+            }, 6000);
+
+            // 9秒后重置
+            setTimeout(() => {
+                location.href = 'index.html';
+            }, 9000);
+        };
+    </script>
+</body>
+</html>
