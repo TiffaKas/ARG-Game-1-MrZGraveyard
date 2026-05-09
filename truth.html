@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>ACCESS DENIED</title>
+    <style>
+        :root { --glitch-red: #ff0000; --gold: #b8977e; }
+        body { margin: 0; background: #000; overflow: hidden; font-family: "SimSun", serif; }
+
+        /* --- 恐怖阶段样式 --- */
+        .horror-container {
+            height: 100vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            color: #fff; background: #000;
+        }
+
+        .blood-text {
+            font-size: 48px; letter-spacing: 15px; font-weight: bold;
+            color: #600; text-shadow: 0 0 10px rgba(255,0,0,0.8);
+            animation: glitch 0.1s infinite;
+        }
+
+        .eye-icon {
+            font-size: 80px; margin-bottom: 20px;
+            filter: grayscale(1) contrast(2);
+            animation: stare 5s ease-in-out infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); text-shadow: 2px 0 red; }
+            25% { transform: translate(-5px, 2px); color: #ff0000; }
+            50% { transform: translate(5px, -2px); text-shadow: -2px 0 red; }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes stare {
+            0%, 90% { transform: scale(1); opacity: 1; }
+            95% { transform: scale(1.1); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- 闪烁动画 --- */
+        .flash {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #fff; opacity: 0; pointer-events: none; z-index: 999;
+        }
+        .animate-flash { animation: flash-seq 0.5s steps(2); }
+        @keyframes flash-seq {
+            0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; }
+        }
+
+        /* --- 正常网页风格 (隐藏) --- */
+        .normal-ui {
+            display: none; height: 100vh; background: #f0f2f5;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        .error-card {
+            background: #fff; padding: 40px; border: 1px solid #dcdfe6;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;
+            border-top: 4px solid #cc0000;
+        }
+        .error-title { color: #333; font-size: 20px; margin-bottom: 10px; }
+        .error-msg { color: #666; font-size: 14px; margin-bottom: 25px; }
+        .log-id { font-family: monospace; font-size: 12px; color: var(--gold); }
+    </style>
+</head>
+<body>
+
+    <div class="horror-container" id="horrorPart">
+        <div class="eye-icon">👁</div>
+        <div class="blood-text">别耍小聪明</div>
+        <p style="color: #333; font-size: 12px; margin-top: 20px;">[ SENSOR DETECTED MANIPULATION ]</p>
+    </div>
+
+    <div class="flash" id="flasher"></div>
+
+    <div class="normal-ui" id="normalPart">
+        <div class="error-card">
+            <div class="error-title">越权访问失败 (403 Forbidden)</div>
+            <div class="error-msg">检测到非正常的 URL 跳转请求，该行为已被记录。</div>
+            <div class="log-id">LOG_AUTH_REF_2026_TRUTH</div>
+            <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
+            <button onclick="location.href='index.html'" style="padding: 10px 20px; cursor:pointer; background:#1d2731; color:white; border:none; border-radius:4px;">返回工作台</button>
+        </div>
+    </div>
+
+    <script>
+        window.onload = () => {
+            const horror = document.getElementById('horrorPart');
+            const flasher = document.getElementById('flasher');
+            const normal = document.getElementById('normalPart');
+
+            // 1秒后开始切换
+            setTimeout(() => {
+                // 启动闪烁
+                flasher.classList.add('animate-flash');
+                
+                // 在闪烁过程中瞬间切换内容
+                setTimeout(() => {
+                    horror.style.display = 'none';
+                    document.body.style.background = '#f0f2f5';
+                    normal.style.display = 'flex';
+                }, 200);
+
+                // 闪烁结束后移除遮罩
+                setTimeout(() => {
+                    flasher.style.display = 'none';
+                }, 500);
+
+            }, 1000);
+        };
+    </script>
+</body>
+</html>
