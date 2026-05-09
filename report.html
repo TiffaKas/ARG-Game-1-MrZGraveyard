@@ -4,28 +4,53 @@
     <meta charset="UTF-8">
     <title>千安公墓 - 季度财务结算报告</title>
     <style>
-        :root { --p-bg: #333; --dark: #000; --ai-bg: #fff; }
-        body { margin: 0; font-family: "SimSun", serif; background-color: #f4f6f8; display: flex; height: 100vh; overflow: hidden; position: relative; color: var(--dark); }
+        /* 核心逻辑样式保留，新增专业排版装饰 */
+        :root { --p-bg: #333; --dark: #000; --ai-bg: #fff; --audit-blue: #2c3e50; --danger: #c0392b; }
+        body { margin: 0; font-family: "SimSun", "STSong", serif; background-color: #f4f6f8; display: flex; height: 100vh; overflow: hidden; position: relative; color: var(--dark); }
         
-        .main { flex: 1; padding: 50px; display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
-        .report-paper { background: #fff; width: 100%; max-width: 850px; padding: 60px; box-shadow: 0 0 10px rgba(0,0,0,0.05); box-sizing: border-box; border: 1px solid #ddd; }
+        .main { flex: 1; padding: 30px; display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
         
-        .header { text-align: center; border-bottom: 2px solid var(--dark); padding-bottom: 20px; margin-bottom: 40px; }
-        .header h1 { margin: 0; font-size: 26px; letter-spacing: 4px; }
+        /* 增强纸张质感：加入页眉防伪标识 */
+        .report-paper { 
+            background: #fff; width: 100%; max-width: 900px; padding: 50px 70px; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.1); box-sizing: border-box; 
+            border: 1px solid #ccc; position: relative; 
+        }
+        .report-paper::before {
+            content: "内部机密 - 严禁外传 INTERNAL USE ONLY";
+            position: absolute; top: 20px; right: 20px; font-size: 10px; color: #ccc; border: 1px solid #eee; padding: 2px 5px;
+        }
 
-        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #eee; border: 1px solid #eee; margin-bottom: 40px; }
-        .summary-item { background: #fff; padding: 20px; text-align: center; }
-        .label { font-size: 12px; color: #666; margin-bottom: 10px; display: block; }
-        .value { font-size: 20px; font-family: "Georgia", serif; font-weight: bold; }
+        .header { text-align: center; border-bottom: 2px double var(--dark); padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { margin: 0; font-size: 24px; letter-spacing: 2px; }
+        .header p { font-size: 12px; margin: 5px 0; color: #555; }
 
-        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 14px; }
-        table th { background: #f9f9f9; text-align: left; padding: 12px; border-bottom: 1px solid #000; }
-        table td { padding: 12px; border-bottom: 1px solid #eee; }
-        .text-right { text-align: right; }
+        /* 顶部看板样式优化：参考图片中的网格布局 */
+        .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid #000; margin-bottom: 30px; }
+        .summary-item { background: #fff; padding: 15px 10px; text-align: center; border: 0.5px solid #eee; }
+        .label { font-size: 11px; color: #333; margin-bottom: 5px; display: block; background: #f2f2f2; padding: 2px 0; font-weight: bold; }
+        .value { font-size: 16px; font-family: "Courier New", monospace; font-weight: bold; }
+        .trend { font-size: 10px; color: var(--danger); display: block; margin-top: 3px; }
+
+        /* 表格细节强化 */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px; line-height: 1.4; }
+        table th { background: #f2f2f2; text-align: left; padding: 10px; border: 1px solid #000; font-weight: bold; }
+        table td { padding: 8px 10px; border: 1px solid #ddd; vertical-align: top; }
+        .text-right { text-align: right; font-family: "Courier New", monospace; }
         
-        .total-row { font-weight: bold; background: #fafafa; border-top: 1px solid #000; }
+        .sub-label { color: #777; font-size: 11px; display: block; font-style: italic; }
+        .total-row { font-weight: bold; background: #f9f9f9; border-top: 2px solid #000; }
         
-        /* AI 助手 - 黑白专业版 */
+        /* 审计水印与印章 */
+        .stamp-box { position: relative; height: 0; }
+        .seal { 
+            position: absolute; right: 50px; bottom: 80px; width: 120px; height: 120px; 
+            border: 3px solid rgba(192, 57, 43, 0.6); border-radius: 50%; color: rgba(192, 57, 43, 0.6);
+            display: flex; align-items: center; justify-content: center; transform: rotate(-15deg);
+            font-weight: bold; font-size: 14px; pointer-events: none; text-align: center; line-height: 1.2;
+        }
+
+        /* AI 助手保持原样 */
         #ai-assistant { 
             position: fixed; right: -400px; top: 100px; width: 320px; 
             background: var(--ai-bg); border: 1px solid #000; 
@@ -35,7 +60,6 @@
         }
         #ai-assistant.active { right: 30px; }
         .ai-title { font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 8px; margin-bottom: 15px; display: flex; align-items: center; }
-        .ai-title::before { content: "●"; color: #000; margin-right: 8px; }
         .ai-link { display: block; padding: 10px; margin: 8px 0; background: #fff; text-decoration: none; color: #333; border: 1px solid #ddd; font-size: 13px; }
         .ai-link:hover { background: #f0f0f0; border-color: #000; }
         .ai-desc { font-size: 11px; color: #666; margin-top: 4px; display: block; }
@@ -49,18 +73,24 @@
     <div class="main">
         <div class="report-paper">
             <div class="header">
-                <h1>千安公墓季度财务审计报告</h1>
-                <p>统计周期：2026年Q2 | 货币单位：人民币 (CNY)</p>
+                <h1>千安公墓管理有限公司 - 季度经营决算表</h1>
+                <p>Report ID: QA-FIN-2026-Q2 | 编制人：财务部核算科 | 审计状态：[复核中]</p>
             </div>
 
             <div class="summary-grid">
                 <div class="summary-item">
-                    <span class="label">账面合约总额</span>
-                    <span class="value" id="gross-total">加载中...</span>
+                    <span class="label">营收总额 (Gross)</span>
+                    <span class="value" id="gross-total">￥0.00</span>
+                    <span class="trend">同比 +6.4%</span>
                 </div>
                 <div class="summary-item">
-                    <span class="label">本季实收毛利</span>
-                    <span class="value" id="net-revenue">加载中...</span>
+                    <span class="label">营业税金及附加</span>
+                    <span class="value" style="color: #c0392b;">-￥637,500</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">本季净现值 (NPV)</span>
+                    <span class="value" id="net-revenue">￥0.00</span>
+                    <span class="trend" style="color: #27ae60;">环比持平</span>
                 </div>
                 <div class="summary-item">
                     <span class="label">资产留存率</span>
@@ -71,14 +101,25 @@
             <table>
                 <thead>
                     <tr>
-                        <th>核算科目</th>
-                        <th class="text-right">金额</th>
-                        <th>审计说明</th>
+                        <th style="width: 35%;">财务会计科目 (Accounting Subject)</th>
+                        <th class="text-right" style="width: 25%;">金额 (Amount)</th>
+                        <th>审计说明与风险提示 (Audit Notes)</th>
                     </tr>
                 </thead>
                 <tbody id="table-body">
                     </tbody>
             </table>
+
+            <div style="font-size: 11px; color: #888; margin-top: 40px;">
+                <p><strong>备注：</strong></p>
+                <p>1. 本报告遵循《公墓管理条例》第十七条关于“生态风险准备金”的强制计提要求。</p>
+                <p>2. 40% 的“合同负债”主要为长期管理维护费，在 20 年期内逐年摊销，目前属于预收科目。</p>
+                <p>3. 涉及 1920s 园区（旧区）的修缮费用已并入“土地成本摊销”项下。</p>
+            </div>
+
+            <div class="stamp-box">
+                <div class="seal">千安公墓<br>财务专用章<br>2026.04.15</div>
+            </div>
         </div>
     </div>
 
@@ -98,11 +139,9 @@
     </div>
 
     <script>
-        // 使用 DOMContentLoaded 确保 HTML 解析完成后立即执行
         document.addEventListener('DOMContentLoaded', () => {
             renderFinancialReport();
             
-            // AI 助手滑动效果
             setTimeout(() => {
                 const aiAssistant = document.getElementById('ai-assistant');
                 if (aiAssistant) aiAssistant.classList.add('active');
@@ -110,36 +149,30 @@
         });
 
         function renderFinancialReport() {
-            // 静态审计核心数据
             const grossValue = 5100000; 
             const netValue = 727500;    
-            const retentionRate = "14.3%";
+            const retentionRate = "14.26%";
 
-            // 1. 填充顶部数值卡片
             const grossEl = document.getElementById('gross-total');
             const netEl = document.getElementById('net-revenue');
             const rateEl = document.getElementById('retention-rate');
 
-            if (grossEl) grossEl.textContent = "￥" + grossValue.toLocaleString();
-            if (netEl) netEl.textContent = "￥" + netValue.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
+            if (grossEl) grossEl.textContent = "￥" + (grossValue / 10000).toFixed(2) + "万";
+            if (netEl) netEl.textContent = "￥" + netValue.toLocaleString();
             if (rateEl) rateEl.textContent = retentionRate;
 
-            // 2. 拟造详细科目数据
+            // 填充更专业的明细科目
             const dataRows = [
-                ["主营业务销售额", "￥5,100,000", "结算标准：340,000/件 (共15件)"],
-                ["减：营业税金 (12.5%)", "- ￥637,500", "政策性税费支出"],
-                ["减：合同负债 (预收递延)", "- ￥2,040,000", "计提比例：40%"],
-                ["减：生态修复专项储备 (20%)", "- ￥1,020,000", "专项用途准备金计提"],
-                ["减：基础土地成本摊销", "- ￥675,000", "固定资产折旧及土地分摊"]
+                ["主营业务收入 - 墓位长期租赁", "￥5,100,000.00", "基于 Q2 确认的 15 宗合同，单价 340k/件"],
+                ["减：流转税及教育费附加", "-(￥637,500.00)", "适用综合税率 12.5%"],
+                ["减：合同负债 (Deferred Revenue)", "-(￥2,040,000.00)", "<span class='sub-label'>强制计提 40%：作为 20 年管护费递延分摊</span>"],
+                ["减：生态修复专项储备金", "-(￥1,020,000.00)", "对应 HSD-09 号环境保护指令，计提比例 20%"],
+                ["减：基础建设与土地改良成本", "-(￥675,000.00)", "<span class='sub-label'>含旧区（Reflection区）排水系统紧急修缮费</span>"],
+                ["加：其他非经营性损益", "￥0.00", "政府补贴及捐赠收益尚未结算"],
             ];
 
             const tbody = document.getElementById('table-body');
             if (!tbody) return;
-
-            // 清空旧数据（防止重复渲染）
             tbody.innerHTML = "";
 
             dataRows.forEach(r => {
@@ -147,18 +180,17 @@
                 tr.innerHTML = `
                     <td>${r[0]}</td>
                     <td class="text-right">${r[1]}</td>
-                    <td>${r[2]}</td>
+                    <td style="font-size: 11px; color:#555;">${r[2]}</td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            // 3. 汇总行
             const totalTr = document.createElement('tr');
             totalTr.className = "total-row";
             totalTr.innerHTML = `
-                <td>本季度净利润 (实收)</td>
-                <td class="text-right">￥727,500.00</td>
-                <td>综合结算率：${retentionRate}</td>
+                <td>本季实收利润 (Actual Profit)</td>
+                <td class="text-right" style="font-size:16px;">￥727,500.00</td>
+                <td><span style="color:#27ae60;">● 满足年度营收预期线</span></td>
             `;
             tbody.appendChild(totalTr);
         }
