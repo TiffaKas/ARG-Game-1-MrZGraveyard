@@ -30,25 +30,26 @@
         td { padding: 15px; border-bottom: 1px solid #ebeef5; color: #444; font-size: 14px; }
         tr:hover { background-color: #f9f9f9; }
         
-        .name-link { color: var(--gold); text-decoration: none; font-weight: bold; border-bottom: 1px solid transparent; transition: all 0.2s; }
-        .name-link:hover { border-bottom-color: var(--gold); }
+        .name-link { color: var(--gold); text-decoration: none; font-weight: bold; border-bottom: 1px solid transparent; transition: all 0.2s; cursor: default; }
         
         /* 精致的状态标签 */
         .status-tag { 
-            color: #67c23a; 
-            background: #f0f9eb; 
             padding: 4px 10px; 
             border-radius: 2px; 
             font-size: 12px; 
             border: 1px solid #e1f3d8;
         }
         
+        /* 活跃状态 */
+        .status-active { color: #67c23a; background: #f0f9eb; border-color: #e1f3d8; }
+        /* 封存状态 */
+        .status-archived { color: #909399; background: #f4f4f5; border-color: #e9e9eb; }
+        
         #empty-msg { text-align: center; padding: 100px 50px; color: #999; font-style: italic; font-size: 14px; }
     </style>
 </head>
 <body>
 
-    <!-- 引用统一侧边栏脚本 -->
     <script src="task.js"></script>
     <script src="sidebar.js"></script>
 
@@ -62,8 +63,8 @@
                 <thead>
                     <tr>
                         <th width="100">编号</th>
-                        <th>姓名 (点击查看详细对焦)</th>
-                        <th>录入时间</th>
+                        <th>姓名 (档案摘要)</th>
+                        <th>录入/更新时间</th>
                         <th width="120">状态</th>
                     </tr>
                 </thead>
@@ -74,29 +75,60 @@
 
     <script>
         window.onload = () => {
-            // 获取并校验本地存储数据
-            const archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
             const container = document.getElementById('list-content');
             const table = document.getElementById('archive-table');
             const emptyMsg = document.getElementById('empty-msg');
-            
-            if (archives.length === 0) {
+
+            // 1. 模拟 12 项历史填充数据
+            const mockArchives = [
+                { name: "张维德", time: "2024-11-12 09:44" },
+                { name: "林晓琴", time: "2025-01-05 14:20" },
+                { name: "Edward Thompson", time: "2025-02-14 11:05" },
+                { name: "顾清泉", time: "2025-03-22 16:30" },
+                { name: "孙美兰", time: "2025-05-19 08:12" },
+                { name: "赵立国", time: "2025-07-01 10:55" },
+                { name: "刘嘉和", time: "2025-08-30 15:40" },
+                { name: "沈知秋", time: "2025-10-12 09:15" },
+                { name: "Kenneth Wong", time: "2025-12-05 13:02" },
+                { name: "马向阳", time: "2026-01-20 17:25" },
+                { name: "周爱莲", time: "2026-02-11 11:50" },
+                { name: "魏长征", time: "2026-03-05 14:10" }
+            ];
+
+            // 2. 获取并校验本地存储数据 (玩家录入的数据)
+            let userArchives = [];
+            try {
+                userArchives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
+            } catch(e) {
+                userArchives = [];
+            }
+
+            // 3. 合并数据：用户新数据排在最前面 (使用 reverse 确保最新录入在顶部)
+            const finalArchives = [...[...userArchives].reverse(), ...mockArchives];
+
+            if (finalArchives.length === 0) {
                 emptyMsg.style.display = 'block';
                 table.style.display = 'none';
             } else {
                 emptyMsg.style.display = 'none';
                 table.style.display = 'table';
                 
-                // 动态构建档案行
-                archives.forEach((item, index) => {
+                finalArchives.forEach((item, index) => {
                     const row = document.createElement('tr');
-                    // 编号三位自动补齐
                     const serial = String(index + 1).padStart(3, '0');
+                    
+                    // 判断是否为用户录入的新数据
+                    const isNewEntry = index < userArchives.length;
+                    
                     row.innerHTML = `
                         <td>#${serial}</td>
-                        <td><a class="name-link" href="detail.html?name=${encodeURIComponent(item.name)}">${item.name}</a></td>
+                        <td><a class="name-link" href="javascript:void(0)">${item.name}</a></td>
                         <td style="color: #909399;">${item.time}</td>
-                        <td><span class="status-tag">正常归档</span></td>
+                        <td>
+                            <span class="status-tag ${isNewEntry ? 'status-active' : 'status-archived'}">
+                                ${isNewEntry ? '正常归档' : '已封存'}
+                            </span>
+                        </td>
                     `;
                     container.appendChild(row);
                 });
