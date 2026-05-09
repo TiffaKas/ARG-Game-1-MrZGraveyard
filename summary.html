@@ -188,24 +188,35 @@
 
     <!-- JavaScript 逻辑 -->
     <script>
-        const searchInput = document.getElementById('searchInput');
+        // 建议：先通过 ID 获取元素，并增加安全检查
+        const searchInput = document.getElementById('searchInput'); 
 
-        // 监听键盘事件
-        searchInput.addEventListener('keydown', function(event) {
-            // 当按下回车键时
-            if (event.key === 'Enter') {
-                const query = searchInput.value.trim();
-
-                // 核心逻辑：如果输入包含“马小同”，跳转到对应的搜索结果页
-                if (query.includes('马小同')) {
-                    window.location.href = 'search_results_ma.html';
-                } 
-                else if (query.includes('石人病')) {
-                    window.location.href = 'search_results_ma.html';
+        if (searchInput) {
+            searchInput.addEventListener('keydown', function(event) {
+                // 当按下回车键时
+                if (event.key === 'Enter') {
+                    // 阻止表单默认提交刷新页面
+                    event.preventDefault(); 
+                    
+                    const query = searchInput.value.trim();
+        
+                    // 核心逻辑：增加对 FOP 的支持，并统一跳转
+                    if (query.includes('马小同') || query.includes('石人病') || query.toUpperCase().includes('FOP')) {
+                        window.location.href = 'search_results_ma.html';
+                    } 
+                    // 引导玩家去搜 FOP 的逻辑（可选）
+                    else if (query.includes('进行性肌肉骨化症')) {
+                         window.location.href = 'search_results_fop.html';
+                    }
+                    else {
+                        console.log("用户搜索了未知内容: " + query);
+                        // 可以在这里增加一个“无结果”的视觉反馈
+                    }
                 }
-                else{
-                    console.log("用户搜索了未知内容: " + query);
-            }});
+            }); // 修复了这里的括号闭合问题
+        } else {
+            console.warn("错误：未在页面中找到 ID 为 'searchInput' 的元素。");
+        }
     </script>
 
 </body>
