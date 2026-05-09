@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>本月已录入档案库 - 千安公墓管理平台</title>
     <style>
-        :root { --gold: #b8977e; --dark: #333; }
+        :root { --gold: #b8977e; --dark: #333; --gray: #909399; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
         .main { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; }
         .content-container { width: 100%; max-width: 900px; background: #fff; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); min-height: 500px; border: 1px solid #ddd; }
@@ -13,7 +13,14 @@
         th { background: #fafafa; color: #606266; font-weight: bold; text-align: left; padding: 15px; border-bottom: 2px solid #ebeef5; font-size: 14px; }
         td { padding: 15px; border-bottom: 1px solid #ebeef5; color: #444; font-size: 14px; }
         tr:hover { background-color: #f9f9f9; }
-        .name-link { color: var(--gold); text-decoration: none; font-weight: bold; cursor: default; }
+        
+        /* 基础样式：历史档案，默认无手型，颜色偏灰 */
+        .name-link { color: var(--gray); text-decoration: none; font-weight: normal; cursor: default; }
+        
+        /* 活跃样式：仅针对用户录入，有手型，金棕色高亮 */
+        .active-link { color: var(--gold); font-weight: bold; cursor: pointer; }
+        .active-link:hover { text-decoration: underline; }
+        
         .status-tag { padding: 4px 10px; border-radius: 2px; font-size: 12px; border: 1px solid #e1f3d8; }
         .status-active { color: #67c23a; background: #f0f9eb; border-color: #e1f3d8; }
         .status-archived { color: #909399; background: #f4f4f5; border-color: #e9e9eb; }
@@ -42,13 +49,11 @@
     </div>
 
     <script>
-        // 使用立即执行函数，防止变量污染和被外部错误阻塞
         (function() {
             const render = () => {
                 const container = document.getElementById('list-content');
                 if (!container) return;
 
-                // 1. 12项固定历史档案
                 const mockArchives = [
                     { name: "张维德", time: "2024-11-12 09:44" },
                     { name: "林晓琴", time: "2025-01-05 14:20" },
@@ -64,28 +69,32 @@
                     { name: "魏长征", time: "2026-03-05 14:10" }
                 ];
 
-                // 2. 获取用户数据
                 let userArchives = [];
                 try {
                     const saved = localStorage.getItem('cemetery_files');
                     userArchives = saved ? JSON.parse(saved) : [];
                     if (!Array.isArray(userArchives)) userArchives = [];
                 } catch(e) {
-                    console.error("Data Parse Error:", e);
                     userArchives = [];
                 }
 
-                // 3. 合并：用户数据倒序排在前，历史数据跟在后
+                // 合并数据：用户录入在顶
                 const combined = [...[...userArchives].reverse(), ...mockArchives];
 
-                container.innerHTML = ""; // 清空
+                container.innerHTML = ""; 
                 combined.forEach((item, index) => {
+                    // 判断是否为前 N 个（即用户录入的部分）
                     const isUser = index < userArchives.length;
                     const serial = String(index + 1).padStart(3, '0');
                     const row = document.createElement('tr');
+                    
+                    // 逻辑点：只有 isUser 为 true 时，才赋予 active-link 类和 detail.html 跳转链接
+                    const linkClass = isUser ? 'name-link active-link' : 'name-link';
+                    const linkHref = isUser ? 'href="detail.html"' : 'href="javascript:void(0)"';
+                    
                     row.innerHTML = `
                         <td>#${serial}</td>
-                        <td><a class="name-link" href="javascript:void(0)">${item.name || '未知项'}</a></td>
+                        <td><a class="${linkClass}" ${linkHref}>${item.name || '未知项'}</a></td>
                         <td style="color: #909399;">${item.time || 'N/A'}</td>
                         <td>
                             <span class="status-tag ${isUser ? 'status-active' : 'status-archived'}">
@@ -97,7 +106,6 @@
                 });
             };
 
-            // 确保 DOM 加载后运行
             if (document.readyState === 'complete') {
                 render();
             } else {
