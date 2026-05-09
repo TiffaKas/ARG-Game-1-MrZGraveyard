@@ -13,24 +13,17 @@
         th { background: #fafafa; color: #606266; font-weight: bold; text-align: left; padding: 15px; border-bottom: 2px solid #ebeef5; font-size: 14px; }
         td { padding: 15px; border-bottom: 1px solid #ebeef5; color: #444; font-size: 14px; }
         tr:hover { background-color: #f9f9f9; }
-        
-        /* 基础样式：历史档案，默认无手型，颜色偏灰 */
         .name-link { color: var(--gray); text-decoration: none; font-weight: normal; cursor: default; }
-        
-        /* 活跃样式：仅针对用户录入，有手型，金棕色高亮 */
         .active-link { color: var(--gold); font-weight: bold; cursor: pointer; }
         .active-link:hover { text-decoration: underline; }
-        
         .status-tag { padding: 4px 10px; border-radius: 2px; font-size: 12px; border: 1px solid #e1f3d8; }
         .status-active { color: #67c23a; background: #f0f9eb; border-color: #e1f3d8; }
         .status-archived { color: #909399; background: #f4f4f5; border-color: #e9e9eb; }
     </style>
 </head>
 <body>
-
     <script src="task.js"></script>
     <script src="sidebar.js"></script>
-
     <div class="main">
         <div class="content-container">
             <h2>数字化管理：已录入档案清单</h2>
@@ -47,13 +40,11 @@
             </table>
         </div>
     </div>
-
     <script>
         (function() {
             const render = () => {
                 const container = document.getElementById('list-content');
                 if (!container) return;
-
                 const mockArchives = [
                     { name: "张维德", time: "2024-11-12 09:44" },
                     { name: "林晓琴", time: "2025-01-05 14:20" },
@@ -68,29 +59,21 @@
                     { name: "周爱莲", time: "2026-02-11 11:50" },
                     { name: "魏长征", time: "2026-03-05 14:10" }
                 ];
-
                 let userArchives = [];
                 try {
                     const saved = localStorage.getItem('cemetery_files');
                     userArchives = saved ? JSON.parse(saved) : [];
-                    if (!Array.isArray(userArchives)) userArchives = [];
-                } catch(e) {
-                    userArchives = [];
-                }
+                } catch(e) { userArchives = []; }
 
-                // 合并数据：用户录入在顶
                 const combined = [...[...userArchives].reverse(), ...mockArchives];
-
                 container.innerHTML = ""; 
                 combined.forEach((item, index) => {
-                    // 判断是否为前 N 个（即用户录入的部分）
                     const isUser = index < userArchives.length;
                     const serial = String(index + 1).padStart(3, '0');
                     const row = document.createElement('tr');
-                    
-                    // 逻辑点：只有 isUser 为 true 时，才赋予 active-link 类和 detail.html 跳转链接
                     const linkClass = isUser ? 'name-link active-link' : 'name-link';
-                    const linkHref = isUser ? `href="detail.html?name=${encodeURIComponent(item.name)}"` : 'href="javascript:void(0)"';
+                    // 修正点：确保参数正确拼接
+                    const linkHref = isUser ? `href="detail.html?name=${encodeURIComponent(item.name.trim())}"` : 'href="javascript:void(0)"';
                     
                     row.innerHTML = `
                         <td>#${serial}</td>
@@ -105,12 +88,7 @@
                     container.appendChild(row);
                 });
             };
-
-            if (document.readyState === 'complete') {
-                render();
-            } else {
-                window.addEventListener('load', render);
-            }
+            window.onload = render;
         })();
     </script>
 </body>
