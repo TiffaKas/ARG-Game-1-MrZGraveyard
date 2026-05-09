@@ -26,26 +26,27 @@
         
         .perforated-container {
             width: 100%; margin: 45px 0; text-align: center; position: relative;
-            height: 40px; cursor: ns-resize; user-select: none; z-index: 10;
+            height: 40px; cursor: ew-resize; user-select: none; z-index: 10;
         }
         .perforated-line {
             border-top: 2px dashed #bbb; width: calc(100% + 160px); margin-left: -80px;
             position: absolute; top: 50%; left: 0; z-index: 1;
         }
 
-        /* 修正：遮罩层改为从上往下覆盖 */
+        /* 修正：遮罩层改为从右向左覆盖（左右撕开逻辑） */
         #tear-overlay {
-            position: absolute; top: 50%; left: -80px;
-            width: calc(100% + 160px); height: 0; background: var(--paper); 
-            z-index: 5; pointer-events: none;
+            position: absolute; top: 50%; right: -80px;
+            width: 0; height: 12px; background: var(--paper); 
+            transform: translateY(-50%); z-index: 5;
+            pointer-events: none;
         }
 
-        /* 修正：滑块位置和朝向 */
+        /* 修正：滑块回到右侧起始位 */
         #tear-handle {
-            position: absolute; top: 50%; left: 50%;
-            width: 80px; height: 34px; background: #f8f8f8;
+            position: absolute; top: 50%; right: -80px;
+            width: 60px; height: 34px; background: #f8f8f8;
             border: 1px solid #ccc; border-radius: 4px;
-            transform: translate(-50%, -50%); z-index: 15;
+            transform: translateY(-50%); z-index: 15;
             cursor: grab; display: flex; align-items: center; justify-content: center;
             font-size: 11px; color: #666; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
@@ -91,7 +92,7 @@
             <div class="perforated-container" id="tearZone">
                 <div class="perforated-line"></div>
                 <div id="tear-overlay"></div>
-                <div id="tear-handle">▼ 向下撕开</div>
+                <div id="tear-handle">◀ 撕开</div>
                 <div class="sensor-tag">HSD-INTERNAL-SENSOR-V7</div>
             </div>
 
@@ -148,31 +149,31 @@
             const viewport = document.getElementById('viewport');
             const tearAudio = document.getElementById('tearAudio');
             
-            // 修正：最大拖拽距离改为垂直高度相关
-            const maxDrag = 150; 
+            // 恢复：最大拖拽距离为水平宽度
+            const maxDrag = zone.offsetWidth + 160; 
             
             let isDragging = false;
-            let startMouseY = 0;
+            let startMouseX = 0;
 
             handle.addEventListener('mousedown', (e) => {
                 if (localStorage.getItem('document_torn') === 'true') return;
                 isDragging = true;
-                startMouseY = e.clientY;
+                startMouseX = e.clientX;
                 handle.style.transition = "none";
                 overlay.style.transition = "none";
             });
 
             window.addEventListener('mousemove', (e) => {
                 if (!isDragging) return;
-                // 修正：计算垂直位移
-                let delta = e.clientY - startMouseY; 
+                // 计算水平位移（从右往左拉）
+                let delta = startMouseX - e.clientX; 
                 if (delta < 0) delta = 0;
                 if (delta > maxDrag) delta = maxDrag;
 
-                handle.style.transform = `translate(-50%, calc(-50% + ${delta}px))`;
-                overlay.style.height = delta + 'px';
+                handle.style.right = (delta - 80) + 'px';
+                overlay.style.width = delta + 'px';
 
-                if (delta >= maxDrag * 0.95) {
+                if (delta >= maxDrag * 0.99) {
                     triggerFinalSequence();
                 }
             });
@@ -182,8 +183,8 @@
                 isDragging = false;
                 handle.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
                 overlay.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-                handle.style.transform = `translate(-50%, -50%)`;
-                overlay.style.height = '0';
+                handle.style.right = '-80px';
+                overlay.style.width = '0';
             });
 
             function triggerFinalSequence() {
@@ -225,6 +226,7 @@
                     document.body.appendChild(bottomGate);
 
                     requestAnimationFrame(() => {
+                        // 保持上下分离动画
                         topGate.style.transform = `translateY(-100%)`;
                         bottomGate.style.transform = `translateY(100%)`;
                     });
