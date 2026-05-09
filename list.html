@@ -4,48 +4,19 @@
     <meta charset="UTF-8">
     <title>本月已录入档案库 - 千安公墓管理平台</title>
     <style>
-        /* 仅保留档案列表业务相关的核心样式 */
         :root { --gold: #b8977e; --dark: #333; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
-
-        /* 主区域样式 - 适配 sidebar.js */
         .main { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; }
-        
-        /* 表格卡片容器 */
-        .content-container { 
-            width: 100%; 
-            max-width: 900px; 
-            background: #fff; 
-            padding: 40px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-            min-height: 500px;
-            border: 1px solid #ddd;
-        }
-        
+        .content-container { width: 100%; max-width: 900px; background: #fff; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); min-height: 500px; border: 1px solid #ddd; }
         h2 { border-left: 4px solid var(--gold); padding-left: 15px; font-weight: normal; margin-bottom: 30px; color: var(--dark); font-size: 18px; }
-
-        /* 表格样式优化 */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th { background: #fafafa; color: #606266; font-weight: bold; text-align: left; padding: 15px; border-bottom: 2px solid #ebeef5; font-size: 14px; }
         td { padding: 15px; border-bottom: 1px solid #ebeef5; color: #444; font-size: 14px; }
         tr:hover { background-color: #f9f9f9; }
-        
-        .name-link { color: var(--gold); text-decoration: none; font-weight: bold; border-bottom: 1px solid transparent; transition: all 0.2s; cursor: default; }
-        
-        /* 精致的状态标签 */
-        .status-tag { 
-            padding: 4px 10px; 
-            border-radius: 2px; 
-            font-size: 12px; 
-            border: 1px solid #e1f3d8;
-        }
-        
-        /* 活跃状态 */
+        .name-link { color: var(--gold); text-decoration: none; font-weight: bold; cursor: default; }
+        .status-tag { padding: 4px 10px; border-radius: 2px; font-size: 12px; border: 1px solid #e1f3d8; }
         .status-active { color: #67c23a; background: #f0f9eb; border-color: #e1f3d8; }
-        /* 封存状态 */
         .status-archived { color: #909399; background: #f4f4f5; border-color: #e9e9eb; }
-        
-        #empty-msg { text-align: center; padding: 100px 50px; color: #999; font-style: italic; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -56,9 +27,6 @@
     <div class="main">
         <div class="content-container">
             <h2>数字化管理：已录入档案清单</h2>
-            
-            <div id="empty-msg" style="display:none;">[ 警告：本地存储库为空，请先前往数据录入终端进行操作 ]</div>
-            
             <table id="archive-table">
                 <thead>
                     <tr>
@@ -74,66 +42,68 @@
     </div>
 
     <script>
-        window.onload = () => {
-            const container = document.getElementById('list-content');
-            const table = document.getElementById('archive-table');
-            const emptyMsg = document.getElementById('empty-msg');
+        // 使用立即执行函数，防止变量污染和被外部错误阻塞
+        (function() {
+            const render = () => {
+                const container = document.getElementById('list-content');
+                if (!container) return;
 
-            // 1. 模拟 12 项历史填充数据
-            const mockArchives = [
-                { name: "张维德", time: "2024-11-12 09:44" },
-                { name: "林晓琴", time: "2025-01-05 14:20" },
-                { name: "Edward Thompson", time: "2025-02-14 11:05" },
-                { name: "顾清泉", time: "2025-03-22 16:30" },
-                { name: "孙美兰", time: "2025-05-19 08:12" },
-                { name: "赵立国", time: "2025-07-01 10:55" },
-                { name: "刘嘉和", time: "2025-08-30 15:40" },
-                { name: "沈知秋", time: "2025-10-12 09:15" },
-                { name: "Kenneth Wong", time: "2025-12-05 13:02" },
-                { name: "马向阳", time: "2026-01-20 17:25" },
-                { name: "周爱莲", time: "2026-02-11 11:50" },
-                { name: "魏长征", time: "2026-03-05 14:10" }
-            ];
+                // 1. 12项固定历史档案
+                const mockArchives = [
+                    { name: "张维德", time: "2024-11-12 09:44" },
+                    { name: "林晓琴", time: "2025-01-05 14:20" },
+                    { name: "Edward Thompson", time: "2025-02-14 11:05" },
+                    { name: "顾清泉", time: "2025-03-22 16:30" },
+                    { name: "孙美兰", time: "2025-05-19 08:12" },
+                    { name: "赵立国", time: "2025-07-01 10:55" },
+                    { name: "刘嘉和", time: "2025-08-30 15:40" },
+                    { name: "沈知秋", time: "2025-10-12 09:15" },
+                    { name: "Kenneth Wong", time: "2025-12-05 13:02" },
+                    { name: "马向阳", time: "2026-01-20 17:25" },
+                    { name: "周爱莲", time: "2026-02-11 11:50" },
+                    { name: "魏长征", time: "2026-03-05 14:10" }
+                ];
 
-            // 2. 获取并校验本地存储数据 (玩家录入的数据)
-            let userArchives = [];
-            try {
-                userArchives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
-            } catch(e) {
-                userArchives = [];
-            }
+                // 2. 获取用户数据
+                let userArchives = [];
+                try {
+                    const saved = localStorage.getItem('cemetery_files');
+                    userArchives = saved ? JSON.parse(saved) : [];
+                    if (!Array.isArray(userArchives)) userArchives = [];
+                } catch(e) {
+                    console.error("Data Parse Error:", e);
+                    userArchives = [];
+                }
 
-            // 3. 合并数据：用户新数据排在最前面 (使用 reverse 确保最新录入在顶部)
-            const finalArchives = [...[...userArchives].reverse(), ...mockArchives];
+                // 3. 合并：用户数据倒序排在前，历史数据跟在后
+                const combined = [...[...userArchives].reverse(), ...mockArchives];
 
-            if (finalArchives.length === 0) {
-                emptyMsg.style.display = 'block';
-                table.style.display = 'none';
-            } else {
-                emptyMsg.style.display = 'none';
-                table.style.display = 'table';
-                
-                finalArchives.forEach((item, index) => {
-                    const row = document.createElement('tr');
+                container.innerHTML = ""; // 清空
+                combined.forEach((item, index) => {
+                    const isUser = index < userArchives.length;
                     const serial = String(index + 1).padStart(3, '0');
-                    
-                    // 判断是否为用户录入的新数据
-                    const isNewEntry = index < userArchives.length;
-                    
+                    const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>#${serial}</td>
-                        <td><a class="name-link" href="javascript:void(0)">${item.name}</a></td>
-                        <td style="color: #909399;">${item.time}</td>
+                        <td><a class="name-link" href="javascript:void(0)">${item.name || '未知项'}</a></td>
+                        <td style="color: #909399;">${item.time || 'N/A'}</td>
                         <td>
-                            <span class="status-tag ${isNewEntry ? 'status-active' : 'status-archived'}">
-                                ${isNewEntry ? '正常归档' : '已封存'}
+                            <span class="status-tag ${isUser ? 'status-active' : 'status-archived'}">
+                                ${isUser ? '正常归档' : '已封存'}
                             </span>
                         </td>
                     `;
                     container.appendChild(row);
                 });
+            };
+
+            // 确保 DOM 加载后运行
+            if (document.readyState === 'complete') {
+                render();
+            } else {
+                window.addEventListener('load', render);
             }
-        };
+        })();
     </script>
 </body>
 </html>
