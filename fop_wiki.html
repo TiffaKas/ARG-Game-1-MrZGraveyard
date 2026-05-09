@@ -4,109 +4,91 @@
     <meta charset="UTF-8">
     <title>进行性肌肉骨化症 - 维基百科，自由的百科全书</title>
     <style>
-        body { font-family: sans-serif; background: #fff; color: #202122; line-height: 1.6; margin: 0; padding: 0; }
+        body { font-family: sans-serif; line-height: 1.6; color: #202124; background: #f6f6f6; margin: 0; padding: 0; }
+        .wrapper { max-width: 1200px; margin: 0 auto; background: #fff; padding: 40px; border: 1px solid #a7d7f9; min-height: 100vh; }
         
-        /* 维基百科侧边栏模拟 */
-        .mw-sidebar { position: fixed; width: 160px; padding: 20px; font-size: 12px; color: #0645ad; border-right: 1px solid #a7d7f9; height: 100vh; background: #f6f6f6; }
-        .mw-sidebar div { margin-bottom: 10px; cursor: pointer; }
-
-        .content { margin-left: 200px; padding: 40px 80px; max-width: 900px; }
+        /* 维基百科样式顶部 */
+        .firstHeading { border-bottom: 1px solid #a2a9b1; margin-bottom: 0.25em; padding: 0; font-family: 'Linux Libertine','Georgia','Times',serif; font-size: 1.8em; }
+        .siteSub { font-size: 12.8px; margin-bottom: 20px; }
         
-        /* 标题样式 */
-        h1 { font-family: 'Linux Libertine', 'Georgia', serif; font-size: 1.8em; border-bottom: 1px solid #a2a9b1; margin-bottom: 0.25em; padding-bottom: 0.25em; font-weight: normal; }
-        h2 { font-size: 1.5em; border-bottom: 1px solid #a2a9b1; margin-top: 1.5em; font-weight: normal; }
+        /* 侧边信息框 (Infobox) - 适配马小同页面格式 */
+        .infobox { border: 1px solid #a2a9b1; background-color: #f8f9fa; margin: 0.5em 0 0.5em 1em; padding: 0.2em; float: right; clear: right; width: 22em; font-size: 88%; line-height: 1.5em; }
+        .infobox th { background-color: #cedff2; text-align: center; }
+        .infobox td { padding: 4px; }
+
+        /* 目录 (TOC) */
+        .toc { border: 1px solid #a2a9b1; background-color: #f8f9fa; padding: 7px; font-size: 95%; display: table; margin-top: 20px; margin-bottom: 20px; }
+        .toc h2 { font-size: 100%; font-weight: bold; text-align: center; margin: 0; }
+        .toc ul { list-style: none; padding: 0; margin: 0.5em 0 0; }
+        .toc li { margin-bottom: 4px; }
+
+        /* 正文 */
+        h2 { border-bottom: 1px solid #a2a9b1; margin-top: 1.5em; }
+        p { margin: 0.5em 0 1em 0; }
+        .warning-box { background: #fff3f3; border-left: 10px solid #d33; margin: 1.5em 10px; padding: 0.5em 10px; font-weight: bold; }
         
-        /* 顶部提示框 */
-        .hatnote { font-style: italic; font-size: 13px; margin-bottom: 20px; color: #444; }
-
-        /* 侧边信息框 Infobox */
-        .infobox { 
-            float: right; width: 280px; border: 1px solid #a2a9b1; background: #f8f9fa; 
-            margin: 0 0 1em 1em; padding: 0.2em; font-size: 12px; 
-        }
-        .infobox th { background: #b0c4de; text-align: center; font-size: 14px; padding: 5px; }
-        .infobox td { padding: 5px; border-top: 1px solid #a2a9b1; }
-        .infobox-image { text-align: center; background: #fff; padding: 10px; }
-
-        /* 脚注 */
-        .reference { font-size: 10px; vertical-align: super; color: #0645ad; cursor: pointer; }
-        .reflist { font-size: 12px; color: #555; background: #f8f9fa; padding: 15px; border: 1px solid #ddd; margin-top: 50px; }
-
-        /* 目录 */
-        .toc { background: #f8f9fa; border: 1px solid #a2a9b1; padding: 15px; display: inline-block; font-size: 13px; margin: 20px 0; }
-        .toc-title { font-weight: bold; text-align: center; display: block; margin-bottom: 5px; }
-
+        /* 链接样式 */
         a { color: #0645ad; text-decoration: none; }
         a:hover { text-decoration: underline; }
+
+        /* 脚注 */
+        .reflist { font-size: 12px; color: #54595d; margin-top: 30px; border-top: 1px solid #a2a9b1; padding-top: 10px; }
     </style>
 </head>
 <body>
-    <div class="mw-sidebar">
-        <div style="font-size: 20px; color: #000; font-weight: bold;">Wikipedia</div>
-        <hr>
-        <div>首页</div>
-        <div>分类索引</div>
-        <div>特色内容</div>
-        <div>随机条目</div>
-        <hr>
-        <div style="color: #666;">帮助</div>
-        <div>社区入口</div>
-        <div>最近更改</div>
+
+<div class="wrapper">
+    <h1 class="firstHeading">进行性肌肉骨化症 (FOP)</h1>
+    <div class="siteSub">维基百科，自由的百科全书</div>
+
+    <table class="infobox">
+        <tr><th colspan="2">进行性肌肉骨化症 <br>Fibrodysplasia Ossificans Progressiva</th></tr>
+        <tr><th>别名</th><td>石人症、Myositis Ossificans Progressiva</td></tr>
+        <tr><th>致病基因</th><td>$ACVR1$ (位于 2q23-24)</td></tr>
+        <tr><th>发病率</th><td>约 1/2,000,000</td></tr>
+        <tr><th>主要症状</th><td>先天性大脚趾畸形、异位骨化、关节禁锢</td></tr>
+        <tr><th>主要专家</th><td>Fred Kaplan, <a href="xiaotong_wiki.html">马小同</a></td></tr>
+        <tr><th>ICD-11</th><td>FB80.0</td></tr>
+    </table>
+
+    <p><b>进行性肌肉骨化症</b>（英语：Fibrodysplasia Ossificans Progressiva，简称 <b>FOP</b>）是一种极其罕见的遗传性结缔组织疾病。该病受 $ACVR1$ 基因突变驱动，导致身体的结缔组织（如肌肉、韧带和肌腱）在受损或自然状态下异常转化为真正的骨组织。这一过程被称为<b>异位骨化</b>。</p>
+
+    <div class="toc">
+        <h2>目录</h2>
+        <ul>
+            <li>1 <a href="#symptoms">临床表现</a></li>
+            <li>2 <a href="#genetics">遗传学机制</a></li>
+            <li>3 <a href="#taboo">临床禁忌（重要）</a></li>
+            <li>4 <a href="#research">现代研究与马小同</a></li>
+        </ul>
     </div>
 
-    <div class="content">
-        <div class="hatnote">本条目介绍的是一种罕见遗传病。关于“石人”的其他含义，请参见“石人 (消歧义)”。</div>
-        
-        <h1>进行性肌肉骨化症</h1>
-        <p>来自维基百科，自由的百科全书</p>
+    <h2 id="symptoms">临床表现</h2>
+    <p>FOP 的典型特征是在出生时即可观察到的<b>先天性大脚趾畸形</b>（通常表现为大脚趾短小且向内偏斜）。随着病程发展，患者通常从幼年时期开始经历周期性的软组织肿胀（Flare-ups）。</p>
+    <p>这些肿胀会在数周内消退，但随之而来的是原本的软组织被新生的板层骨取代。骨化通常遵循特定的顺序：从躯干顶部向下，由身体中轴向四肢延伸。最终，新生成的骨组织会形成一个“第二骨架”，禁锢患者的关节活动，使患者呈现出类似石像的姿态。</p>
 
-        <table class="infobox">
-            <tr><th colspan="2">进行性肌肉骨化症<br>(FOP)</th></tr>
-            <tr><td colspan="2" class="infobox-image">
-                <div style="border: 1px solid #eee; padding: 20px; background: #eee; color: #888;">
-                    [此处为骨骼异位骨化示意图]
-                </div>
-                <p style="font-size: 10px; margin-top: 5px;">受害者骨骼标本展示了典型的异位骨化现象</p>
-            </td></tr>
-            <tr><td><b>别名</b></td><td>石人症 (Stone Man Syndrome)</td></tr>
-            <tr><td><b>症状</b></td><td>先天性大脚趾畸形、肌肉骨化、关节僵硬</td></tr>
-            <tr><td><b>发病率</b></td><td>约 1/2,000,000</td></tr>
-            <tr><td><b>致病基因</b></td><td>$ACVR1$ (位于 2q23-24)</td></tr>
-            <tr><td><b>遗传方式</b></td><td>常染色体显性遗传</td></tr>
-        </table>
+    <h2 id="genetics">遗传学机制</h2>
+    <p>FOP 的分子基础在于编码骨形态发生蛋白 (BMP) I 型受体的基因 $ACVR1$ 发生突变。最常见的突变类型是 $c.617G>A$ ($p.Arg206His$)。这一突变使得受体处于“过度活跃”状态，即使在没有配体结合的情况下，也会持续向下游发送成骨信号。任何对肌肉的轻微损伤或炎症反应都会被误认为是骨骼修复的需求，从而触发不可逆的骨化程序。</p>
 
-        <p><b>进行性肌肉骨化症</b>（英语：Fibrodysplasia Ossificans Progressiva，简称 <b>FOP</b>）是一种极其罕见的遗传性结缔组织疾病<span class="reference">[1]</span>。该病的主要特征为骨骼肌和结缔组织（如韧带和肌腱）逐渐发生异位骨化，转化为真正的骨组织。这种过程通常是不可逆的，最终导致患者像“石像”一样失去活动能力。</p>
-
-        <div class="toc">
-            <span class="toc-title">目录</span>
-            1. 症状与体征<br>
-            2. 遗传学机制<br>
-            3. 临床禁忌<br>
-            4. 历史研究与马小同博士<br>
-            5. 参考文献
-        </div>
-
-        <h2>症状与体征</h2>
-        <p>FOP 患者在出生时通常表现为明显的<b>先天性大脚趾畸形</b>（向内弯曲且缩短）。随着年龄增长，身体各部位（通常由头颈部开始向下延伸）会出现周期性的软组织肿胀（Flare-ups）。这些肿胀消退后，原本的肌肉组织将被新生成的板层骨取代<span class="reference">[2]</span>。</p>
-
-        <h2>遗传学机制</h2>
-        <p>绝大多数 FOP 案例是由位于 2 号染色体长臂的 $ACVR1$ 基因发生错义突变引起的。该基因负责编码一种骨形态发生蛋白（BMP）I 型受体。当突变发生时，受体对配体的敏感度异常增高，导致软组织在受到轻微压力或损伤时即触发成骨修复程序。</p>
-
-        <h2>临床禁忌</h2>
-        <p style="background: #fff3f3; padding: 10px; border-left: 5px solid #ff0000;">
-            <b>警告：</b> 对 FOP 患者进行肌肉内注射、肌肉活检或手术切除异位骨是非常危险的。任何手术创伤都会诱发剧烈的“火花（Flare-up）”反应，导致手术部位迅速产生更大规模的骨化<span class="reference">[3]</span>。
-        </p>
-
-        <h2>历史研究与马小同博士</h2>
-        <p>21世纪初期，全球罕见病专家<b>马小同</b>（Dr. Xiao-Tong Ma）在宾夕法尼亚大学期间对 $ACVR1$ 信号通路进行了深入研究<span class="reference">[4]</span>。他的团队首次提出了利用特定小分子抑制剂来阻断信号传导的方案。然而，根据 2026 年的最新行业流言，马博士在回国后与一些私人机构（如<b>千安管理公司</b>）的合作引发了学术界的道德争议，涉及对旧时代骨骼标本的非法重新采集。</p>
-
-        <div class="reflist">
-            <b>参考文献</b><br>
-            [1] Shore, E.M., et al. (2006). "A recurrent mutation in the BMP type I receptor ACVR1 causes FOP". Nature Genetics.<br>
-            [2] Kaplan, F.S., et al. (2008). "The medical management of FOP: current treatment considerations".<br>
-            [3] IFOPA. (2025). "Clinical guidelines for the treatment of Stone Man Syndrome".<br>
-            [4] Ma, X.T., (2024). "From Ossification to Reflection: A new perspective on HSD simulation". 
-        </div>
+    <h2 id="taboo">临床禁忌</h2>
+    <div class="warning-box">
+        临床医学界严禁对 FOP 患者进行任何形式的肌肉内注射、组织活检或试图切除已形成的异位骨。任何侵入性医疗操作或外部创伤都会诱发剧烈的免疫反应，导致该部位发生更大规模、更迅速的成骨。
     </div>
+
+    <h2 id="research">现代研究与马小同</h2>
+    <p>在 21 世纪的转化医学浪潮中，针对 FOP 的药物研发取得了突破。其中，维甲酸受体 $\gamma$ 选择性激动剂 <b>Palovarotene</b> 是目前的重点研究方向。中国专家<b><a href="xiaotong_wiki.html">马小同</a></b>博士在宾夕法尼亚大学深造期间，曾系统性地分析了 $ACVR1$ 通路的约束条件，并提出了基于信号阻断的早期诊断协议。</p>
+    <p>近期有学术讨论指出，马博士的研究理念强调“划痕理论”，即通过对历史病例的极端分析来为未来的基因疗法开辟道路。这一理念在罕见病社群中引发了关于医学伦理边界的深刻讨论。</p>
+
+    <div class="reflist">
+        <p><b>参考文献：</b></p>
+        <p>1. Shore EM, et al. "A recurrent mutation in the BMP type I receptor ACVR1 causes FOP." Nat Genet. 2006.</p>
+        <p>2. Kaplan FS, et al. "The medical management of FOP: Current treatment considerations." 2024.</p>
+        <p>3. Ma XT. "Reflections on ACVR1 and The Simulation of Bone Growth." Academic Press, 2025.</p>
+    </div>
+
+    <hr>
+    <p style="font-size: 12px; color: #54595d;">最后修订于 2026年4月 | 本条目是数字化档案库的一部分。</p>
+</div>
+
 </body>
 </html>
