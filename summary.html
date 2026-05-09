@@ -201,11 +201,11 @@
                     const query = searchInput.value.trim();
         
                     // 核心逻辑：增加对 FOP 的支持，并统一跳转
-                    if (query.includes('马小同') || query.includes('石人病') || query.toUpperCase().includes('FOP')) {
+                    if (query.includes('马小同') ) {
                         window.location.href = 'search_results_ma.html';
                     } 
                     // 引导玩家去搜 FOP 的逻辑（可选）
-                    else if (query.includes('进行性肌肉骨化症')) {
+                    else if (query.includes('石人病')) {
                          window.location.href = 'search_results_fop.html';
                     }
                     else {
