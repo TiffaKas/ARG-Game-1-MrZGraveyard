@@ -4,96 +4,101 @@
     <meta charset="UTF-8">
     <title>维吉尼亚密码 (Vigenère Cipher) - Google 搜索</title>
     <style>
-        body { font-family: arial, sans-serif; background: #fff; margin: 0; padding: 0; }
+        :root { --blue: #1a0dab; --gray: #70757a; --border: #dfe1e5; }
+        body { font-family: arial, sans-serif; background: #fff; margin: 0; padding: 0; color: #202124; }
+        
         .header { border-bottom: 1px solid #ebebeb; padding: 20px 30px; position: sticky; top: 0; background: #fff; z-index: 100; }
-        .logo { color: #4285f4; font-size: 24px; font-weight: bold; text-decoration: none; }
-        .search-container { max-width: 650px; margin-left: 150px; padding: 20px; }
-        .stats { color: #70757a; font-size: 14px; margin-bottom: 20px; }
-        .result { margin-bottom: 35px; }
-        .result a { text-decoration: none; cursor: pointer; }
-        .result h3 { color: #1a0dab; font-size: 20px; margin: 0 0 5px 0; font-weight: normal; }
+        .logo { font-size: 24px; font-weight: bold; text-decoration: none; }
+        
+        /* 布局容器 */
+        .main-container { display: flex; max-width: 1200px; margin-left: 150px; padding: 20px; gap: 60px; }
+        
+        /* 左侧搜索结果列 */
+        .results-column { flex: 0 1 650px; }
+        .stats { color: var(--gray); font-size: 14px; margin-bottom: 20px; }
+        
+        .result { margin-bottom: 30px; }
+        .result a { text-decoration: none; }
+        .result .cite { color: #202124; font-size: 14px; display: block; margin-bottom: 4px; }
+        .result h3 { color: var(--blue); font-size: 20px; margin: 0 0 5px 0; font-weight: normal; }
         .result h3:hover { text-decoration: underline; }
-        .result .cite { color: #202124; font-size: 14px; font-style: normal; margin-bottom: 4px; display: block; }
         .result .desc { color: #4d5156; font-size: 14px; line-height: 1.58; }
         .result em { font-weight: bold; font-style: normal; }
-        
-        /* 侧边知识卡片 (Knowledge Graph) 模拟 */
-        .knowledge-card { 
-            position: absolute; left: 850px; top: 120px; width: 360px; 
-            border: 1px solid #dfe1e5; border-radius: 8px; padding: 20px; 
-        }
-        .knowledge-card h2 { font-size: 24px; font-weight: normal; margin-top: 0; }
-        .knowledge-card .subtitle { color: #70757a; font-size: 14px; margin-bottom: 15px; }
-        .knowledge-card p { font-size: 14px; line-height: 1.5; color: #202124; }
 
-        .related-search { margin-top: 50px; border-top: 1px solid #ebebeb; padding-top: 20px; padding-bottom: 50px;}
-        .related-search h2 { font-size: 20px; font-weight: normal; margin-bottom: 15px; }
-        .related-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .related-item { color: #1a0dab; text-decoration: none; font-size: 14px; }
+        /* 右侧知识卡片 */
+        .knowledge-column { flex: 0 0 360px; }
+        .knowledge-card { border: 1px solid var(--border); border-radius: 8px; padding: 20px; position: sticky; top: 120px; }
+        .knowledge-card h2 { font-size: 24px; font-weight: normal; margin: 0 0 5px 0; }
+        .knowledge-card .subtitle { color: var(--gray); font-size: 14px; margin-bottom: 15px; }
+        .knowledge-card p { font-size: 14px; line-height: 1.5; }
+
+        .related-search { margin-top: 50px; border-top: 1px solid #ebebeb; padding-top: 20px; }
+        .related-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .related-item { color: var(--blue); text-decoration: none; font-size: 14px; }
         .related-item:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     <div class="header">
-        <a href="#" class="logo">
+        <a href="summary.html" class="logo">
             <span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span>
         </a>
     </div>
 
-    <div class="search-container">
-        <div class="stats">找到约 456,000 条结果 （用时 0.38 秒）</div>
-            <div class="desc">
-                <em>维吉尼亚密码</em>（Vigenère Cipher）是一种使用多表代换方案的加密方法。它通过使用一系列交替的凯撒密码，根据关键词的字母来决定移动的位数，从而在一定程度上抵御了<em>频率分析</em>法的攻击...
+    <div class="main-container">
+        <div class="results-column">
+            <div class="stats">找到约 456,000 条结果 （用时 0.38 秒）</div>
+
+            <div class="result">
+                <a href="#">
+                    <span class="cite">https://baike.baidu.com › item › 维吉尼亚密码</span>
+                    <h3>维吉尼亚密码 - 百科详情</h3>
+                </a>
+                <div class="desc"><em>维吉尼亚密码</em>（Vigenère Cipher）是一种使用多表代换方案的加密方法。它通过使用一系列交替的凯撒密码，抵御了<em>频率分析</em>法的攻击...</div>
+            </div>
+
+            <div class="result">
+                <a href="https://www.metools.info/code/c71.html">
+                    <span class="cite">https://www.metools.info › code › c71</span>
+                    <h3>维吉尼亚密码在线转换 - 一个好用的在线加密解密工具</h3>
+                </a>
+                <div class="desc">提供在线<em>维吉尼亚密码</em>加密和解密功能。只需输入明文和密钥，即可快速生成密文，是学习古典密码学的便捷助手。</div>
+            </div>
+
+            <div class="result">
+                <a href="#">
+                    <span class="cite">https://www.cryptomuseum.com › vigenere</span>
+                    <h3>维吉尼亚密码的历史与技术原理 - 密码博物馆</h3>
+                </a>
+                <div class="desc">深入探讨<em>布莱斯·德·维吉尼亚</em>在16世纪完善的算法。该算法曾被称为“不可破译的密码”，直到19世纪才被破解。</div>
+            </div>
+
+            <div class="related-search">
+                <h2>相关搜索</h2>
+                <div class="related-list">
+                    <a href="#" class="related-item">维吉尼亚密码表高清图</a>
+                    <a href="#" class="related-item">卡西斯基试验 破解步骤</a>
+                    <a href="#" class="related-item">凯撒密码在线解密</a>
+                    <a href="#" class="related-item">多表代换密码 原理</a>
+                    <a href="#" class="related-item">Python实现维吉尼亚加密</a>
+                    <a href="#" class="related-item">古典密码学常用算法</a>
+                </div>
             </div>
         </div>
 
-        <div class="result">
-            <a href="https://www.metools.info/code/c71.html">
-                <span class="cite">https://www.metools.info › code › c71</span>
-                <h3>维吉尼亚密码在线转换 - 一个好用的在线加密解密工具</h3>
-            </a>
-            <div class="desc">提供在线<em>维吉尼亚密码</em>加密和<em>维吉尼亚密码解密</em>功能。只需输入明文和密钥，即可快速生成密文，支持多种字母表处理方式，是学习古典密码学的便捷助手。</div>
-        </div>
-
-        <div class="result">
-            <a href="#">
-                <span class="cite">https://www.cryptomuseum.com › crypto › vigenere</span>
-                <h3>维吉尼亚密码的历史与技术原理 - 密码博物馆</h3>
-            </a>
-            <div class="desc">深入探讨<em>布莱斯·德·维吉尼亚</em>（Blaise de Vigenère）在16世纪完善的加密算法。该算法曾被称为“不可破译的密码”，直到19世纪被卡西斯基彻底破解。</div>
-        </div>
-
-        <div class="result">
-            <a href="#">
-                <span class="cite">https://ctf-wiki.org › crypto › classical › vigenere</span>
-                <h3>古典密码：维吉尼亚密码详解 - CTF Wiki</h3>
-            </a>
-            <div class="desc">在CTF比赛中，<em>维吉尼亚密码</em>是常见的考点。本文介绍了如何利用<em>Kasiski实验</em>和弗里德曼测试（重合指数）来推测密钥长度并进行破解...</div>
-        </div>
-
-        <div class="related-search">
-            <h2>相关搜索</h2>
-            <div class="related-list">
-                <a href="#" class="related-item">维吉尼亚密码表高清图</a>
-                <a href="#" class="related-item">卡西斯基试验 破解步骤</a>
-                <a href="#" class="related-item">凯撒密码在线解密</a>
-                <a href="#" class="related-item">多表代换密码 原理</a>
-                <a href="#" class="related-item">古典密码学常用算法</a>
-                <a href="#" class="related-item">Python实现维吉尼亚加密</a>
+        <div class="knowledge-column">
+            <div class="knowledge-card">
+                <h2>维吉尼亚密码</h2>
+                <div class="subtitle">多表代换古典密码</div>
+                <p><b>维吉尼亚密码</b> 是一种使用一系列交替的凯撒密码组成的置换密码。其核心工具是“维吉尼亚方阵”。</p>
+                <hr style="border: 0; border-top: 1px solid #ebebeb; margin: 15px 0;">
+                <p style="font-size: 13px;">
+                    <b>发明者：</b> 乔万·巴蒂斯塔·贝拉索<br><br>
+                    <b>特点：</b> 有效消除字母频率特征。<br><br>
+                    <b>核心：</b> 密钥（Key）的循环使用。
+                </p>
             </div>
         </div>
-    </div>
-
-    <div class="knowledge-card">
-        <h2>维吉尼亚密码</h2>
-        <div class="subtitle">多表代换古典密码</div>
-        <p><b>维吉尼亚密码</b> 是一种使用一系列交替的凯撒密码组成的置换密码。其核心工具是“维吉尼亚方阵”，通过密钥来控制加密过程。</p>
-        <hr style="border: 0; border-top: 1px solid #ebebeb;">
-        <p style="font-size: 13px;">
-            <b>发明者：</b> 乔万·巴蒂斯塔·贝拉索（由布莱斯·德·维吉尼亚完善并命名）。<br><br>
-            <b>特点：</b> 能够有效消除字母频率特征，直到1863年才被系统性破解。<br><br>
-            <b>核心：</b> 密钥（Key）的循环使用，决定了明文字母在方阵中的偏移量。
-        </p>
     </div>
 </body>
 </html>
