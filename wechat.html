@@ -8,8 +8,12 @@
         :root { --win-bg: #f5f5f5; --side-black: #2e2e2e; --list-gray: #eeeae8; --active-gray: #c8c8c8; --wechat-green: #07c160; --msg-green: #95ec69; }
         body { margin: 0; font-family: "Microsoft YaHei", sans-serif; background-color: #f5f5f5; display: flex; height: 100vh; overflow: hidden; }
         .wechat-window { width: 100vw; height: 100vh; display: flex; background: var(--win-bg); position: relative; }
-        .win-side { width: 60px; background: var(--side-black); display: flex; flex-direction: column; align-items: center; padding: 20px 0; flex-shrink: 0; }
-        .avatar-main { width: 35px; height: 35px; background: #888; border-radius: 4px; margin-bottom: 25px; }
+        
+        /* 修复侧边栏显示问题 */
+        .win-side { width: 60px; background: var(--side-black); display: flex; flex-direction: column; align-items: center; padding: 20px 0; flex-shrink: 0; height: 100%; box-sizing: border-box; }
+        .avatar-main { width: 35px; height: 35px; background: #888; border-radius: 4px; margin-bottom: 25px; flex-shrink: 0; }
+        .icon { font-size: 24px; margin-bottom: 20px; } /* 补充图标样式 */
+
         .win-list { width: 280px; background: var(--list-gray); border-right: 1px solid #dcd9d8; display: flex; flex-direction: column; }
         .list-search { padding: 25px 12px 10px; position: relative; }
         .list-search input { width: 100%; border: none; background: #dbd9d8; padding: 6px 10px; font-size: 12px; border-radius: 2px; outline: none; }
@@ -201,7 +205,6 @@
         const list = document.getElementById('contactList');
         list.innerHTML = '';
         Object.keys(chatData).forEach(key => {
-            // 如果是tong，需要检查是否已添加
             if (key === 'tong' && localStorage.getItem('tong_added') !== 'true') return;
 
             const data = chatData[key];
@@ -252,8 +255,6 @@
         switchChat(currentChatKey);
     }
 
-    // --- 功能整合逻辑 ---
-
     const searchInput = document.getElementById('searchInput');
     const searchResultBox = document.getElementById('searchResultBox');
     const profileModal = document.getElementById('profileModal');
@@ -301,7 +302,7 @@
 
         if (applyTime) {
             const elapsed = Date.now() - parseInt(applyTime);
-            const waitTime = 180000; // 3分钟
+            const waitTime = 180000; 
 
             if (elapsed >= waitTime) {
                 localStorage.setItem('tong_added', 'true');
