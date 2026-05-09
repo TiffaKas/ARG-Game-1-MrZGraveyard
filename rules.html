@@ -33,18 +33,18 @@
             position: absolute; top: 50%; left: 0; z-index: 1;
         }
 
-        /* 修正：遮罩层改为从右向左覆盖（左右撕开逻辑） */
+        /* 遮罩层：从右侧向左延展，遮盖虚线模拟撕开轨迹 */
         #tear-overlay {
             position: absolute; top: 50%; right: -80px;
-            width: 0; height: 12px; background: var(--paper); 
+            width: 0; height: 10px; background: var(--paper); 
             transform: translateY(-50%); z-index: 5;
             pointer-events: none;
         }
 
-        /* 修正：滑块回到右侧起始位 */
+        /* 滑块：初始位于最右侧 */
         #tear-handle {
             position: absolute; top: 50%; right: -80px;
-            width: 60px; height: 34px; background: #f8f8f8;
+            width: 80px; height: 34px; background: #f8f8f8;
             border: 1px solid #ccc; border-radius: 4px;
             transform: translateY(-50%); z-index: 15;
             cursor: grab; display: flex; align-items: center; justify-content: center;
@@ -67,7 +67,6 @@
 <body>
     <script src="task.js"></script>
     <audio id="tearAudio" src="tearing.ogg" preload="auto"></audio>
-
     <script src="sidebar.js"></script>
 
     <div class="main" id="viewport">
@@ -149,7 +148,7 @@
             const viewport = document.getElementById('viewport');
             const tearAudio = document.getElementById('tearAudio');
             
-            // 恢复：最大拖拽距离为水平宽度
+            // 计算最大水平拉动距离（整张纸的宽度加上左右边距）
             const maxDrag = zone.offsetWidth + 160; 
             
             let isDragging = false;
@@ -161,19 +160,24 @@
                 startMouseX = e.clientX;
                 handle.style.transition = "none";
                 overlay.style.transition = "none";
+                handle.style.cursor = "grabbing";
             });
 
             window.addEventListener('mousemove', (e) => {
                 if (!isDragging) return;
-                // 计算水平位移（从右往左拉）
-                let delta = startMouseX - e.clientX; 
+                
+                // 计算从右向左的位移
+                let delta = startMouseX - e.clientX;
                 if (delta < 0) delta = 0;
                 if (delta > maxDrag) delta = maxDrag;
 
+                // 更新滑块位置（从初始的 right: -80px 开始向左移动）
                 handle.style.right = (delta - 80) + 'px';
+                // 更新遮罩宽度，遮住虚线
                 overlay.style.width = delta + 'px';
 
-                if (delta >= maxDrag * 0.99) {
+                // 当撕拉进度超过 98% 时触发
+                if (delta >= maxDrag * 0.98) {
                     triggerFinalSequence();
                 }
             });
@@ -181,8 +185,11 @@
             window.addEventListener('mouseup', () => {
                 if (!isDragging) return;
                 isDragging = false;
-                handle.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-                overlay.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+                handle.style.cursor = "grab";
+                
+                // 如果没撕完，回弹
+                handle.style.transition = "all 0.4s ease";
+                overlay.style.transition = "all 0.4s ease";
                 handle.style.right = '-80px';
                 overlay.style.width = '0';
             });
@@ -195,6 +202,7 @@
                 isDragging = false;
                 localStorage.setItem('document_torn', 'true');
                 
+                // 锁定页面布局准备进行拆分
                 doc.style.maxWidth = "100vw";
                 doc.style.width = "100vw";
                 doc.style.margin = "0";
@@ -204,38 +212,44 @@
                 viewport.style.overflow = "hidden";
 
                 setTimeout(() => {
-                    const splitY = zone.getBoundingClientRect().top + (zone.offsetHeight / 2);
+                    const rect = zone.getBoundingClientRect();
+                    const splitY = rect.top + (rect.height / 2);
                     const contentHtml = doc.innerHTML;
 
+                    // 隐藏原文档
                     doc.classList.add('is-torn-hidden');
 
+                    // 创建上半部分
                     const topGate = document.createElement('div');
                     topGate.className = 'tear-fragment';
                     topGate.style.top = '0';
                     topGate.style.height = splitY + 'px';
                     topGate.innerHTML = `<div style="width:100vw; padding:60px calc(50vw - 375px); background:white; position:absolute; top:0; box-sizing:border-box;">${contentHtml}</div>`;
                     
+                    // 创建下半部分
                     const bottomGate = document.createElement('div');
                     bottomGate.className = 'tear-fragment';
                     bottomGate.style.top = splitY + 'px';
                     bottomGate.style.height = (window.innerHeight - splitY) + 'px';
                     bottomGate.innerHTML = `<div style="width:100vw; padding:60px calc(50vw - 375px); background:white; position:absolute; top:0; box-sizing:border-box;">${contentHtml}</div>`;
+                    // 修正下半部分内容的垂直偏移
                     bottomGate.firstChild.style.marginTop = `-${splitY}px`;
 
                     document.body.appendChild(topGate);
                     document.body.appendChild(bottomGate);
 
+                    // 执行上下分离动画
                     requestAnimationFrame(() => {
-                        // 保持上下分离动画
                         topGate.style.transform = `translateY(-100%)`;
                         bottomGate.style.transform = `translateY(100%)`;
                     });
 
+                    // 跳转
                     setTimeout(() => {
                         window.location.href = 'stupidending.html';
                     }, 1000);
 
-                }, 500); 
+                }, 400); 
             }
         })();
     </script>
