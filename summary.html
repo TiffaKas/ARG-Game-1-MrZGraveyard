@@ -199,12 +199,13 @@
                 // 核心逻辑：如果输入包含“马小同”，跳转到对应的搜索结果页
                 if (query.includes('马小同')) {
                     window.location.href = 'search_results_ma.html';
-                } else if (query !== "") {
-                    // 如果输入其他内容，可以根据需要决定是否跳转到通用 404 或其他页面
-                    console.log("用户搜索了未知内容: " + query);
+                } 
+                else if (query.includes('石人病')) {
+                    window.location.href = 'search_results_ma.html';
                 }
-            }
-        });
+                else{
+                    console.log("用户搜索了未知内容: " + query);
+            }});
     </script>
 
 </body>
