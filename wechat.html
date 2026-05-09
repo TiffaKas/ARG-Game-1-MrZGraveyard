@@ -4,15 +4,21 @@
     <meta charset="UTF-8">
     <title>微信 WeChat</title>
     <style>
-        /* 样式部分保持不变，确保视觉上的真实感 */
+        /* 样式部分完全保留你的新代码 */
         :root { --win-bg: #f5f5f5; --side-black: #2e2e2e; --list-gray: #eeeae8; --active-gray: #c8c8c8; --wechat-green: #07c160; --msg-green: #95ec69; }
         body { margin: 0; font-family: "Microsoft YaHei", sans-serif; background-color: #f5f5f5; display: flex; height: 100vh; overflow: hidden; }
-        .wechat-window { width: 100vw; height: 100vh; display: flex; background: var(--win-bg); }
+        .wechat-window { width: 100vw; height: 100vh; display: flex; background: var(--win-bg); position: relative; }
         .win-side { width: 60px; background: var(--side-black); display: flex; flex-direction: column; align-items: center; padding: 20px 0; flex-shrink: 0; }
         .avatar-main { width: 35px; height: 35px; background: #888; border-radius: 4px; margin-bottom: 25px; }
         .win-list { width: 280px; background: var(--list-gray); border-right: 1px solid #dcd9d8; display: flex; flex-direction: column; }
         .list-search { padding: 25px 12px 10px; position: relative; }
         .list-search input { width: 100%; border: none; background: #dbd9d8; padding: 6px 10px; font-size: 12px; border-radius: 2px; outline: none; }
+        
+        /* 搜索弹窗样式补充 */
+        #searchResultBox { position: absolute; top: 60px; left: 12px; right: 12px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none; z-index: 100; }
+        .search-item { padding: 10px; display: flex; align-items: center; cursor: pointer; border: 1px solid #eee; }
+        .search-item:hover { background: #f2f2f2; }
+
         #contactList { flex: 1; overflow-y: auto; }
         .contact-item { padding: 12px; display: flex; align-items: center; cursor: pointer; border-bottom: 1px solid #e0dbda; }
         .contact-item.active { background: var(--active-gray); }
@@ -30,18 +36,40 @@
         .msg-bubble { background: #fff; padding: 8px 12px; border-radius: 4px; font-size: 14px; max-width: 70%; line-height: 1.6; margin: 0 12px; }
         .msg-row.me .msg-bubble { background: var(--msg-green); }
         .msg-time-tag { text-align: center; color: #b2b2b2; font-size: 11px; margin: 15px 0; }
+        .msg-recall { text-align: center; color: #b2b2b2; font-size: 12px; margin: 15px 0; width: 100%; }
+
         .chat-footer { height: 180px; border-top: 1px solid #e5e5e5; background: #fff; display: flex; flex-direction: column; }
         #messageInput { flex: 1; padding: 15px 20px; border: none; outline: none; resize: none; font-size: 14px; }
         .send-btn-row { padding: 10px 20px; display: flex; justify-content: flex-end; }
         .send-btn { background: #f5f5f5; border: 1px solid #e5e5e5; color: #07c160; padding: 4px 20px; border-radius: 2px; cursor: pointer; }
+
+        /* 资料弹窗补充 */
+        #overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.3); display: none; z-index: 999; }
+        #profileModal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; background: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.2); border-radius: 4px; display: none; z-index: 1000; padding: 30px; }
+        .profile-btn { width: 100%; padding: 10px; background: var(--wechat-green); color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; }
+        .profile-btn:disabled { background: #ccc; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
 <div class="wechat-window">
-    <div class="win-side"><div class="avatar-main"></div><div class="icon" style="color:var(--wechat-green); text-align:center; cursor:default;">🗨</div></div>
+    <div class="win-side">
+        <div class="avatar-main"></div>
+        <div class="icon" style="color:var(--wechat-green); text-align:center; cursor:default;">🗨</div>
+    </div>
     <div class="win-list">
-        <div class="list-search"><input type="text" placeholder="搜索"></div>
+        <div class="list-search">
+            <input type="text" id="searchInput" placeholder="搜索" autocomplete="off">
+            <div id="searchResultBox">
+                <div class="search-item" onclick="showProfile()">
+                    <div class="contact-avatar" style="background:#2d3436"></div>
+                    <div>
+                        <div class="contact-name">同非桶</div>
+                        <div class="contact-last-msg">微信号: 14019093321</div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="contactList"></div>
     </div>
     <div class="win-chat">
@@ -54,11 +82,23 @@
     </div>
 </div>
 
+<div id="overlay"></div>
+<div id="profileModal">
+    <div style="display: flex; align-items: center;">
+        <div class="contact-avatar" style="width:50px; height:50px; background:#2d3436"></div>
+        <div style="margin-left: 15px;">
+            <div style="font-weight: bold; font-size: 18px;">同非桶</div>
+            <div style="font-size: 12px; color: #999;">微信号: 14019093321</div>
+        </div>
+    </div>
+    <button class="profile-btn" id="addBtn" onclick="sendApply()">添加到通讯录</button>
+    <div style="text-align: center; margin-top: 10px;"><a href="#" onclick="closeProfile()" style="font-size: 12px; color: #999; text-decoration:none;">取消</a></div>
+</div>
+
 <script>
     const chatData = {
         dad: {
-            name: '爸爸',
-            avatar: '#4a90e2',
+            name: '爸爸', avatar: '#4a90e2',
             messages: [
                 { type: 'time', content: '2026年5月3日' },
                 { type: 'other', content: '钱收到了吗？' },
@@ -82,8 +122,7 @@
             ]
         },
         classmate: {
-            name: '老王 (14班)',
-            avatar: '#f5a623',
+            name: '老王 (14班)', avatar: '#f5a623',
             messages: [
                 { type: 'other', content: '救命！！！' },
                 { type: 'other', content: '老顾你写完物理那个受力分析了吗？' },
@@ -95,7 +134,7 @@
                 { type: 'other', content: '妹子们都说你去我就去。' },
                 { type: 'me', content: '真不去，UIC 那个剧本杀世界观还得填坑。' },
                 { type: 'other', content: '又是你的宇宙信息壳... 听着就头大。' },
-                { type: 'other', content: '你是不是最近写代码写傻了？' },
+                { type: 'other', content: '你最近是不是写代码写傻了？' },
                 { type: 'other', content: '下午帮我带瓶冰可乐，回头转你钱。' },
                 { type: 'me', content: '加冰？' },
                 { type: 'other', content: '必须加冰，命是可乐给的。' },
@@ -104,8 +143,7 @@
             ]
         },
         mom: {
-            name: '妈妈',
-            avatar: '#ffb3ba',
+            name: '妈妈', avatar: '#ffb3ba',
             messages: [
                 { type: 'time', content: '11:30' },
                 { type: 'other', content: '儿子，在吃饭吗？' },
@@ -128,9 +166,8 @@
                 { type: 'other', content: '【转账 200元：买水果吃】' },
                 { type: 'other', content: '虽然我知道你大概率不会用这钱去买水果🤔但是总归先转了没错' }
             ]
-        }
-    };
-    uic_group: {
+        },
+        uic_group: {
             name: 'UIC 核心枢纽 (4)', avatar: '#2d3436',
             messages: [
                 { type: 'other', content: '老顾，那个“信息壳”的逻辑闭环断了' },
@@ -149,6 +186,14 @@
                 { type: 'other', content: '写设定太上头，都忘了还要考试了' }
             ]
         },
+        tong: {
+            name: '同非桶', avatar: '#2d3436',
+            messages: [
+                { type: 'recall', content: '已通过申请，现在可以开始聊天了' },
+                { type: 'other', content: '你好。' }
+            ]
+        }
+    };
 
     let currentChatKey = 'dad';
 
@@ -156,6 +201,9 @@
         const list = document.getElementById('contactList');
         list.innerHTML = '';
         Object.keys(chatData).forEach(key => {
+            // 如果是tong，需要检查是否已添加
+            if (key === 'tong' && localStorage.getItem('tong_added') !== 'true') return;
+
             const data = chatData[key];
             const div = document.createElement('div');
             div.className = `contact-item ${key === currentChatKey ? 'active' : ''}`;
@@ -180,6 +228,8 @@
         data.messages.forEach(msg => {
             if (msg.type === 'time') {
                 body.innerHTML += `<div class="msg-time-tag">${msg.content}</div>`;
+            } else if (msg.type === 'recall') {
+                body.innerHTML += `<div class="msg-recall">${msg.content}</div>`;
             } else {
                 const isMe = msg.type === 'me';
                 body.innerHTML += `
@@ -202,7 +252,72 @@
         switchChat(currentChatKey);
     }
 
-    window.onload = () => { renderContactList(); switchChat('dad'); };
+    // --- 功能整合逻辑 ---
+
+    const searchInput = document.getElementById('searchInput');
+    const searchResultBox = document.getElementById('searchResultBox');
+    const profileModal = document.getElementById('profileModal');
+    const overlay = document.getElementById('overlay');
+    const addBtn = document.getElementById('addBtn');
+
+    searchInput.addEventListener('input', (e) => {
+        searchResultBox.style.display = (e.target.value === '14019093321') ? 'block' : 'none';
+    });
+
+    function showProfile() {
+        searchResultBox.style.display = 'none';
+        profileModal.style.display = 'block';
+        overlay.style.display = 'block';
+        if (localStorage.getItem('tong_apply_timestamp')) {
+            updateAddButtonStatus();
+        }
+    }
+
+    function closeProfile() {
+        profileModal.style.display = 'none';
+        overlay.style.display = 'none';
+    }
+
+    function sendApply() {
+        localStorage.setItem('tong_apply_timestamp', Date.now());
+        updateAddButtonStatus();
+        setTimeout(closeProfile, 800);
+        checkStatus();
+    }
+
+    function updateAddButtonStatus() {
+        addBtn.innerText = '已发送申请';
+        addBtn.disabled = true;
+    }
+
+    function checkStatus() {
+        const applyTime = localStorage.getItem('tong_apply_timestamp');
+        const alreadyAdded = localStorage.getItem('tong_added');
+
+        if (alreadyAdded === 'true') {
+            renderContactList();
+            return;
+        }
+
+        if (applyTime) {
+            const elapsed = Date.now() - parseInt(applyTime);
+            const waitTime = 180000; // 3分钟
+
+            if (elapsed >= waitTime) {
+                localStorage.setItem('tong_added', 'true');
+                renderContactList();
+                alert("系统提示：同非桶 已通过你的好友申请。");
+            } else {
+                setTimeout(checkStatus, 5000);
+            }
+        }
+    }
+
+    window.onload = () => { 
+        checkStatus(); 
+        renderContactList(); 
+        switchChat('dad'); 
+    };
 </script>
 </body>
 </html>
