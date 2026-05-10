@@ -4,16 +4,18 @@
     <meta charset="UTF-8">
     <title>千安公墓 - 数字化管理平台</title>
     <style>
-        /* 核心样式保持不变 */
+        /* 仅保留业务逻辑相关的核心样式 */
         :root { --p-bg: #1d2731; --gold: #b8977e; --dark: #333; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
 
+        /* 主区域样式 */
         .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
         .card { background: #fff; padding: 50px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         h2 { border-left: 4px solid var(--gold); padding-left: 15px; font-weight: normal; margin-bottom: 30px; color: var(--dark); font-size: 18px; }
         input { width: 100%; padding: 15px; border: 1px solid #ddd; margin: 20px 0; box-sizing: border-box; outline: none; }
         #search-btn { width: 100%; padding: 15px; background: var(--p-bg); color: var(--gold); border: none; cursor: pointer; font-weight: bold; }
         
+        /* 待处理任务弹窗样式 - 必须保留 */
         .work-popup { position: fixed; bottom: 20px; right: 20px; width: 380px; max-height: 450px; background: #fff; border: 2px solid var(--gold); display: flex; flex-direction: column; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
         .popup-header { background: var(--p-bg); color: var(--gold); padding: 12px 20px; font-weight: bold; font-size: 13px; }
         .popup-content { padding: 20px; overflow-y: auto; font-size: 14px; line-height: 1.8; white-space: pre-wrap; background: #fdfdfd; flex: 1; color: #333; }
@@ -34,7 +36,7 @@
     </div>
 
     <script>
-        // --- 投诉档案数据库初始化逻辑 ---
+        // --- 新增：投诉档案数据库初始化逻辑 ---
         (function initComplaintDatabase() {
             if (!localStorage.getItem('hsd_complaint_data')) {
                 const platforms = ["微博", "小红书", "今日头条", "知乎", "百度贴吧", "大众点评"];
@@ -45,6 +47,7 @@
                 };
 
                 const data = [];
+                // 1. 杂草类 (7条)
                 for(let i=0; i<7; i++) {
                     data.push({
                         time: randomDate(2016, 2026),
@@ -54,6 +57,7 @@
                         reply: "已收悉。计划于下个工作周内指派绿化组进行全面修剪与除草作业。"
                     });
                 }
+                // 2. 卫生类 (6条)
                 for(let i=0; i<6; i++) {
                     data.push({
                         time: randomDate(2016, 2026),
@@ -63,15 +67,18 @@
                         reply: "行政部已收到反馈。已将相关区域列入重点清洁巡查名单，并增加每日消杀频次。"
                     });
                 }
+                // 3. 遗物清理冲突 (4条)
+                const tones = ["怎么回事？", "太不专业了！", "非常愤怒！", "你们必须给个交代！"];
                 for(let i=0; i<4; i++) {
                     data.push({
                         time: randomDate(2016, 2026),
                         platform: platforms[i % platforms.length],
                         id: users[(i+4) % users.length],
-                        content: `${["怎么回事？", "太不专业了！", "非常愤怒！", "你们必须给个交代！"][i]} 清理卫生的时候把我们祭奠的${['假花', '白酒瓶', '香炉', '家书'][i]}给扔了，那是死者的遗物！${i===3 ? "严重抗议这种野蛮清理行为！" : ""}`,
+                        content: `${tones[i]} 清理卫生的时候把我们祭奠的${['假花', '白酒瓶', '香炉', '家书'][i]}给扔了，那是死者的遗物！${i===3 ? "严重抗议这种野蛮清理行为！" : ""}`,
                         reply: "对此深表歉意。因清明祭扫高峰，保洁组误将部分陈放过久的祭品视为杂物清理。现已加强员工岗前培训。"
                     });
                 }
+                // 4. 特殊彩蛋 (1条)
                 data.push({
                     time: "2024-04-20",
                     platform: "哔哩哔哩",
@@ -81,37 +88,50 @@
                 });
 
                 localStorage.setItem('hsd_complaint_data', JSON.stringify(data));
+                console.log("档案数据库已冷冻保存。");
             }
         })();
+        // --- 初始化结束 ---
 
         const TASK_POOL = [
-            "陈建（阿建）...", // 简略处理以节省空间
-            "果果.......", 
-            "谁也没想到，老周..."
+            "陈建（阿建）身体挺不错的，没想到在家里就这么静静地走了。不知道是什么原因？之前摔跤后没有骨折，没有扭伤，我一直都觉得阿建身体很好，没有我们这个年纪常有的骨质疏松。也经常锻炼，每天都是走两万步以上，也很鼓舞人，可惜的就是没有一个好妻子陪伴着他，也无儿无女。还记得阿建当时是镇里唯一一个考上大学的人，可风光了，他是个好人。陈建是个好人，不是说他做过舍身为人的大善事，但是他一直守着本分，不越界；每当碰见有人需要帮助时，灰色的瞳孔总是让人感到安心，大家和他相处都很舒服。致：灰色的阿建。",
+            "果果.......是妈妈不好，要是妈妈当时没有失去理智就好了，是妈妈让你伤心了，但是孩子，这个世界太苦，你也太苦，这个石人病太折磨人了..................嗯......这对你来说也许也是一件好事，但是妈妈要带着这份愧疚活下去了，替你的；宋涵是个很好的同学，她人挺高的，成绩好，是个好班长，做事认真，客观。记得那一次，我差点被冤枉了，是她坚持调查下去我才被还回清白，要是她熟视无睹的话，就没有现在的我。发生这件事我也感到很伤心，她没有叫我的外号“马桶”，而是正常地直呼我的大名，干练的声音和一声声“小同”始终在我的脑海，宋涵，再见，祝你好运。",
+            "谁也没想到，老周，周诚，会在盛夏的午后，蜷缩在那个没有冷气的维修间里冻死。这听起来像个笑话，但他走的时候，身上确实覆盖着一层薄薄的白色霜华。我一直觉得老周是个怪人，虽然他身体看起来很硬朗，从不感冒，但他那双手摸起来总是像井水一样冰凉，夏天和他握手甚至能感到一阵寒意。老周是个实实在在的好人。记得那年学校电路短路引发小火灾，是他冒着烟冲进去抢救档案。大家后来问他怕不怕烫，他只是搓了搓那双发蓝的指甲盖，憨厚地笑笑说：“我这人天生怕热不怕火。”他这辈子没结过婚，守着那堆零件过日子，从不占人便宜。医生私下里嘀咕，说老周的代谢速度慢得惊人，这或许解释了他为什么总是那么冷静、那么凉。"
         ];
 
         function find() {
             let v = document.getElementById('pass').value.trim();
             if(!v) return;
 
-            // 新增逻辑：匹配特殊档案号 QA-3
+            // --- 查找逻辑增加：QA-3 ---
             if (v === "QA-3") {
                 window.open("mrz.html", "_blank");
                 return;
             }
 
+            // 获取本地存储的档案库
             let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
+            
+            // 搜索逻辑：匹配 indexID（档案号）或 name（姓名）
             let target = archives.find(a => a.indexID === v || a.name === v);
 
             if (target) {
+                // 命中数据库，跳转至详情页并携带姓名参数
                 window.location.href = "detail.html?name=" + encodeURIComponent(target.name);
             } else {
+                // 未命中数据库，按原逻辑尝试访问静态页面
                 window.location.href = encodeURIComponent(v) + ".html";
             }
         }
 
         function checkNewTask() {
-            let archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
+            let archives = [];
+            try {
+                archives = JSON.parse(localStorage.getItem('cemetery_files') || '[]');
+            } catch(e) {
+                archives = [];
+            }
+            
             const now = Date.now();
             const cooldown = 180000; 
 
@@ -119,15 +139,23 @@
             if (localStorage.getItem('current_task_content')) return;
 
             let storedStartTime = localStorage.getItem('task_cooldown_start');
+
             if (!storedStartTime) {
                 localStorage.setItem('task_cooldown_start', now);
+                console.log("新任务计时开始...");
                 return;
             }
 
-            if (now - parseInt(storedStartTime) >= cooldown) {
+            const startTime = parseInt(storedStartTime);
+            const elapsed = now - startTime;
+
+            if (elapsed >= cooldown) {
                 localStorage.setItem('current_task_content', TASK_POOL[archives.length]);
                 localStorage.removeItem('task_cooldown_start');
                 location.reload(); 
+            } else {
+                const remaining = Math.round((cooldown - elapsed) / 1000);
+                console.log(`距离下个任务下发还剩: ${remaining} 秒`);
             }
         }
 
