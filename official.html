@@ -4,19 +4,35 @@
     <meta charset="UTF-8">
     <title>千安园 - 每一份生命都值得被温柔对待</title>
     <style>
-        :root { --gold-light: #d4af37; --text: #4a4a4a; --bg: #ffffff; }
+        :root { --gold-light: #d4af37; --text: #4a4a4a; --bg: #ffffff; --dark-blue: #1d2731; }
         body { margin: 0; font-family: "Microsoft YaHei", "Source Han Serif CN", serif; color: var(--text); background: var(--bg); line-height: 1.8; }
         
         /* 导航栏 */
         nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 10% ; border-bottom: 1px solid #eee; position: sticky; top: 0; background: #fff; z-index: 100; }
         .logo { font-size: 24px; font-weight: bold; color: var(--gold-light); letter-spacing: 2px; }
+        .nav-links { display: flex; align-items: center; }
         .nav-links a { margin-left: 30px; text-decoration: none; color: #666; font-size: 14px; transition: color 0.3s; }
         .nav-links a:hover { color: var(--gold-light); }
+
+        /* 登录按钮样式 */
+        .login-btn { margin-left: 30px; padding: 6px 20px; border: 1px solid var(--gold-light); color: var(--gold-light); border-radius: 20px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .login-btn:hover { background: var(--gold-light); color: #fff; }
 
         /* 英雄区 */
         .hero { height: 60vh; background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .hero h1 { font-size: 48px; color: #333; margin-bottom: 10px; font-weight: 300; }
         .hero p { font-size: 18px; letter-spacing: 5px; color: var(--gold-light); }
+
+        /* 登录弹窗（模态框） */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #fff; padding: 40px; border-radius: 8px; width: 320px; position: relative; text-align: center; }
+        .modal-content h2 { margin-top: 0; color: var(--dark-blue); font-size: 20px; margin-bottom: 25px; }
+        .close-modal { position: absolute; top: 15px; right: 15px; cursor: pointer; color: #aaa; font-size: 20px; }
+        
+        .login-form input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; outline: none; }
+        .login-form input:focus { border-color: var(--gold-light); }
+        .submit-btn { width: 100%; padding: 12px; background: var(--dark-blue); color: var(--gold-light); border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .error-msg { color: #c0392b; font-size: 12px; margin-top: -10px; margin-bottom: 10px; display: none; }
 
         /* 内容板块 */
         .content-section { padding: 80px 15%; text-align: center; }
@@ -27,7 +43,6 @@
         .card:hover { transform: translateY(-10px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .card h3 { color: var(--gold-light); margin-bottom: 15px; }
         
-        /* 页脚 */
         footer { background: #333; color: #ccc; padding: 40px 10%; font-size: 12px; text-align: center; }
     </style>
 </head>
@@ -40,8 +55,22 @@
         <a href="#">园区景观</a>
         <a href="#">礼仪服务</a>
         <a href="#">在线纪念</a>
+        <div class="login-btn" onclick="toggleModal(true)">内部登录</div>
     </div>
 </nav>
+
+<div class="modal" id="loginModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="toggleModal(false)">&times;</span>
+        <h2>内部行政管理系统</h2>
+        <div class="login-form">
+            <input type="text" id="username" placeholder="管理员姓名" autocomplete="off">
+            <input type="password" id="password" placeholder="授权密码">
+            <div id="errorTip" class="error-msg">用户名或密码错误</div>
+            <button class="submit-btn" onclick="handleLogin()">进入系统</button>
+        </div>
+    </div>
+</div>
 
 <div class="hero">
     <h1>对生命的敬畏，对记忆的永恒</h1>
@@ -50,7 +79,7 @@
 
 <div class="content-section">
     <h2>人文关怀</h2>
-    <p>在千安，我们相信死亡不是生命的终点，而是化作星辰，永远守护在亲人身旁。我们的园区设计融合自然之美与人文之光，旨在为您提供一个追思、缅怀、与心灵对话的静谧空间。</p>
+    <p>在千安，我们相信死亡不是生命的终点，而是化作星辰，永远守护在亲人身旁。</p>
     
     <div class="grid">
         <div class="card">
@@ -73,6 +102,37 @@
     <p>许可证号：QA-RE-2024001 | 咨询热线：400-000-0000</p>
     <p style="opacity: 0.3;">* 我们承诺：所有档案录入均经过严格观测与标准化处理 *</p>
 </footer>
+
+<script>
+    function toggleModal(show) {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = show ? 'flex' : 'none';
+        if (!show) {
+            document.getElementById('errorTip').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+    }
+
+    function handleLogin() {
+        const user = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
+        const errorTip = document.getElementById('errorTip');
+
+        // 这里设置你的逻辑验证，比如之前提到的顾叙
+        if (user === "顾叙" && pass === "UIC") {
+            window.open("administrator.html", "_blank");
+        } else {
+            errorTip.style.display = 'block';
+        }
+    }
+
+    // 点击模态框背景关闭
+    window.onclick = function(event) {
+        const modal = document.getElementById('loginModal');
+        if (event.target == modal) toggleModal(false);
+    }
+</script>
 
 </body>
 </html>
