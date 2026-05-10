@@ -14,24 +14,41 @@
         .nav-links a { margin-left: 30px; text-decoration: none; color: #666; font-size: 14px; transition: color 0.3s; }
         .nav-links a:hover { color: var(--gold-light); }
 
-        /* 登录按钮样式 */
         .login-btn { margin-left: 30px; padding: 6px 20px; border: 1px solid var(--gold-light); color: var(--gold-light); border-radius: 20px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
         .login-btn:hover { background: var(--gold-light); color: #fff; }
+
+        /* 管理员浮窗 */
+        .admin-float-btn { 
+            position: fixed; 
+            bottom: 30px; 
+            right: 30px; 
+            padding: 12px 24px; 
+            background: var(--dark-blue); 
+            color: var(--gold-light); 
+            border: 2px solid var(--gold-light); 
+            border-radius: 50px; 
+            cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            z-index: 9999; 
+            display: none; /* 默认隐藏 */
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .admin-float-btn:hover { transform: scale(1.05); background: #2c3e50; }
 
         /* 英雄区 */
         .hero { height: 60vh; background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .hero h1 { font-size: 48px; color: #333; margin-bottom: 10px; font-weight: 300; }
         .hero p { font-size: 18px; letter-spacing: 5px; color: var(--gold-light); }
 
-        /* 登录弹窗（模态框） */
+        /* 登录弹窗 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: #fff; padding: 40px; border-radius: 8px; width: 320px; position: relative; text-align: center; }
         .modal-content h2 { margin-top: 0; color: var(--dark-blue); font-size: 20px; margin-bottom: 25px; }
         .close-modal { position: absolute; top: 15px; right: 15px; cursor: pointer; color: #aaa; font-size: 20px; }
         
         .login-form input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; outline: none; }
-        .login-form input:focus { border-color: var(--gold-light); }
-        .submit-btn { width: 100%; padding: 12px; background: var(--dark-blue); color: var(--gold-light); border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .submit-btn { width: 100%; padding: 12px; background: var(--dark-blue); color: var(--gold-light); border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .error-msg { color: #c0392b; font-size: 12px; margin-top: -10px; margin-bottom: 10px; display: none; }
 
         /* 内容板块 */
@@ -66,10 +83,14 @@
         <div class="login-form">
             <input type="text" id="username" placeholder="管理员姓名" autocomplete="off">
             <input type="password" id="password" placeholder="授权密码">
-            <div id="errorTip" class="error-msg">用户名或密码错误</div>
+            <div id="errorTip" class="error-msg">身份验证失败</div>
             <button class="submit-btn" onclick="handleLogin()">进入系统</button>
         </div>
     </div>
+</div>
+
+<div id="adminFloatBtn" class="admin-float-btn" onclick="window.open('administrator_official.html', '_blank')">
+    ⚙️ 网页管理系统
 </div>
 
 <div class="hero">
@@ -100,10 +121,17 @@
 <footer>
     <p>千安公墓管理有限公司 版权所有 © 2026</p>
     <p>许可证号：QA-RE-2024001 | 咨询热线：400-000-0000</p>
-    <p style="opacity: 0.3;">* 我们承诺：所有档案录入均经过严格观测与标准化处理 *</p>
+    <p style="opacity: 0.3;">* 所有档案录入均经过严格观测与标准化处理 *</p>
 </footer>
 
 <script>
+    // 页面加载时检查登录状态
+    window.onload = function() {
+        if (localStorage.getItem("admin_access") === "true") {
+            document.getElementById('adminFloatBtn').style.display = 'block';
+        }
+    };
+
     function toggleModal(show) {
         const modal = document.getElementById('loginModal');
         modal.style.display = show ? 'flex' : 'none';
@@ -119,15 +147,19 @@
         const pass = document.getElementById('password').value;
         const errorTip = document.getElementById('errorTip');
 
-        // 这里设置你的逻辑验证，比如之前提到的顾叙
         if (user === "顾叙" && pass === "UIC") {
-            window.open("administrator_official.html", "_blank");
+            // 存入 localStorage
+            localStorage.setItem("admin_access", "true");
+            // 显示浮窗
+            document.getElementById('adminFloatBtn').style.display = 'block';
+            // 关闭模态框
+            toggleModal(false);
         } else {
             errorTip.style.display = 'block';
         }
     }
 
-    // 点击模态框背景关闭
+    // 点击背景关闭
     window.onclick = function(event) {
         const modal = document.getElementById('loginModal');
         if (event.target == modal) toggleModal(false);
