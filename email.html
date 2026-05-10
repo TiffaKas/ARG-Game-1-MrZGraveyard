@@ -84,10 +84,10 @@
         let messageHistory = {
             "杨先生": [{type: 'msg-left', content: "你好，我是杨先生。欢迎入职千安公墓。有问题可以随时联系我。"}],
             "综合管理部 - 老张": [{type: 'msg-left', content: "你好，小伙子。公司最近在搞文化建设，建议你参与一下：<br><br><a href='activity.html' target='_blank' style='color:#2980b9; font-weight:bold; text-decoration:underline;'>【置顶】关于鼓励员工给公司提建议的通知</a>"}],
-            "财务部 - 赵姐": [{type: 'msg-left', content: "你是新来的小顾？工资卡信息记得尽快录入。"}],
-            "人力资源部 - 周姐": [{type: 'msg-left', content: "入职合同已经在系统里锁定了，有问题记得在办公时间内咨询。"}],
-            "后勤维修 - 马师傅": [{type: 'msg-left', content: "巡逻路上要是发现设施坏了，记得直接在系统报修。"}],
-            "档案室 - 小李": [{type: 'msg-left', content: "查阅纸质档案需要书面申请，电子档只有权限账户可见。"}],
+            "财务部 - 赵姐": [{type: 'msg-left', content: "小顾是吧？我是财务部的赵姐。入职后的工资卡信息录入了吗？记得下周一前发我。"}],
+            "人力资源部 - 周姐": [{type: 'msg-left', content: "你好，关于入职合同和社保缴纳的政策，可以查阅员工手册。办公时间外不处理私事。"}],
+            "后勤维修 - 马师傅": [{type: 'msg-left', content: "小顾，巡逻的时候注意安全。要是发现哪块路灯不亮了，记得在系统里点个报修。"}],
+            "档案室 - 小李": [{type: 'msg-left', content: "档案室实行准入制度。借阅纸质卷宗需要提前一天申请，并由主管联签。"}],
             "卫先生 - 审计部": []
         };
 
@@ -153,24 +153,28 @@
 
             setTimeout(() => {
                 document.getElementById('typingIndicator').style.display = 'none';
-                let reply = "收到了，我会反馈给领导的。";
+                let reply = "收到。请继续执行日常巡视任务。";
                 
-                // 统一口径回复逻辑
-                if (text.includes("成本") || text.includes("贵") || text.includes("万")) {
-                    if (currentContact === "财务部 - 赵姐") reply = "成本账目是受法律监管的，每一笔开支都有迹可循，请专注你份内的事。";
-                    else if (currentContact === "人力资源部 - 周姐") reply = "周姐建议你，新员工的首要任务是融入，而不是质疑公司的商业定价。";
-                    else if (currentContact === "后勤维修 - 马师傅") reply = "小顾，那些石材养护一次的钱能买半辆车，成本高着呢。";
-                    else if (currentContact === "档案室 - 小李") reply = "成本核算档案属于保密级别，没有副总以上签字无法查阅。";
-                }
+                // 仅在用户提及特定敏感词时，普通同事才开启“防备模式”
+                const isSensitive = text.includes("成本") || text.includes("贵") || text.includes("万") || text.includes("钱");
 
-                if (currentContact === "杨先生") {
-                    const hit = keywords.some(k => text.includes(k));
-                    reply = hit ? standardReply : (text.includes("成本") ? "关于成本，审计部卫先生会直接答复你。" : "请查阅岗位说明书。");
-                } else if (currentContact === "卫先生 - 审计部") {
-                    if (text.includes("但是成本也没有那么高吧")) {
-                        reply = "很多新人有时都会问类似的问题，你也不是第一个，这个建议会被听进去的。";
-                    } else {
-                        reply = "审计的职责在于确保流程的闭环。去档案室看你该看的就行。";
+                if (isSensitive) {
+                    if (currentContact === "财务部 - 赵姐") reply = "成本账目由专门的审计小组对接，普通员工无权过问。请知悉。";
+                    else if (currentContact === "人力资源部 - 周姐") reply = "周姐多说一句，职场新人最重要的品质是执行力。关于公司的商业机密，建议不要随意打听。";
+                    else if (currentContact === "后勤维修 - 马师傅") reply = "小顾啊，这园子里的一草一木养护起来都是烧钱的活。你做好巡逻就行，别操心这些。";
+                    else if (currentContact === "档案室 - 小李") reply = "资产明细和成本核算属于机密档案，我这里的权限也看不了。";
+                    else if (currentContact === "杨先生") reply = "关于你反馈的成本疑点，审计部卫先生会直接与你沟通。";
+                } else {
+                    // 非敏感词的日常回复
+                    if (currentContact === "杨先生") {
+                        const hit = keywords.some(k => text.includes(k));
+                        reply = hit ? standardReply : "情况已知晓。";
+                    } else if (currentContact === "卫先生 - 审计部") {
+                        if (text.includes("但是成本也没有那么高吧")) {
+                            reply = "很多新人有时都会问类似的问题，你也不是第一个，这个建议会被听进去的。";
+                        } else {
+                            reply = "审计的职责在于确保流程的闭环。去档案室看你该看的就行。";
+                        }
                     }
                 }
 
@@ -191,7 +195,6 @@
         function checkAuditStatus() {
             const state = localStorage.getItem('wei_contact_state');
             const startTime = localStorage.getItem('audit_submit_timestamp');
-            // 如果处于等待状态且时间超过60秒，或者已经是接收状态
             if (state === 'waiting' && startTime && (Date.now() - parseInt(startTime) >= 60000)) {
                 createWeiContact(true);
             } else if (state === 'received') {
@@ -207,7 +210,6 @@
             weiDiv.className = isNew ? "contact-item active-new" : "contact-item";
             weiDiv.onclick = function() { switchContact('卫先生 - 审计部', this); this.classList.remove('active-new'); };
             weiDiv.innerHTML = `<div class="avatar" style="background:#c0392b;">卫</div><div><div style="font-weight:bold;">卫先生</div><div style="font-size:11px; color:#999;">审计部</div></div>`;
-            // 插入在杨先生之后
             sidebar.insertBefore(weiDiv, sidebar.children[2]);
             localStorage.setItem('wei_contact_state', 'received');
         }
