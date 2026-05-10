@@ -30,7 +30,7 @@
             cursor: pointer; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
             z-index: 9999; 
-            display: none; /* 默认隐藏 */
+            display: none; 
             font-weight: bold;
             transition: all 0.3s;
         }
@@ -60,111 +60,4 @@
         .card:hover { transform: translateY(-10px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .card h3 { color: var(--gold-light); margin-bottom: 15px; }
         
-        footer { background: #333; color: #ccc; padding: 40px 10%; font-size: 12px; text-align: center; }
-    </style>
-</head>
-<body>
-
-<nav>
-    <div class="logo">千安园 | QIANAN PARK</div>
-    <div class="nav-links">
-        <a href="#">关于我们</a>
-        <a href="#">园区景观</a>
-        <a href="#">礼仪服务</a>
-        <a href="#">在线纪念</a>
-        <div class="login-btn" onclick="toggleModal(true)">内部登录</div>
-    </div>
-</nav>
-
-<div class="modal" id="loginModal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="toggleModal(false)">&times;</span>
-        <h2>内部行政管理系统</h2>
-        <div class="login-form">
-            <input type="text" id="username" placeholder="管理员姓名" autocomplete="off">
-            <input type="password" id="password" placeholder="授权密码">
-            <div id="errorTip" class="error-msg">身份验证失败</div>
-            <button class="submit-btn" onclick="handleLogin()">进入系统</button>
-        </div>
-    </div>
-</div>
-
-<div id="adminFloatBtn" class="admin-float-btn" onclick="window.open('administrator_official.html', '_blank')">
-    ⚙️ 网页管理系统
-</div>
-
-<div class="hero">
-    <h1>对生命的敬畏，对记忆的永恒</h1>
-    <p>千安园：为每一个灵魂寻找宁静的归宿</p>
-</div>
-
-<div class="content-section">
-    <h2>人文关怀</h2>
-    <p>在千安，我们相信死亡不是生命的终点，而是化作星辰，永远守护在亲人身旁。</p>
-    
-    <div class="grid">
-        <div class="card">
-            <h3>定制化墓位</h3>
-            <p>根据逝者的生平特点，提供个性化石碑雕刻与周边绿化设计。</p>
-        </div>
-        <div class="card">
-            <h3>全天候管家</h3>
-            <p>专业的维护团队，确保每一处角落都洁净如新，草木常青。</p>
-        </div>
-        <div class="card">
-            <h3>数字云纪念</h3>
-            <p>通过数字化档案，您可以随时随地查看亲人的生平点滴。（系统升级中）</p>
-        </div>
-    </div>
-</div>
-
-<footer>
-    <p>千安公墓管理有限公司 版权所有 © 2026</p>
-    <p>许可证号：QA-RE-2024001 | 咨询热线：400-000-0000</p>
-    <p style="opacity: 0.3;">* 所有档案录入均经过严格观测与标准化处理 *</p>
-</footer>
-
-<script>
-    // 页面加载时检查登录状态
-    window.onload = function() {
-        if (localStorage.getItem("admin_access") === "true") {
-            document.getElementById('adminFloatBtn').style.display = 'block';
-        }
-    };
-
-    function toggleModal(show) {
-        const modal = document.getElementById('loginModal');
-        modal.style.display = show ? 'flex' : 'none';
-        if (!show) {
-            document.getElementById('errorTip').style.display = 'none';
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-        }
-    }
-
-    function handleLogin() {
-        const user = document.getElementById('username').value;
-        const pass = document.getElementById('password').value;
-        const errorTip = document.getElementById('errorTip');
-
-        if (user === "顾叙" && pass === "UIC") {
-            // 存入 localStorage
-            localStorage.setItem("admin_access", "true");
-            // 显示浮窗
-            document.getElementById('adminFloatBtn').style.display = 'block';
-            // 关闭模态框
-            toggleModal(false);
-        } else {
-            errorTip.style.display = 'block';
-        }
-    }
-
-    // 点击背景关闭
-    window.onclick = function(event) {
-        const modal = document.getElementById('loginModal');
-        if (event.target == modal) toggleModal(false);
-    }
-</script>
-
-</body>
-</html>
+        footer { background: #333; color: #ccc; padding: 40px 10
