@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>系统维护 - 千安园内部行政管理系统</title>
+    <style>
+        :root {
+            --gold-light: #d4af37;
+            --text-grey: #666;
+            --bg-white: #ffffff;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-white);
+            font-family: "Microsoft YaHei", sans-serif;
+            overflow: hidden;
+        }
+
+        /* 维护界面容器 */
+        .maintenance-container {
+            text-align: center;
+            z-index: 10;
+        }
+
+        /* 齿轮自转动画 */
+        .icon {
+            font-size: 60px;
+            color: var(--gold-light);
+            margin-bottom: 20px;
+            display: inline-block; /* 必须是行内块或块状才能旋转 */
+            animation: rotate_gear 4s infinite linear; /* 4秒一圈，线性匀速 */
+        }
+
+        @keyframes rotate_gear {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        p {
+            color: var(--text-grey);
+            font-size: 14px;
+        }
+
+        /* 进度条动画 */
+        .loading-bar {
+            width: 200px;
+            height: 2px;
+            background: #eee;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+        }
+        .loading-bar::after {
+            content: '';
+            position: absolute;
+            left: -50%;
+            width: 50%;
+            height: 100%;
+            background: var(--gold-light);
+            animation: loading 2s infinite linear;
+        }
+        @keyframes loading {
+            0% { left: -50%; }
+            100% { left: 100%; }
+        }
+
+        /* 隐藏的留言 */
+        .hidden-message {
+            position: fixed;
+            bottom: 10%;
+            right: 10%;
+            color: #ffffff; 
+            font-size: 12px;
+            user-select: text; 
+            cursor: default;
+            z-index: 1;
+        }
+
+        .hidden-message::selection {
+            background: var(--gold-light);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="maintenance-container">
+        <div class="icon">⚙️</div>
+        <h1>界面紧急维护中</h1>
+        <p>INTERNAL SYSTEM EMERGENCY MAINTENANCE</p>
+        <div class="loading-bar"></div>
+        <p style="font-size: 12px; opacity: 0.6;">正在尝试重新建立数据库连接...</p>
+    </div>
+
+    <div class="hidden-message">
+        叙，一个人不够，我试过了......
+    </div>
+
+</body>
+</html>
