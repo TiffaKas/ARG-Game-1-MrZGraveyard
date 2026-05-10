@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>档案详情 - [未授权访问] Mr Z</title>
+    <style>
+        :root { --gold: #b8977e; --border: #dcdfe6; --dark: #333; --p-bg: #1d2731; --warning: #8b0000; }
+        body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
+        .main { flex: 1; overflow-y: auto; display: flex; align-items: flex-start; justify-content: center; padding: 40px; }
+        .record-card { width: 100%; max-width: 850px; background: #fff; border: 1px solid var(--border); padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); position: relative; }
+        
+        /* 顶部警告边框 */
+        .record-card::before { content: "CLASSIFIED / TOP SECRET"; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: var(--warning); color: #fff; font-size: 8px; text-align: center; line-height: 5px; letter-spacing: 5px; }
+
+        .section-header { border-left: 4px solid var(--warning); padding-left: 15px; font-size: 20px; font-weight: normal; margin-bottom: 40px; color: var(--dark); letter-spacing: 1px; }
+        .main-info { display: flex; gap: 40px; margin-bottom: 30px; border-bottom: 1px solid #f0f0f0; padding-bottom: 30px; }
+        .photo-box { width: 160px; text-align: center; }
+        .photo-box img { width: 160px; height: 210px; object-fit: cover; border: 1px solid #ddd; filter: contrast(1.5) brightness(0.8) grayscale(100%); transition: all 0.5s; }
+        .photo-box img:hover { filter: contrast(1.2) brightness(1.1) invert(100%); }
+        
+        .info-table { flex: 1; display: grid; grid-template-columns: 100px 1fr 100px 1fr; border-top: 1px solid #ebeef5; border-left: 1px solid #ebeef5; align-content: start; }
+        .info-table div { padding: 15px; border-right: 1px solid #ebeef5; border-bottom: 1px solid #ebeef5; font-size: 14px; }
+        .t-label { background: #fafafa; color: #606266; font-weight: bold; }
+        
+        .content-title { font-weight: bold; margin-bottom: 15px; font-size: 14px; color: var(--warning); display: flex; align-items: center; }
+        .content-title::before { content: ""; width: 8px; height: 8px; background: var(--warning); margin-right: 10px; }
+        .content-box { background: #fcfcfc; border: 1px solid #eee; padding: 20px; font-size: 14px; line-height: 2; color: #222; min-height: 80px; margin-bottom: 30px; white-space: pre-wrap; text-align: justify; font-family: "Courier New", Courier, monospace; }
+        
+        /* 乱码样式控制 */
+        .glitch-text { color: #999; word-break: break-all; filter: blur(0.3px); }
+    </style>
+</head>
+<body>
+    <script src="sidebar.js"></script>
+    <div class="main">
+        <div class="record-card">
+            <div class="section-header">人员电子档案明细 - [核心加密层]</div>
+            
+            <div class="main-info">
+                <div class="photo-box">
+                    <img id="v-photo" src="https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=300&q=50" alt="认知危害警告">
+                    <div style="font-size:11px; color:var(--warning); margin-top:8px; font-weight: bold;">[认知危害检测：通过]</div>
+                </div>
+                <div class="info-table">
+                    <div class="t-label">姓名</div><div id="v-name">Mr Z (Unknown)</div>
+                    <div class="t-label">档案编号</div><div id="v-id" style="font-family: monospace; color: var(--warning); font-weight: bold;">QA-ERROR-NULL-3</div>
+                    <div class="t-label">录入时间</div><div id="v-time">1970-01-01 00:00:00</div>
+                    <div class="t-label">数据分类</div><div>[已拒绝访问]</div>
+                </div>
+            </div>
+
+            <div class="content-title">生理特征提取 (Physical Observation - SCP Protocol)</div>
+            <div class="content-box" id="v-bio">
+项目编号：MRZ-03
+项目等级：Keter / 信息性危害
+描述：个体表现为一名成年男性，但其物理参数在不同观察者视阈下表现出强烈的【数据删除】波动。
+生理特征摘要：
+1. 观察到其瞳孔呈现不稳定的灰色螺旋状，符合“模拟塌陷”后的信息残余表现。
+2. 皮肤表面温度恒定保持在 $0^\circ\text{C}$，无生物代谢产生的热能散失。
+3. 任何试图对其骨骼密度进行 X 光扫描的操作均导致设备输出：[NULL_DATA]。
+备注：该个体不应被视为“遗体”，而应视为某种物理法则的“占位符”。
+            </div>
+
+            <div class="content-title">生平简述 (Administrative Description - Encrypted)</div>
+            <div class="glitch-text content-box" id="v-desc">
+ðŸ§™â€â™‚ï¸â–‘â–’â–“â–ˆ 01101000 01100101 01101100 01110000 00100000 01101101 01100101
+ÎžÎ£Î©Î”_Î¦_Â§Â¶_Â±â‰ˆâˆž_â€ â€¡_â™¦â™£â™¥â™ _Â¥â‚¬Â£Â¢
+[数据损坏] 叙，这不是结束。â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+LOREM IPSUM DOLOâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ERR_CONNECTION_TIMED_OUT: The entity "Z" has exceeded the information limit of this terminal.
+[ä½ ä¸è¯¥æ¥åˆ°è¿™é‡Œ]
+            </div>
+        </div>
+    </div>
+</body>
+</html>
