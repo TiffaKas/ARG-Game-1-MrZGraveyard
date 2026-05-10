@@ -170,11 +170,9 @@
                         const hit = keywords.some(k => text.includes(k));
                         reply = hit ? standardReply : "情况已知晓。";
                     } else if (currentContact === "卫先生 - 审计部") {
-                        if (text.includes("但是成本也没有那么高吧")) {
+                        if (text.includes("但是成本也没有那么高吧？")) {
                             reply = "很多新人有时都会问类似的问题，你也不是第一个，这个建议会被听进去的。";
-                        } else {
-                            reply = "审计的职责在于确保流程的闭环。去档案室看你该看的就行。";
-                        }
+                        } 
                     }
                 }
 
