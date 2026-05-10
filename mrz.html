@@ -84,7 +84,7 @@
         
         document.addEventListener('selectionchange', () => {
             const selection = window.getSelection().toString();
-            if (selection.length > 0) {
+            if (selection.length > 5) {
                 window.San -= 1;
                 localStorage.setItem('user_san_value', window.San);
                 
