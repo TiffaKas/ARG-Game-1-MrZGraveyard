@@ -2,47 +2,47 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>档案详情 - [未授权访问] Mr Z</title>
+    <title>档案详情 - 千安公墓管理平台</title>
     <style>
-        :root { --gold: #b8977e; --border: #dcdfe6; --dark: #333; --p-bg: #1d2731; --warning: #8b0000; }
+        /* 恢复到与 detail.html 一致的朴素样式，去除所有特殊警告装饰 */
+        :root { --gold: #b8977e; --border: #dcdfe6; --dark: #333; --p-bg: #1d2731; }
         body { margin: 0; font-family: "SimSun", serif; background-color: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
         
-        /* 黑屏转场蒙版 */
+        /* 保持初始黑屏转场 */
         #black-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 10000; transition: opacity 0.5s;
         }
 
         .main { flex: 1; overflow-y: auto; display: flex; align-items: flex-start; justify-content: center; padding: 40px; }
-        .record-card { width: 100%; max-width: 850px; background: #fff; border: 1px solid var(--border); padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); position: relative; }
-        .record-card::before { content: "CLASSIFIED / TOP SECRET"; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: var(--warning); color: #fff; font-size: 8px; text-align: center; line-height: 5px; letter-spacing: 5px; }
-
-        .section-header { border-left: 4px solid var(--warning); padding-left: 15px; font-size: 20px; font-weight: normal; margin-bottom: 40px; color: var(--dark); letter-spacing: 1px; }
-        .main-info { display: flex; gap: 40px; margin-bottom: 30px; border-bottom: 1px solid #f0f0f0; padding-bottom: 30px; }
+        .record-card { width: 100%; max-width: 850px; background: #fff; border: 1px solid var(--border); padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .section-header { border-left: 4px solid var(--gold); padding-left: 15px; font-size: 20px; font-weight: normal; margin-bottom: 40px; color: var(--dark); letter-spacing: 1px; }
         
+        .main-info { display: flex; gap: 40px; margin-bottom: 30px; border-bottom: 1px solid #f0f0f0; padding-bottom: 30px; }
         .info-table { flex: 1; display: grid; grid-template-columns: 100px 1fr 100px 1fr; border-top: 1px solid #ebeef5; border-left: 1px solid #ebeef5; align-content: start; }
         .info-table div { padding: 15px; border-right: 1px solid #ebeef5; border-bottom: 1px solid #ebeef5; font-size: 14px; }
         .t-label { background: #fafafa; color: #606266; font-weight: bold; }
         
-        .content-title { font-weight: bold; margin-bottom: 15px; font-size: 14px; color: var(--warning); display: flex; align-items: center; }
-        .content-title::before { content: ""; width: 8px; height: 8px; background: var(--warning); margin-right: 10px; }
+        .content-title { font-weight: bold; margin-bottom: 15px; font-size: 14px; color: var(--p-bg); display: flex; align-items: center; }
+        .content-title::before { content: ""; width: 8px; height: 8px; background: var(--gold); margin-right: 10px; }
         
-        /* 核心逻辑：双层叠加容器 */
         .content-box { 
-            position: relative; background: #fcfcfc; border: 1px solid #eee; padding: 20px; 
-            font-size: 14px; line-height: 2; min-height: 120px; margin-bottom: 30px; text-align: justify; 
+            background: #fcfcfc; border: 1px solid #eee; padding: 20px; 
+            font-size: 14px; line-height: 2; color: #444; min-height: 80px; margin-bottom: 30px; 
+            white-space: pre-wrap; text-align: justify; 
         }
 
-        /* 黑色常规层 */
-        .layer-normal { color: #222; z-index: 2; position: relative; pointer-events: none; }
-        /* 白色机密层：完全不可见，除非选中 */
-        .layer-secret { 
-            color: #fff; position: absolute; top: 20px; left: 20px; right: 20px; z-index: 3; 
-            user-select: text; white-space: pre-wrap; word-break: break-all;
+        /* 机密信息：颜色设为背景色（隐形），紧跟在段落后 */
+        .secret-inline { 
+            color: #fcfcfc; /* 与 content-box 背景色一致 */
+            user-select: text;
         }
-        .layer-secret::selection { background: var(--warning); color: #fff; }
 
-        .glitch-text { color: #999; filter: blur(0.3px); }
+        /* 选中时的反馈：San值系统触感 */
+        .secret-inline::selection { 
+            background: #333; 
+            color: #fff; 
+        }
     </style>
 </head>
 <body>
@@ -50,39 +50,22 @@
 
     <div class="main">
         <div class="record-card">
-            <div class="section-header">人员电子档案明细 - [权限溢出]</div>
+            <div class="section-header">人员电子档案明细</div>
             
             <div class="main-info">
                 <div class="info-table">
-                    <div class="t-label">姓名</div><div>Mr Z (疑似：卫某)</div>
-                    <div class="t-label">档案编号</div><div style="font-family: monospace; color: var(--warning); font-weight: bold;">QA-ERROR-NULL-3</div>
+                    <div class="t-label">姓名</div><div>Mr Z (卫某)</div>
+                    <div class="t-label">档案编号</div><div style="font-family: monospace; color: var(--gold); font-weight: bold;">QA-ERROR-NULL-3</div>
                     <div class="t-label">录入时间</div><div>1970-01-01 00:00:00</div>
-                    <div class="t-label">数据分类</div><div>[已拒绝访问]</div>
+                    <div class="t-label">数据分类</div><div>数字化核心墓区</div>
                 </div>
             </div>
 
             <div class="content-title">生理特征提取 (Physical Observation)</div>
-            <div class="content-box">
-                <div class="layer-normal">
-                    观察对象为一名约 40-50 岁的成年男性。身高约 175cm，体型偏瘦。皮肤粗糙，伴有长期缺乏光照导致的苍白。双目呆滞，对光源刺激反应迟钝。
-                </div>
-                <div class="layer-secret">
-此实体呈量子态，伴随强烈信息干扰。严禁封锁【QA-Seal】‘QA-3’【QA-Seal】相关通路。实体现身时，周围 50 米内所有数字存储设备将发生 [REDACTED] 级别的位翻转。
-                </div>
-            </div>
+            <div class="content-box">观察对象为一名约 40-50 岁的成年男性。身高约 175cm，体型偏瘦。皮肤粗糙，伴有长期缺乏光照导致的苍白。双目呆滞，对光源刺激反应迟钝。<span class="secret-inline">此实体呈量子态，伴随强烈信息干扰。严禁封锁【QA-Seal】‘QA-3’【QA-Seal】相关通路。实体现身时，周围 50 米内所有数字存储设备将发生 [REDACTED] 级别的位翻转。</span></div>
 
             <div class="content-title">生平简述 (Biography Summary)</div>
-            <div class="content-box">
-                <div class="layer-normal">
-                    前公墓管理处行政人员。因长期在封闭环境下处理大量墓葬档案，于 2024 年确诊为精神分裂症。常自言自语，坚称“死者并未离去，只是换了种编码”。
-                </div>
-                <div class="layer-secret glitch-text">
-ðŸ§™â€â™‚ï¸â–‘â–’â–“â–ˆ 01101000 01100101 01101100 01110000 
-ÎžÎ£Î©Î”_Î¦_Â§Â¶_Â±â‰ˆâˆž_â€ â€¡_â™¦â™£â™¥â™ _Â¥â‚¬Â£Â¢
-ERR_CONNECTION_TIMED_OUT: The entity "Z" has exceeded the information limit.
-[ä½ ä¸è¯¥æ¥åˆ°è¿™é‡Œ] [叙，一个人不够，我试过了......]
-                </div>
-            </div>
+            <div class="content-box">前公墓管理处行政人员。因长期在封闭环境下处理大量墓葬档案，于 2024 年确诊为精神分裂症。常自言自语，坚称“死者并未离去，只是换了种编码”。<span class="secret-inline">ðŸ§™â€â™‚ï¸â–‘â–’â–“â–ˆ 01101000 01100101 01101100 01110000 ÎžÎ£Î©Î”_Î¦_Â§Â¶_Â±â‰ˆâˆž_â€ â€¡_â™¦â™£â™¥â™ _Â¥â‚¬Â£Â¢ ERR_CONNECTION_TIMED_OUT: The entity "Z" has exceeded the information limit. [ä½ ä¸è¯¥æ¥åˆ°è¿™é‡Œ] [叙，一个人不够，我试过了......]</span></div>
         </div>
     </div>
 
@@ -96,22 +79,18 @@ ERR_CONNECTION_TIMED_OUT: The entity "Z" has exceeded the information limit.
             }, 500);
         };
 
-        // 2. San值系统与全局变量
+        // 2. San值系统
         window.San = 0;
         
-        // 监听选中事件
         document.addEventListener('selectionchange', () => {
             const selection = window.getSelection().toString();
             if (selection.length > 0) {
                 window.San -= 1;
-                console.warn(`[系统警告] 精神值偏移: ${window.San}`);
-                
-                // 可选：将San值存入本地防止刷新重置
                 localStorage.setItem('user_san_value', window.San);
                 
-                // 如果San值过低，可以触发一些视觉抖动（可选）
-                if (window.San < -50) {
-                    document.body.style.filter = `contrast(${1 + Math.abs(window.San)/100})`;
+                // 实时视觉反馈：对比度随San值降低而变化
+                if (window.San < -10) {
+                    document.body.style.filter = `contrast(${1 + Math.abs(window.San)/200})`;
                 }
             }
         });
