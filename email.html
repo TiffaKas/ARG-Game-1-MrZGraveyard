@@ -88,11 +88,14 @@
             "人力资源部 - 周姐": [{type: 'msg-left', content: "你好，关于入职合同和社保缴纳的政策，可以查阅员工手册。办公时间外不处理私事。"}],
             "后勤维修 - 马师傅": [{type: 'msg-left', content: "小顾，巡逻的时候注意安全。要是发现哪块路灯不亮了，记得在系统里点个报修。"}],
             "档案室 - 小李": [{type: 'msg-left', content: "档案室实行准入制度。借阅纸质卷宗需要提前一天申请，并由主管联签。"}],
-            "卫先生 - 审计部": []
+            "卫先生 - 审计部": [],
+            "Mr. Z": []
         };
 
+        let San = -1; // 精神状态判定变量，默认设为-1以触发测试逻辑
         let currentContact = "杨先生";
         let isWeiTyping = false; 
+        let isZTyping = false;
         const keywords = ["红点", "保安", "实时", "墓位", "平面图"];
         const standardReply = "是正在巡逻的保安，我们的系统比较先进，他们巡逻的位置和实时信息会更新在实时墓位平面图上。";
 
@@ -101,6 +104,13 @@
             "从财务报表上看，公司将绝大部分营收划归到了‘高档园区维护成本’中。",
             "比如，为了维持石材色泽的高频次化学养护，以及园区内景观植物的 24 小时专业维保。",
             "很多的维护是必要的，作为千安墓园本身来讲。"
+        ];
+
+        const zDialogs = [
+            "哟，可算连上了。别东张西望的，叫我 Mr. Z 就行。这破地方的底层防火墙比想象的还臃肿，我可是费了老大的劲、好不容易才从那堆数据废墟里偷偷溜出来的一缕残留信号。",
+            "啧啧，看你现在这副游走在崩溃边缘的惨样（精神值都归负了），是不是终于察觉到了？跟你明说了吧，千安公墓这家公司从根子上就有巨大的问题，根本不是什么普通的墓园。",
+            "别指望去哪间具体的办公室捞我——我现在的‘身体’早就不复存在了。当年被我那个恶毒的上司用下作手段恶意‘处理’掉之后，我的物理形态就彻底蒸发了，只剩这一抹意识被公司强行保存在核心服务器的深处，像个全天候运转的底层代码长工一样被持续榨取管理。",
+            "不过别害怕，我对你没有恶意，甚至可以说，我非常乐意向你展现善意，提供一份双向的帮助。我需要你作为我在现世的‘手脚’去帮我索取、查找一些管理层刻意隐瞒的底层系统漏洞与重构数据；作为交换，我掌握的内部底线权限，能保你在精神彻底被撕碎异化前，看清某些被埋在泥土底下的‘真相’。怎么样，这笔对等的交易，做不做？"
         ];
 
         function switchContact(name, element) {
@@ -119,6 +129,10 @@
             if(name === '卫先生 - 审计部' && messageHistory[name].length === 0) {
                 if (!isWeiTyping) playWeiSequence();
             }
+
+            if(name === 'Mr. Z' && messageHistory[name].length === 0) {
+                if (!isZTyping) playZSequence();
+            }
         }
 
         function playWeiSequence() {
@@ -136,6 +150,23 @@
                         document.getElementById('userInput').value = "但是成本也没有那么高吧？";
                     }
                     isWeiTyping = false;
+                }
+            }
+            nextMsg();
+        }
+
+        function playZSequence() {
+            isZTyping = true;
+            let index = 0;
+            function nextMsg() {
+                if (index < zDialogs.length) {
+                    const content = zDialogs[index];
+                    messageHistory["Mr. Z"].push({type: 'msg-left', content: content});
+                    if (currentContact === "Mr. Z") renderMessage('msg-left', content);
+                    index++;
+                    setTimeout(nextMsg, 2000);
+                } else {
+                    isZTyping = false;
                 }
             }
             nextMsg();
@@ -162,7 +193,7 @@
                     if (currentContact === "财务部 - 赵姐") reply = "成本账目由专门的审计小组对接，普通员工无权过问。请知悉。";
                     else if (currentContact === "人力资源部 - 周姐") reply = "周姐多说一句，职场新人最重要的品质是执行力。关于公司的商业机密，建议不要随意打听。";
                     else if (currentContact === "后勤维修 - 马师傅") reply = "小顾啊，这园子里的一草一木养护起来都是烧钱的活。你做好巡逻就行，别操心这些。";
-                    else if (currentContact === "档案室 - 小李") reply = "资产明细和成本核算属于机密档案，我这里的权限也看不了。";
+                    else if (currentContact === "档案室 - 小微") reply = "资产明细和成本核算属于机密档案，我这里的权限也看不了。";
                     else if (currentContact === "杨先生") reply = "关于你反馈的成本疑点，审计部卫先生会直接与你沟通。";
                 } else {
                     // 非敏感词的日常回复
@@ -173,6 +204,8 @@
                         if (text.includes("但是成本也没有那么高吧？")) {
                             reply = "很多新人有时都会问类似的问题，你也不是第一个，这个建议会被听进去的。";
                         } 
+                    } else if (currentContact === "Mr. Z") {
+                        reply = "哼，聪明的试探。不过在进行我们‘双向互助’的深度合作前，先注意维系住你那可怜的理智。多去留心那些被掩盖的异常，交互信号随时有效。";
                     }
                 }
 
@@ -200,6 +233,12 @@
             }
         }
 
+        function checkSanStatus() {
+            if (typeof San !== 'undefined' && San < 0) {
+                createMrZContact(true);
+            }
+        }
+
         function createWeiContact(isNew = true) {
             if (document.getElementById('wei-item')) return;
             const sidebar = document.getElementById('contactList');
@@ -212,10 +251,25 @@
             localStorage.setItem('wei_contact_state', 'received');
         }
 
+        function createMrZContact(isNew = true) {
+            if (document.getElementById('z-item')) return;
+            const sidebar = document.getElementById('contactList');
+            const zDiv = document.createElement('div');
+            zDiv.id = "z-item";
+            zDiv.className = isNew ? "contact-item active-new" : "contact-item";
+            zDiv.onclick = function() { switchContact('Mr. Z', this); this.classList.remove('active-new'); };
+            zDiv.innerHTML = `<div class="avatar" style="background:#2c3e50; border: 1px dashed #c0392b; color:#e74c3c;">Z</div><div><div style="font-weight:bold; color:#c0392b;">Mr. Z</div><div style="font-size:11px; color:#e74c3c; font-style: italic;">[未知异常映射]</div></div>`;
+            sidebar.appendChild(zDiv);
+        }
+
         window.onload = () => {
             switchContact('杨先生', document.getElementById('item-yang'));
             checkAuditStatus();
-            setInterval(checkAuditStatus, 5000);
+            checkSanStatus();
+            setInterval(() => {
+                checkAuditStatus();
+                checkSanStatus();
+            }, 5000);
         };
         document.getElementById('userInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
     </script>
