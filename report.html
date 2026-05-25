@@ -98,6 +98,7 @@
                 </div>
             </div>
 
+            <div style="font-size: 13px; font-weight: bold; margin: 25px 0 10px 0; border-left: 3px solid #000; padding-left: 6px;">一、季度财务决算明细（交易数据）</div>
             <table>
                 <thead>
                     <tr>
@@ -107,7 +108,24 @@
                     </tr>
                 </thead>
                 <tbody id="table-body">
-                    </tbody>
+                </tbody>
+            </table>
+
+            <div style="font-size: 13px; font-weight: bold; margin: 35px 0 10px 0; border-left: 3px solid #000; padding-left: 6px;">二、流量明细-分渠道分析（经营数据）</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>流量来源</th>
+                        <th class="text-right">访客人数</th>
+                        <th class="text-right">访客人数占比</th>
+                        <th class="text-right">交易金额</th>
+                        <th class="text-right">交易金额占比</th>
+                        <th class="text-right">买家数</th>
+                        <th class="text-right">买家数占比</th>
+                    </tr>
+                </thead>
+                <tbody id="operational-table-body">
+                </tbody>
             </table>
 
             <div style="font-size: 11px; color: #888; margin-top: 40px;">
@@ -141,6 +159,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             renderFinancialReport();
+            renderOperationalReport();
             
             setTimeout(() => {
                 const aiAssistant = document.getElementById('ai-assistant');
@@ -193,6 +212,50 @@
                 <td><span style="color:#27ae60;">● 满足年度营收预期线</span></td>
             `;
             tbody.appendChild(totalTr);
+        }
+
+        function renderOperationalReport() {
+            // 细化分渠道经营指标，精准匹配15人及510万交易额
+            const opRows = [
+                ["流量宝", "5,215,033", "77.69%", "￥1,020,000.00", "20.00%", "3", "20.00%"],
+                ["品销宝-品牌专区", "143,358", "2.14%", "￥1,360,000.00", "26.67%", "4", "26.67%"],
+                ["直通车", "78,243", "1.17%", "￥340,000.00", "6.66%", "1", "6.66%"],
+                ["淘内免费其他", "165,540", "2.47%", "￥0.00", "0.00%", "0", "0.00%"],
+                ["手淘搜索", "131,596", "1.96%", "￥0.00", "0.00%", "0", "0.00%"],
+                ["园区线下生态转介绍", "4,142", "0.57%", "￥2,380,000.00", "46.67%", "7", "46.67%"]
+            ];
+
+            const opTbody = document.getElementById('operational-table-body');
+            if (!opTbody) return;
+            opTbody.innerHTML = "";
+
+            opRows.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${r[0]}</strong></td>
+                    <td class="text-right">${r[1]}</td>
+                    <td class="text-right">${r[2]}</td>
+                    <td class="text-right">${r[3]}</td>
+                    <td class="text-right">${r[4]}</td>
+                    <td class="text-right" style="font-weight: bold;">${r[5]}</td>
+                    <td class="text-right">${r[6]}</td>
+                `;
+                opTbody.appendChild(tr);
+            });
+
+            // 新增经营数据总计行以符合底表规范
+            const totalTr = document.createElement('tr');
+            totalTr.className = "total-row";
+            totalTr.innerHTML = `
+                <td>总计 (Total)</td>
+                <td class="text-right">5,737,912</td>
+                <td class="text-right">100.00%</td>
+                <td class="text-right">￥5,100,000.00</td>
+                <td class="text-right">100.00%</td>
+                <td class="text-right" style="color: #c0392b;">15</td>
+                <td class="text-right">100.00%</td>
+            `;
+            opTbody.appendChild(totalTr);
         }
     </script>
 </body>
